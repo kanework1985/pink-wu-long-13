@@ -1,0 +1,2656 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="theme-color" content="#ffdee9" />
+  <title>粉櫻甜心・台灣四人十三張（可愛風美女版）</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- PeerJS CDN (P2P Multiplayer with seamless local fallback) -->
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <!-- QRCodeJS CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+
+    :root {
+      --sakura-bg-1: #fff1f5;
+      --sakura-bg-2: #ffe0ec;
+      --sakura-bg-3: #ffd1e3;
+      --rose-gold: #e89bb4;
+      --rose-deep: #be185d;
+      --cream-glass: rgba(255, 255, 255, 0.78);
+
+      /* Dynamic Card Dimensions */
+      --hand-card-w: clamp(42px, 10.2vw, 64px);
+      --hand-card-h: clamp(60px, 14.5vw, 90px);
+      --hand-overlap: clamp(-20px, -4.2vw, -10px);
+
+      --lane-card-w: clamp(36px, 8.4vw, 54px);
+      --lane-card-h: clamp(50px, 11.8vw, 76px);
+      --lane-overlap: clamp(-14px, -2.5vw, -6px);
+
+      --mini-card-w: clamp(22px, 4.6vw, 32px);
+      --mini-card-h: clamp(31px, 6.4vw, 45px);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100dvh;
+      overflow: hidden;
+      font-family: 'M PLUS Rounded 1c', 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(155deg, #fff5f8 0%, #ffe4ef 45%, #fce7f3 75%, #ffe9d6 100%);
+      color: #5c1f3c;
+      touch-action: manipulation;
+    }
+
+    /* Pastel Macaron Table Background */
+    .sakura-bg {
+      background-image:
+        radial-gradient(circle at 18% 18%, rgba(255, 182, 213, 0.45) 0%, transparent 45%),
+        radial-gradient(circle at 82% 80%, rgba(254, 215, 170, 0.42) 0%, transparent 48%),
+        radial-gradient(circle at 50% 45%, rgba(255, 255, 255, 0.65) 0%, rgba(255, 224, 236, 0.85) 75%);
+    }
+
+    /* Falling Sakura Petals Decoration */
+    .petal-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1;
+    }
+    .petal {
+      position: absolute;
+      top: -10%;
+      width: 14px;
+      height: 10px;
+      background: linear-gradient(135deg, #ffb7d5, #ff85b3);
+      border-radius: 150% 0 150% 0;
+      opacity: 0.45;
+      animation: fallPetal linear infinite;
+    }
+    @keyframes fallPetal {
+      0% { transform: translateY(-10dvh) translateX(0) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.5; }
+      90% { opacity: 0.45; }
+      100% { transform: translateY(110dvh) translateX(65px) rotate(360deg); opacity: 0; }
+    }
+
+    /* Frosted Glass & Rose-Gold Borders */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.74);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1.5px solid rgba(244, 143, 177, 0.48);
+      box-shadow: 0 6px 20px rgba(219, 39, 119, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+
+    .rose-title {
+      background: linear-gradient(180deg, #ec4899 0%, #be185d 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .btn-sweet {
+      background: linear-gradient(180deg, #ff85b3 0%, #ec4899 100%);
+      color: #ffffff;
+      border: 1.5px solid #fbcfe8;
+      box-shadow: 0 3px 10px rgba(236, 72, 153, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      transition: transform 0.12s ease, filter 0.12s ease;
+    }
+    .btn-sweet:hover:not(:disabled) { filter: brightness(1.06); }
+    .btn-sweet:active:not(:disabled) { transform: scale(0.95); }
+    .btn-sweet:disabled { opacity: 0.45; cursor: not-allowed; filter: grayscale(0.4); }
+
+    .btn-cream {
+      background: linear-gradient(180deg, #ffffff 0%, #fff0f6 100%);
+      color: #9d174d;
+      border: 1.5px solid rgba(244, 143, 177, 0.65);
+      box-shadow: 0 2px 6px rgba(219, 39, 119, 0.10);
+      transition: transform 0.12s ease, background 0.12s ease;
+    }
+    .btn-cream:hover:not(:disabled) { background: linear-gradient(180deg, #fff7fa 0%, #ffe0ec 100%); }
+    .btn-cream:active:not(:disabled) { transform: scale(0.95); }
+
+    /* Cute Playing Cards */
+    .p-card {
+      position: relative;
+      background: linear-gradient(160deg, #ffffff 0%, #fff7fa 100%);
+      border-radius: 8px;
+      border: 1.5px solid #f9a8d4;
+      box-shadow: -2px 2px 6px rgba(190, 24, 93, 0.16);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 3px 4px;
+      cursor: pointer;
+      transition: transform 0.15s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.15s ease, border-color 0.15s ease;
+      flex-shrink: 0;
+    }
+
+    .p-card.red { color: #e11d48; }
+    .p-card.black { color: #3b1d36; }
+
+    .p-card.hand-card {
+      width: var(--hand-card-w);
+      height: var(--hand-card-h);
+      margin-left: var(--hand-overlap);
+    }
+    .p-card.hand-card:first-child { margin-left: 0; }
+    .p-card.hand-card:hover { transform: translateY(-6px); z-index: 20; }
+    .p-card.hand-card.selected {
+      transform: translateY(-14px);
+      border: 2px solid #ec4899;
+      box-shadow: 0 8px 16px rgba(236, 72, 153, 0.38);
+      z-index: 30;
+    }
+
+    .p-card.lane-card {
+      width: var(--lane-card-w);
+      height: var(--lane-card-h);
+      margin-left: var(--lane-overlap);
+    }
+    .p-card.lane-card:first-child { margin-left: 0; }
+    .p-card.lane-card:hover { transform: translateY(-4px); z-index: 20; }
+
+    .p-card.mini-card {
+      width: var(--mini-card-w);
+      height: var(--mini-card-h);
+      margin-left: -8px;
+      border-radius: 5px;
+      padding: 1px 2px;
+      cursor: default;
+    }
+    .p-card.mini-card:first-child { margin-left: 0; }
+
+    /* Pink Lace / Heart Card Back */
+    .p-card-back {
+      background:
+        radial-gradient(circle at 50% 50%, #fff0f6 15%, transparent 16%),
+        repeating-linear-gradient(135deg, #f472b6, #f472b6 4px, #ec4899 4px, #ec4899 8px);
+      border: 1.5px solid #ffffff;
+      box-shadow: inset 0 0 0 1px #fbcfe8;
+    }
+
+    .lane-slot {
+      border: 1.5px dashed rgba(236, 72, 153, 0.42);
+      background: rgba(255, 255, 255, 0.55);
+      transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .lane-slot.can-drop {
+      border-color: #ec4899;
+      background: rgba(255, 228, 240, 0.85);
+      box-shadow: 0 0 12px rgba(236, 72, 153, 0.25);
+      cursor: pointer;
+    }
+    .lane-slot.foul-lane {
+      border-color: #e11d48;
+      background: rgba(254, 205, 211, 0.72);
+    }
+
+    /* Beauty Photo Cross-fade */
+    .photo-fade {
+      transition: opacity 0.45s ease, transform 0.45s ease;
+    }
+    .photo-fade.swapping {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+
+    /* Dramatic Banner Animation */
+    @keyframes bannerPop {
+      0% { opacity: 0; transform: scale(0.75); }
+      18% { opacity: 1; transform: scale(1.04); }
+      82% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(0.96); }
+    }
+    .banner-pop {
+      animation: bannerPop 1.85s ease forwards;
+    }
+
+    .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scroll::-webkit-scrollbar-track { background: rgba(244, 143, 177, 0.15); border-radius: 99px; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: rgba(236, 72, 153, 0.45); border-radius: 99px; }
+
+    /* =====================================================================
+       MANDATORY: Landscape Short Screen Compact Mode
+       @media (orientation: landscape) and (max-height: 540px)
+       ===================================================================== */
+    @media (orientation: landscape) and (max-height: 540px) {
+      :root {
+        --hand-card-w: clamp(34px, 5.2vw, 48px);
+        --hand-card-h: clamp(46px, 11dvh, 66px);
+        --hand-overlap: clamp(-14px, -1.7vw, -6px);
+
+        --lane-card-w: clamp(30px, 4.4vw, 42px);
+        --lane-card-h: clamp(42px, 9.6dvh, 58px);
+        --lane-overlap: clamp(-12px, -1.5vw, -5px);
+
+        --mini-card-w: clamp(19px, 2.9vw, 26px);
+        --mini-card-h: clamp(26px, 6.2dvh, 36px);
+      }
+
+      .hide-on-short {
+        display: none !important;
+      }
+
+      .lobby-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 0.6rem !important;
+      }
+
+      .lobby-card {
+        padding: 0.6rem !important;
+      }
+
+      .compact-header {
+        padding-top: 0.18rem !important;
+        padding-bottom: 0.18rem !important;
+        min-height: 34px !important;
+      }
+
+      .compact-stage-wrap {
+        flex-direction: row !important;
+        gap: 0.4rem !important;
+        padding: 0.2rem 0.4rem !important;
+      }
+
+      .beauty-panel {
+        width: clamp(128px, 21vw, 175px) !important;
+        flex-direction: column !important;
+        padding: 0.35rem !important;
+      }
+
+      .beauty-photo-box {
+        width: 100% !important;
+        height: clamp(110px, 44dvh, 175px) !important;
+      }
+
+      .compact-lanes {
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        gap: 0.3rem !important;
+      }
+
+      .p-card.hand-card.selected {
+        transform: translateY(-9px);
+      }
+
+      #qr-container canvas, #qr-container img {
+        width: 68px !important;
+        height: 68px !important;
+      }
+    }
+  </style>
+</head>
+<body class="sakura-bg flex flex-col h-[100dvh] w-full overflow-hidden relative">
+
+  <!-- Decorative Falling Sakura Petals -->
+  <div class="petal-layer" aria-hidden="true">
+    <div class="petal" style="left: 8%; animation-duration: 11s; animation-delay: 0s;"></div>
+    <div class="petal" style="left: 24%; animation-duration: 14s; animation-delay: 2s; width: 11px; height: 8px;"></div>
+    <div class="petal" style="left: 42%; animation-duration: 10s; animation-delay: 4s;"></div>
+    <div class="petal" style="left: 63%; animation-duration: 13s; animation-delay: 1s; width: 12px; height: 9px;"></div>
+    <div class="petal" style="left: 79%; animation-duration: 12s; animation-delay: 3.5s;"></div>
+    <div class="petal" style="left: 91%; animation-duration: 15s; animation-delay: 5s; width: 10px; height: 7px;"></div>
+  </div>
+
+  <!-- ===================== TOAST CONTAINER (NO alert()) ===================== -->
+  <div id="toast-container" class="fixed top-14 left-1/2 -translate-x-1/2 z-[120] flex flex-col gap-2 pointer-events-none w-[90vw] max-w-sm items-center"></div>
+
+  <!-- ===================== DRAMATIC EFFECT OVERLAY ===================== -->
+  <div id="fx-overlay" class="fixed inset-0 z-[100] pointer-events-none flex items-center justify-center hidden">
+    <div id="fx-banner" class="px-7 py-4 rounded-3xl border-2 border-pink-300 bg-gradient-to-r from-pink-500/95 via-rose-400/95 to-pink-500/95 shadow-2xl text-center">
+      <div id="fx-title" class="text-2xl sm:text-4xl font-black text-white tracking-wider drop-shadow"></div>
+      <div id="fx-sub" class="text-xs sm:text-base font-bold text-pink-50 mt-1"></div>
+    </div>
+  </div>
+
+  <!-- Hidden Multi-File Input for Custom Beauty Photo Album -->
+  <input id="custom-photo-input" type="file" accept="image/jpeg,image/png,image/webp,image/*" multiple class="hidden" onchange="handleCustomPhotosUpload(this)" />
+
+  <!-- =========================================================================
+       SCREEN 1: LOBBY & WAITING ROOM
+       ========================================================================= -->
+  <div id="lobby-screen" class="relative z-10 flex flex-col h-[100dvh] w-full overflow-hidden">
+    <!-- Lobby Header -->
+    <header class="compact-header shrink-0 px-3 sm:px-6 py-2 bg-white/75 backdrop-blur-md border-b border-pink-300/60 flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2 min-w-0">
+        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center text-white font-black text-base sm:text-lg shadow shrink-0">🌸</div>
+        <div class="min-w-0">
+          <h1 class="text-sm sm:text-xl font-black rose-title truncate leading-tight">粉櫻甜心・台灣四人十三張</h1>
+          <p class="hide-on-short text-[11px] text-rose-500/80 truncate font-bold">可愛美女寫真伴遊・自動換照・P2P 連線對戰</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-1.5 shrink-0">
+        <span id="net-status-badge" class="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-pink-100 border border-pink-300 text-rose-700">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span> 準備就緒
+        </span>
+        <button onclick="openRulesModal()" class="btn-cream px-2.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold" title="玩法規則">📖 規則</button>
+        <button onclick="openAudioModal()" class="btn-cream px-2.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold" title="音效與語音設定">🔊 音效</button>
+        <button onclick="toggleFullscreen()" class="btn-sweet px-2.5 py-1.5 rounded-xl text-xs sm:text-sm font-black" title="切換全螢幕">⛶ 全螢幕</button>
+      </div>
+    </header>
+
+    <!-- Lobby Main Content -->
+    <main class="flex-1 min-h-0 p-2.5 sm:p-5 flex items-center justify-center overflow-y-auto custom-scroll">
+      <div class="lobby-grid w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-5 items-stretch">
+
+        <!-- Left Column: Player & Room Controls -->
+        <section class="lobby-card glass-card rounded-3xl p-3.5 sm:p-5 flex flex-col justify-between gap-2.5">
+          <div class="space-y-2.5">
+            <div class="flex items-center justify-between">
+              <h2 class="text-sm sm:text-base font-black text-rose-600 flex items-center gap-1.5">🎀 玩家與甜心設定</h2>
+              <span id="mobile-net-badge" class="sm:hidden text-[11px] px-2 py-0.5 rounded-full bg-pink-100 border border-pink-300 text-rose-600 font-bold">就緒</span>
+            </div>
+
+            <!-- Nickname -->
+            <div>
+              <label class="block text-xs text-rose-700/80 font-bold mb-1">玩家暱稱</label>
+              <input id="player-name-input" type="text" maxlength="10" value="甜心牌聖"
+                class="w-full px-3 py-2 rounded-2xl bg-white/90 border border-pink-300 text-rose-900 font-bold text-sm focus:outline-none focus:border-pink-500" />
+            </div>
+
+            <!-- AI Difficulty -->
+            <div>
+              <label class="block text-xs text-rose-700/80 font-bold mb-1">少女 AI 補位難度（小櫻・小莓・小兔）</label>
+              <div class="grid grid-cols-3 gap-1.5" id="ai-diff-group">
+                <button type="button" data-diff="easy" onclick="setAiDifficulty('easy')"
+                  class="ai-diff-btn py-1.5 rounded-2xl text-xs font-bold border border-pink-300 bg-white/80 text-rose-700">放水新手</button>
+                <button type="button" data-diff="normal" onclick="setAiDifficulty('normal')"
+                  class="ai-diff-btn py-1.5 rounded-2xl text-xs font-black border-2 border-pink-500 bg-pink-100 text-rose-700">普通</button>
+                <button type="button" data-diff="master" onclick="setAiDifficulty('master')"
+                  class="ai-diff-btn py-1.5 rounded-2xl text-xs font-bold border border-pink-300 bg-white/80 text-rose-700">大師</button>
+              </div>
+            </div>
+
+            <!-- Custom Album Quick Import in Lobby -->
+            <div class="flex items-center justify-between gap-2 p-2 rounded-2xl bg-pink-50/90 border border-pink-200">
+              <div class="text-xs font-bold text-rose-700 truncate" id="lobby-album-status">
+                🖼️ 內建 8 位甜心寫真（自動輪播）
+              </div>
+              <button type="button" onclick="triggerCustomPhotoUpload()" class="btn-cream px-2.5 py-1 rounded-xl text-xs font-black shrink-0">
+                📷 匯入相簿
+              </button>
+            </div>
+
+            <!-- Room Create / Join -->
+            <div class="pt-1 border-t border-pink-200 space-y-2">
+              <div class="grid grid-cols-2 gap-2">
+                <button id="btn-create-room" onclick="createOnlineRoom()" class="btn-sweet py-2 px-3 rounded-2xl font-black text-xs sm:text-sm">
+                  🏠 建立連線房間
+                </button>
+                <button onclick="startQuickLocalGame()" class="btn-cream py-2 px-3 rounded-2xl font-black text-xs sm:text-sm">
+                  🌸 立即單機開局
+                </button>
+              </div>
+
+              <div class="flex gap-1.5">
+                <input id="join-room-input" type="text" maxlength="8" placeholder="輸入房號加入 (例: 5201)"
+                  class="flex-1 min-w-0 px-3 py-1.5 rounded-2xl bg-white/90 border border-pink-300 text-rose-900 text-xs sm:text-sm font-bold uppercase focus:outline-none focus:border-pink-500" />
+                <button id="btn-join-room" onclick="joinOnlineRoom()" class="btn-cream px-3.5 py-1.5 rounded-2xl font-black text-xs sm:text-sm shrink-0">
+                  加入房間
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <p class="hide-on-short text-[11px] text-rose-600/75 leading-relaxed font-medium">
+            支援 1~4 人 P2P 連線，空位由可愛少女 AI 自動補滿；玩牌過程自動輪播 8 位甜心寫真，也支援匯入自己的相簿照片！
+          </p>
+        </section>
+
+        <!-- Right Column: Waiting Room & Invite QR -->
+        <section class="lobby-card glass-card rounded-3xl p-3.5 sm:p-5 flex flex-col justify-between gap-2.5">
+          <div class="flex items-center justify-between gap-2">
+            <h2 class="text-sm sm:text-base font-black text-rose-600">🍰 粉櫻等待室 (1~4人)</h2>
+            <span id="room-code-display" class="px-2.5 py-0.5 rounded-full bg-pink-100 border border-pink-300 text-xs font-mono font-bold text-rose-700">
+              房號：單機預備
+            </span>
+          </div>
+
+          <!-- 4 Seats Grid -->
+          <div id="lobby-seats" class="grid grid-cols-2 gap-2"></div>
+
+          <!-- Invite QR + Copy Link -->
+          <div id="invite-box" class="flex items-center gap-3 p-2.5 rounded-2xl bg-white/75 border border-pink-200">
+            <div id="qr-container" class="w-18 h-18 sm:w-20 sm:h-20 bg-white rounded-xl p-1 border border-pink-200 flex items-center justify-center shrink-0 overflow-hidden">
+              <span class="text-[10px] text-rose-400 text-center font-bold leading-tight">建立房間<br/>生成 QR</span>
+            </div>
+            <div class="flex-1 min-w-0 space-y-1">
+              <div class="text-xs font-black text-rose-700 truncate" id="invite-status-text">建立連線房後可邀請好友</div>
+              <div class="text-[11px] text-rose-500/80 truncate font-mono" id="invite-url-preview">?room=------</div>
+              <button id="btn-copy-invite" onclick="copyInviteLink()" disabled
+                class="btn-cream w-full py-1.5 px-2 rounded-xl text-xs font-black disabled:opacity-40">
+                📋 複製邀請網址
+              </button>
+            </div>
+          </div>
+
+          <!-- Start Match Button -->
+          <button id="btn-start-match" onclick="hostStartGame()" class="btn-sweet w-full py-2.5 sm:py-3 rounded-2xl font-black text-sm sm:text-base tracking-wide">
+            🌸 開始發牌對戰 ✨
+          </button>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- =========================================================================
+       SCREEN 2: GAME TABLE + BEAUTY PHOTO SHOWCASE
+       ========================================================================= -->
+  <div id="game-screen" class="relative z-10 hidden flex-col h-[100dvh] w-full overflow-hidden">
+
+    <!-- Top Game HUD Bar -->
+    <header class="compact-header shrink-0 px-2.5 sm:px-4 py-1.5 bg-white/80 backdrop-blur-md border-b border-pink-300/60 flex items-center justify-between gap-2 z-20">
+      <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
+        <span id="hud-round" class="px-2 py-0.5 rounded-full bg-pink-100 border border-pink-300 text-rose-700 text-xs font-black shrink-0">第 1 局</span>
+        <span id="hud-room-tag" class="hidden sm:inline text-xs text-rose-500 font-mono font-bold truncate">單機模式</span>
+        <span id="hud-my-score" class="px-2 py-0.5 rounded-full bg-rose-500 text-xs font-bold text-white shrink-0 shadow-sm">
+          總水數：<strong>0</strong>
+        </span>
+      </div>
+
+      <div class="flex items-center gap-1 sm:gap-1.5 shrink-0">
+        <button onclick="openRulesModal()" class="btn-cream px-2 py-1 rounded-xl text-xs font-bold">📖</button>
+        <button onclick="openAudioModal()" class="btn-cream px-2 py-1 rounded-xl text-xs font-bold">🔊</button>
+        <button onclick="toggleFullscreen()" class="btn-sweet px-2 py-1 rounded-xl text-xs font-black">⛶ 全螢幕</button>
+        <button onclick="leaveToLobby()" class="px-2 py-1 rounded-xl text-xs font-bold bg-rose-100 hover:bg-rose-200 border border-rose-300 text-rose-700">離開</button>
+      </div>
+    </header>
+
+    <!-- Main Game Content Wrapper: Portrait=Column, Desktop/Landscape=Row (Left Table + Right Beauty Showcase) -->
+    <div class="compact-stage-wrap flex-1 min-h-0 flex flex-col md:flex-row gap-1.5 sm:gap-2.5 p-1.5 sm:p-3 overflow-hidden max-w-7xl w-full mx-auto">
+
+      <!-- LEFT / MAIN TABLE COLUMN -->
+      <main class="flex-1 min-w-0 min-h-0 flex flex-col justify-between gap-1 sm:gap-1.5 overflow-hidden">
+
+        <!-- TOP: 3 Cute AI/Player Opponents Strip -->
+        <section id="opponents-row" class="shrink-0 grid grid-cols-3 gap-1.5 sm:gap-2.5 w-full"></section>
+
+        <!-- CENTER ANTI-JITTER STATUS & TIMER BAR (Fixed Width/Height + animate-pulse ONLY) -->
+        <section class="shrink-0 flex items-center justify-center">
+          <div class="w-full max-w-xl h-7 sm:h-8 px-2.5 sm:px-3 rounded-full bg-white/80 border border-pink-300 shadow-sm flex items-center justify-between gap-2 overflow-hidden">
+            <div class="flex items-center gap-1.5 min-w-0">
+              <span class="w-2 h-2 rounded-full bg-pink-500 animate-pulse shrink-0"></span>
+              <span id="stage-status-text" class="text-[11px] sm:text-xs font-black text-rose-700 truncate">點選手牌放入頭/中/尾三墩，或套用推薦擺法</span>
+            </div>
+            <!-- Fixed-width countdown pill (Zero jitter) -->
+            <div class="w-14 sm:w-16 h-5 sm:h-6 rounded-full bg-gradient-to-r from-pink-500 to-rose-400 flex items-center justify-center shrink-0">
+              <span id="timer-display" class="font-mono text-[11px] sm:text-xs font-black text-white animate-pulse">60s</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- MIDDLE: Player's 3 Lanes -->
+        <section id="player-lanes-section" class="flex-1 min-h-0 flex flex-col justify-center gap-1 overflow-hidden">
+          <!-- Smart Suggestions & Special Hand Bar -->
+          <div id="assist-bar" class="shrink-0 flex flex-wrap items-center justify-between gap-1 px-0.5">
+            <div class="flex items-center gap-1 overflow-x-auto custom-scroll py-0.5" id="suggestions-container">
+              <span class="text-[11px] text-rose-600 font-black shrink-0">💡 推薦：</span>
+            </div>
+            <div class="flex items-center gap-1 shrink-0">
+              <button id="btn-special-declare" onclick="declareSpecialHand()" class="hidden px-2.5 py-0.5 rounded-full bg-gradient-to-r from-rose-500 to-amber-400 border border-white text-white text-[11px] font-black shadow animate-pulse">
+                🌟 立即報到！
+              </button>
+              <span id="foul-warning-badge" class="hidden px-2 py-0.5 rounded-full bg-rose-600 text-white text-[11px] font-black">
+                ⚠️ 倒水（相公）
+              </span>
+            </div>
+          </div>
+
+          <!-- 3 Lanes Grid -->
+          <div class="compact-lanes flex-1 min-h-0 flex flex-col sm:grid sm:grid-cols-3 gap-1 sm:gap-2 items-stretch">
+            <!-- Front Lane -->
+            <div id="lane-front" onclick="handleLaneClick('front')"
+              class="lane-slot rounded-2xl p-1 sm:p-1.5 flex sm:flex-col items-center justify-between gap-1 min-h-0">
+              <div class="flex sm:w-full items-center justify-between gap-1 shrink-0">
+                <span class="text-[11px] sm:text-xs font-black text-rose-600 whitespace-nowrap">頭墩 <span class="text-[10px] text-rose-400">(3張)</span></span>
+                <span id="rank-front" class="px-1.5 py-0.5 rounded-full bg-pink-100 text-[10px] font-bold text-rose-700 whitespace-nowrap">0/3</span>
+              </div>
+              <div id="cards-front" class="flex-1 flex items-center justify-center min-h-[42px]"></div>
+              <div id="score-front" class="hidden text-[11px] font-black px-2 py-0.5 rounded-full"></div>
+            </div>
+
+            <!-- Middle Lane -->
+            <div id="lane-mid" onclick="handleLaneClick('mid')"
+              class="lane-slot rounded-2xl p-1 sm:p-1.5 flex sm:flex-col items-center justify-between gap-1 min-h-0">
+              <div class="flex sm:w-full items-center justify-between gap-1 shrink-0">
+                <span class="text-[11px] sm:text-xs font-black text-rose-600 whitespace-nowrap">中墩 <span class="text-[10px] text-rose-400">(5張)</span></span>
+                <span id="rank-mid" class="px-1.5 py-0.5 rounded-full bg-pink-100 text-[10px] font-bold text-rose-700 whitespace-nowrap">0/5</span>
+              </div>
+              <div id="cards-mid" class="flex-1 flex items-center justify-center min-h-[42px]"></div>
+              <div id="score-mid" class="hidden text-[11px] font-black px-2 py-0.5 rounded-full"></div>
+            </div>
+
+            <!-- Back Lane -->
+            <div id="lane-back" onclick="handleLaneClick('back')"
+              class="lane-slot rounded-2xl p-1 sm:p-1.5 flex sm:flex-col items-center justify-between gap-1 min-h-0">
+              <div class="flex sm:w-full items-center justify-between gap-1 shrink-0">
+                <span class="text-[11px] sm:text-xs font-black text-rose-600 whitespace-nowrap">尾墩 <span class="text-[10px] text-rose-400">(5張)</span></span>
+                <span id="rank-back" class="px-1.5 py-0.5 rounded-full bg-pink-100 text-[10px] font-bold text-rose-700 whitespace-nowrap">0/5</span>
+              </div>
+              <div id="cards-back" class="flex-1 flex items-center justify-center min-h-[42px]"></div>
+              <div id="score-back" class="hidden text-[11px] font-black px-2 py-0.5 rounded-full"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- BOTTOM: Hand Tray & Controls -->
+        <section id="hand-control-section" class="shrink-0 w-full flex flex-col gap-1">
+          <div id="arrange-actions" class="flex items-center justify-between gap-1.5 px-0.5">
+            <div class="flex items-center gap-1">
+              <button onclick="toggleHandSort()" id="btn-sort-hand" class="btn-cream px-2.5 py-1 rounded-xl text-[11px] sm:text-xs font-black">
+                ⇅ 依點數
+              </button>
+              <button onclick="clearAllLanes()" class="btn-cream px-2.5 py-1 rounded-xl text-[11px] sm:text-xs font-black">
+                ↺ 清空
+              </button>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span id="hand-count-hint" class="text-[11px] text-rose-600 font-bold hidden sm:inline">剩餘 13 張</span>
+              <button id="btn-confirm-hand" onclick="confirmPlayerArrangement()" disabled
+                class="btn-sweet px-4 sm:px-6 py-1 rounded-xl text-xs sm:text-sm font-black">
+                💖 確認擺牌
+              </button>
+            </div>
+          </div>
+
+          <div id="hand-tray" class="w-full min-h-[54px] sm:min-h-[82px] flex items-end justify-center px-1.5 pt-2 pb-0.5 overflow-x-auto custom-scroll"></div>
+        </section>
+      </main>
+
+      <!-- =====================================================================
+           RIGHT / COMPACT BEAUTY PHOTO SHOWCASE (甜心寫真伴遊框)
+           Portrait Mobile: Sleek horizontal bar | Desktop & Landscape: Tall vertical showcase
+           ===================================================================== -->
+      <aside id="beauty-showcase" class="beauty-panel glass-card rounded-2xl p-1.5 sm:p-2.5 shrink-0 flex flex-row md:flex-col items-center justify-between gap-2 md:w-[205px] lg:w-[235px]">
+        <!-- Photo Display Frame -->
+        <div class="beauty-photo-box relative w-[64px] h-[78px] md:w-full md:h-[245px] lg:h-[285px] rounded-xl overflow-hidden border-2 border-pink-300 bg-pink-50 shadow-inner shrink-0 cursor-pointer"
+          onclick="openPhotoLightbox()" title="點擊放大欣賞甜心寫真">
+          <div id="beauty-photo-stage" class="photo-fade w-full h-full flex items-center justify-center"></div>
+          <span id="beauty-counter-pill" class="absolute top-1 right-1 px-1.5 py-0.5 rounded-full bg-rose-500/85 text-white text-[9px] font-black">1/8</span>
+        </div>
+
+        <!-- Character Info + Dialogue Bubble + Controls -->
+        <div class="flex-1 min-w-0 w-full flex flex-col justify-between gap-1 h-full">
+          <div class="space-y-1">
+            <div class="flex items-center justify-between gap-1">
+              <span id="beauty-name-tag" class="text-xs sm:text-sm font-black text-rose-700 truncate">🌸 櫻花巫女・小櫻</span>
+              <button id="btn-auto-rotate" onclick="toggleAutoRotate()"
+                class="px-1.5 py-0.5 rounded-full text-[10px] font-black bg-pink-500 text-white shrink-0" title="切換 12 秒自動換照">
+                🔄 自動開
+              </button>
+            </div>
+            <!-- Cute Dialogue Bubble -->
+            <div class="relative p-1.5 sm:p-2 rounded-xl bg-white/90 border border-pink-200 text-[11px] sm:text-xs font-bold text-rose-700 leading-snug line-clamp-2">
+              <span id="beauty-dialogue">「主人加油喔～祝你這局大殺四方💖」</span>
+            </div>
+          </div>
+
+          <!-- Action Buttons: Next Photo + Custom Album -->
+          <div class="grid grid-cols-2 gap-1.5 pt-0.5">
+            <button onclick="nextBeautyPhoto(true)" class="btn-sweet py-1 px-1.5 rounded-xl text-[11px] font-black truncate">
+              ✨ 換一張
+            </button>
+            <button onclick="triggerCustomPhotoUpload()" class="btn-cream py-1 px-1.5 rounded-xl text-[11px] font-black truncate">
+              📷 自訂相簿
+            </button>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 1: 3-SECTION STICKY FOOTER SETTLEMENT MODAL (MANDATORY STRUCTURE)
+       ========================================================================= -->
+  <div id="settlement-modal" class="hidden fixed inset-0 z-[90] bg-rose-950/55 backdrop-blur-sm flex items-center justify-center p-2.5 sm:p-4">
+    <div class="w-full max-w-2xl max-h-[92dvh] flex flex-col overflow-hidden rounded-3xl border-2 border-pink-300 bg-gradient-to-b from-white to-pink-50 shadow-2xl">
+      <!-- TOP: Fixed Header (shrink-0) -->
+      <div class="shrink-0 px-4 py-3 bg-gradient-to-r from-pink-100 via-rose-50 to-pink-100 border-b border-pink-200 flex items-center justify-between gap-2">
+        <div>
+          <h3 id="settle-title" class="text-base sm:text-lg font-black rose-title">第 1 局 甜心結算戰報</h3>
+          <p id="settle-subtitle" class="text-xs text-rose-500 font-bold"></p>
+        </div>
+        <span id="settle-my-delta" class="px-3 py-1 rounded-full text-sm font-black border"></span>
+      </div>
+
+      <!-- MIDDLE: Scrollable Scoreboard & Pairwise Details (flex-1 overflow-y-auto) -->
+      <div id="settle-body" class="flex-1 overflow-y-auto custom-scroll p-3.5 sm:p-4 space-y-3"></div>
+
+      <!-- BOTTOM: Permanently Pinned Footer (shrink-0) -->
+      <div class="shrink-0 px-4 py-3 bg-white/90 border-t border-pink-200 flex items-center justify-end gap-2.5">
+        <button onclick="leaveToLobby()" class="btn-cream px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-black">
+          返回大廳
+        </button>
+        <button id="btn-next-round" onclick="startNextRound()" class="btn-sweet flex-1 sm:flex-none sm:px-8 py-2.5 rounded-2xl text-sm font-black">
+          確定 / 再來一局 🌸
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 2: PHOTO LIGHTBOX (Tap beauty photo to view full size)
+       ========================================================================= -->
+  <div id="lightbox-modal" class="hidden fixed inset-0 z-[96] bg-rose-950/75 backdrop-blur-sm flex items-center justify-center p-4" onclick="closePhotoLightbox()">
+    <div class="w-full max-w-sm rounded-3xl border-2 border-pink-300 bg-white p-3 shadow-2xl space-y-2.5" onclick="event.stopPropagation()">
+      <div class="flex items-center justify-between">
+        <span id="lightbox-title" class="text-sm font-black text-rose-700"></span>
+        <button onclick="closePhotoLightbox()" class="text-rose-400 hover:text-rose-700 font-black text-lg px-2">✕</button>
+      </div>
+      <div id="lightbox-stage" class="w-full aspect-[4/5] rounded-2xl overflow-hidden border border-pink-200 bg-pink-50 flex items-center justify-center"></div>
+      <div class="flex gap-2">
+        <button onclick="nextBeautyPhoto(true); updateLightboxContent();" class="btn-sweet flex-1 py-2 rounded-xl text-xs font-black">✨ 換下一張寫真</button>
+        <button onclick="triggerCustomPhotoUpload()" class="btn-cream flex-1 py-2 rounded-xl text-xs font-black">📷 匯入自訂相簿</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 3: AUDIO & MEDIA ENGINE SETTINGS
+       ========================================================================= -->
+  <div id="audio-modal" class="hidden fixed inset-0 z-[95] bg-rose-950/55 backdrop-blur-sm flex items-center justify-center p-3">
+    <div class="w-full max-w-md max-h-[92dvh] flex flex-col overflow-hidden rounded-3xl border-2 border-pink-300 bg-white shadow-2xl">
+      <div class="shrink-0 px-4 py-3 bg-pink-50 border-b border-pink-200 flex items-center justify-between">
+        <h3 class="text-base font-black rose-title">🔊 甜心語音、音效與背景音樂</h3>
+        <button onclick="closeAudioModal()" class="text-rose-400 hover:text-rose-700 text-lg font-black px-2">✕</button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto custom-scroll p-4 space-y-3.5 text-sm">
+        <div class="flex items-center justify-between p-2.5 rounded-2xl bg-pink-50 border border-pink-200">
+          <span class="font-black text-rose-700">全域靜音開關</span>
+          <button id="btn-master-mute" onclick="audioEngine.toggleMute()" class="btn-cream px-3 py-1 rounded-xl text-xs font-black">
+            🔊 開啟中
+          </button>
+        </div>
+
+        <div class="space-y-2 p-3 rounded-2xl bg-pink-50 border border-pink-200">
+          <div class="flex items-center justify-between">
+            <span class="font-black text-rose-700">🎵 柔和背景音樂 (BGM)</span>
+            <button id="btn-bgm-toggle" onclick="audioEngine.toggleBgm()" class="btn-sweet px-3 py-1 rounded-xl text-xs font-black">
+              ▶ 播放五聲音階
+            </button>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-rose-600 font-bold w-10">音量</span>
+            <input id="slider-bgm" type="range" min="0" max="1" step="0.05" value="0.35"
+              oninput="audioEngine.setBgmVolume(this.value)" class="flex-1 accent-pink-500" />
+            <span id="val-bgm" class="text-xs font-mono font-bold text-rose-700 w-9 text-right">35%</span>
+          </div>
+          <div class="pt-2 border-t border-pink-200 space-y-1.5">
+            <label class="block text-xs text-rose-600 font-bold">匯入本機音樂檔循環播放 (MP3 / WAV)：</label>
+            <div class="flex items-center gap-2">
+              <label class="btn-cream px-3 py-1.5 rounded-xl text-xs font-black cursor-pointer">
+                📂 選擇音樂檔
+                <input id="custom-bgm-file" type="file" accept="audio/mp3,audio/wav,audio/*" class="hidden" onchange="audioEngine.loadCustomBgm(this)" />
+              </label>
+              <span id="custom-bgm-name" class="text-xs text-rose-500 font-bold truncate flex-1">目前：內建柔和五聲音階</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-2 p-3 rounded-2xl bg-pink-50 border border-pink-200">
+          <div class="flex items-center justify-between">
+            <span class="font-black text-rose-700">✨ 可愛合成音效 (SFX)</span>
+            <button onclick="audioEngine.playSfx('homerun')" class="btn-cream px-2.5 py-1 rounded-xl text-xs font-black">測試音效</button>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-rose-600 font-bold w-10">音量</span>
+            <input id="slider-sfx" type="range" min="0" max="1" step="0.05" value="0.7"
+              oninput="audioEngine.setSfxVolume(this.value)" class="flex-1 accent-pink-500" />
+            <span id="val-sfx" class="text-xs font-mono font-bold text-rose-700 w-9 text-right">70%</span>
+          </div>
+        </div>
+
+        <div class="space-y-2 p-3 rounded-2xl bg-pink-50 border border-pink-200">
+          <div class="flex items-center justify-between">
+            <span class="font-black text-rose-700">🗣️ 繁中甜美語音播報 (TTS)</span>
+            <div class="flex gap-1.5">
+              <button id="btn-tts-toggle" onclick="audioEngine.toggleVoice()" class="btn-cream px-2.5 py-1 rounded-xl text-xs font-black">開啟</button>
+              <button onclick="audioEngine.speak('主人加油喔，粉櫻甜心祝你全壘打！')" class="btn-cream px-2.5 py-1 rounded-xl text-xs font-black">試聽</button>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-rose-600 font-bold w-10">音量</span>
+            <input id="slider-voice" type="range" min="0" max="1" step="0.05" value="0.9"
+              oninput="audioEngine.setVoiceVolume(this.value)" class="flex-1 accent-pink-500" />
+            <span id="val-voice" class="text-xs font-mono font-bold text-rose-700 w-9 text-right">90%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="shrink-0 px-4 py-2.5 bg-pink-50 border-t border-pink-200 flex justify-end">
+        <button onclick="closeAudioModal()" class="btn-sweet px-6 py-2 rounded-2xl text-sm font-black">完成設定 💖</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 4: TAIWAN 13-CARDS RULES REFERENCE
+       ========================================================================= -->
+  <div id="rules-modal" class="hidden fixed inset-0 z-[95] bg-rose-950/55 backdrop-blur-sm flex items-center justify-center p-3">
+    <div class="w-full max-w-lg max-h-[92dvh] flex flex-col overflow-hidden rounded-3xl border-2 border-pink-300 bg-white shadow-2xl">
+      <div class="shrink-0 px-4 py-3 bg-pink-50 border-b border-pink-200 flex items-center justify-between">
+        <h3 class="text-base font-black rose-title">📖 台灣經典十三張（十三支）規則</h3>
+        <button onclick="closeRulesModal()" class="text-rose-400 hover:text-rose-700 text-lg font-black px-2">✕</button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto custom-scroll p-4 space-y-2.5 text-xs sm:text-sm text-rose-900 leading-relaxed">
+        <div class="p-2.5 rounded-2xl bg-pink-50 border border-pink-200">
+          <div class="font-black text-rose-600 mb-1">1. 基本分墩與防倒水</div>
+          每人 13 張牌，分成 <strong>頭墩(3張)、中墩(5張)、尾墩(5張)</strong>。必須符合 <strong>尾墩 ≥ 中墩 ≥ 頭墩</strong>，否則為「<strong>倒水（相公）</strong>」，無條件輸給所有未倒水對手並以打槍倍數賠付。
+        </div>
+        <div class="p-2.5 rounded-2xl bg-pink-50 border border-pink-200">
+          <div class="font-black text-rose-600 mb-1">2. 牌型大小（只比點數不比花色）</div>
+          同花順 &gt; 鐵支 &gt; 葫蘆 &gt; 同花 &gt; 順子 &gt; 三條 &gt; 兩對 &gt; 一對 &gt; 烏龍。<br/>
+          A 最大、2 最小，同點數平手（0 水）。順子以 <strong>10-J-Q-K-A</strong> 最大，<strong>A-2-3-4-5</strong> 第二大。
+        </div>
+        <div class="p-2.5 rounded-2xl bg-pink-50 border border-pink-200">
+          <div class="font-black text-rose-600 mb-1">3. 單墩加水、打槍與全壘打</div>
+          <ul class="list-disc pl-4 space-y-0.5">
+            <li><strong>頭墩三條（衝三）</strong>：3 水 ｜ <strong>中墩葫蘆</strong>：2 水</li>
+            <li><strong>尾墩鐵支</strong>：4 水 ｜ <strong>中墩鐵支</strong>：8 水</li>
+            <li><strong>尾墩同花順</strong>：5 水 ｜ <strong>中墩同花順</strong>：10 水</li>
+            <li><strong>打槍</strong>：三墩全贏同一位對手，對該對手總水數 <strong>×2</strong>。</li>
+            <li><strong>全壘打</strong>：打槍全部三位對手，總水數 <strong>再翻倍</strong>！</li>
+          </ul>
+        </div>
+        <div class="p-2.5 rounded-2xl bg-pink-50 border border-pink-200">
+          <div class="font-black text-rose-600 mb-1">4. 特殊報到牌型（免比牌直接贏）</div>
+          <strong>至尊青龍</strong>（各 26 水）、<strong>一條龍</strong>（各 13 水）、<strong>三同花 / 三順子 / 六對半</strong>（各 3 水）。
+        </div>
+      </div>
+
+      <div class="shrink-0 px-4 py-2.5 bg-pink-50 border-t border-pink-200 flex justify-end">
+        <button onclick="closeRulesModal()" class="btn-sweet px-6 py-2 rounded-2xl text-sm font-black">我知道了 🌸</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       JAVASCRIPT ENGINE:
+       1. 8 Original Cute Anime Beauty SVG Generator & Photo Showcase Manager
+       2. AudioMediaEngine (Sweet TTS, Cute SFX, Soft Pentatonic BGM, Local MP3)
+       3. Authentic Taiwan 13-Cards Evaluator, Solver & AI
+       4. PeerJS Multiplayer with Seamless Local Fallback
+       ========================================================================= -->
+  <script>
+    'use strict';
+
+    /* =========================================================================
+       1. 8 ORIGINAL CUTE ANIME BEAUTY SVG PORTRAITS (Embedded, Zero Broken Links)
+       ========================================================================= */
+    function buildCuteBeautySvg(cfg) {
+      // Generates a rich, original anime-style cute beauty portrait SVG
+      const bgDeco = cfg.deco === 'sakura'
+        ? `<circle cx="35" cy="40" r="9" fill="#fff" opacity="0.55"/><circle cx="205" cy="55" r="7" fill="#fff" opacity="0.6"/><text x="22" y="88" font-size="20">🌸</text><text x="195" y="108" font-size="18">🌸</text><text x="188" y="230" font-size="16">✨</text>`
+        : cfg.deco === 'berry'
+        ? `<text x="20" y="55" font-size="20">🍓</text><text x="194" y="65" font-size="20">🍓</text><text x="25" y="230" font-size="17">🍰</text><text x="196" y="220" font-size="16">💖</text>`
+        : cfg.deco === 'star'
+        ? `<text x="22" y="50" font-size="20">⭐</text><text x="192" y="62" font-size="20">🌙</text><text x="196" y="150" font-size="16">✨</text><text x="22" y="210" font-size="16">🎵</text>`
+        : cfg.deco === 'boba'
+        ? `<text x="22" y="58" font-size="22">🧋</text><text x="192" y="65" font-size="18">💛</text><text x="194" y="225" font-size="18">✨</text>`
+        : cfg.deco === 'cat'
+        ? `<text x="22" y="55" font-size="19">🐾</text><text x="192" y="60" font-size="19">💤</text><text x="192" y="220" font-size="18">💗</text>`
+        : cfg.deco === 'bunny'
+        ? `<text x="22" y="55" font-size="20">♠️</text><text x="192" y="55" font-size="20">♥️</text><text x="24" y="225" font-size="18">♦️</text><text x="192" y="225" font-size="18">♣️</text>`
+        : cfg.deco === 'beach'
+        ? `<circle cx="195" cy="42" r="22" fill="#fde047" opacity="0.85"/><text x="20" y="62" font-size="20">🌺</text><text x="190" y="225" font-size="18">🌊</text>`
+        : `<text x="24" y="54" font-size="20">👑</text><text x="190" y="60" font-size="19">💎</text><text x="22" y="220" font-size="18">🎀</text><text x="194" y="225" font-size="18">✨</text>`;
+
+      // Hair back shape variations
+      let hairBack = '';
+      if (cfg.hairStyle === 'twintails') {
+        hairBack = `
+          <ellipse cx="48" cy="175" rx="28" ry="62" fill="${cfg.hairMain}" transform="rotate(14 48 175)"/>
+          <ellipse cx="192" cy="175" rx="28" ry="62" fill="${cfg.hairMain}" transform="rotate(-14 192 175)"/>
+          <circle cx="62" cy="112" r="10" fill="${cfg.accent}"/>
+          <circle cx="178" cy="112" r="10" fill="${cfg.accent}"/>
+          <path d="M60 110 C60 45, 180 45, 180 110 L176 185 L64 185 Z" fill="${cfg.hairDark}"/>
+        `;
+      } else if (cfg.hairStyle === 'bob') {
+        hairBack = `
+          <path d="M52 125 C48 45, 192 45, 188 125 C192 178, 178 205, 162 208 L78 208 C62 205, 48 178, 52 125 Z" fill="${cfg.hairMain}"/>
+        `;
+      } else {
+        // Long flowing hair
+        hairBack = `
+          <path d="M46 130 C44 38, 196 38, 194 130 L204 285 L36 285 Z" fill="${cfg.hairMain}"/>
+          <path d="M58 135 C58 55, 182 55, 182 135 L188 275 L52 275 Z" fill="${cfg.hairDark}" opacity="0.35"/>
+        `;
+      }
+
+      // Headwear / Ears / Accessories
+      let headwear = '';
+      if (cfg.accessory === 'catEars') {
+        headwear = `
+          <polygon points="62,86 74,38 104,70" fill="${cfg.hairMain}" stroke="${cfg.hairDark}" stroke-width="2"/>
+          <polygon points="71,78 78,49 96,70" fill="#fbcfe8"/>
+          <polygon points="178,86 166,38 136,70" fill="${cfg.hairMain}" stroke="${cfg.hairDark}" stroke-width="2"/>
+          <polygon points="169,78 162,49 144,70" fill="#fbcfe8"/>
+        `;
+      } else if (cfg.accessory === 'bunnyEars') {
+        headwear = `
+          <ellipse cx="86" cy="42" rx="14" ry="38" fill="#ffffff" stroke="${cfg.accent}" stroke-width="2.5" transform="rotate(-14 86 42)"/>
+          <ellipse cx="86" cy="45" rx="7" ry="26" fill="#fbcfe8" transform="rotate(-14 86 45)"/>
+          <ellipse cx="154" cy="42" rx="14" ry="38" fill="#ffffff" stroke="${cfg.accent}" stroke-width="2.5" transform="rotate(14 154 42)"/>
+          <ellipse cx="154" cy="45" rx="7" ry="26" fill="#fbcfe8" transform="rotate(14 154 45)"/>
+        `;
+      } else if (cfg.accessory === 'maidFrill') {
+        headwear = `
+          <path d="M62 84 Q120 44 178 84 Q158 64 140 72 Q120 56 100 72 Q82 64 62 84 Z" fill="#ffffff" stroke="#f472b6" stroke-width="2"/>
+          <circle cx="120" cy="64" r="6" fill="${cfg.accent}"/>
+        `;
+      } else if (cfg.accessory === 'tiara') {
+        headwear = `
+          <polygon points="88,74 100,48 112,66 120,40 128,66 140,48 152,74" fill="#fde047" stroke="#eab308" stroke-width="2"/>
+          <circle cx="120" cy="59" r="4.5" fill="#ec4899"/>
+        `;
+      } else if (cfg.accessory === 'mikoRibbon') {
+        headwear = `
+          <polygon points="150,74 185,56 178,88" fill="#e11d48"/>
+          <polygon points="150,74 128,58 134,84" fill="#fb7185"/>
+          <circle cx="152" cy="74" r="6" fill="#fde047"/>
+        `;
+      } else if (cfg.accessory === 'starPin') {
+        headwear = `
+          <text x="148" y="88" font-size="22">⭐</text>
+          <text x="72" y="92" font-size="16">✨</text>
+        `;
+      } else if (cfg.accessory === 'hibiscus') {
+        headwear = `<text x="150" y="92" font-size="28">🌺</text>`;
+      } else {
+        headwear = `
+          <ellipse cx="164" cy="78" rx="14" ry="8" fill="${cfg.accent}" transform="rotate(20 164 78)"/>
+          <circle cx="164" cy="78" r="4" fill="#fff"/>
+        `;
+      }
+
+      // Cute Eyes (wink or both open sparkling)
+      const rightEye = cfg.wink
+        ? `<path d="M135 144 Q146 135 157 144" fill="none" stroke="#4a1d35" stroke-width="3.2" stroke-linecap="round"/>`
+        : `
+          <ellipse cx="146" cy="144" rx="11.5" ry="13.5" fill="#2d1624"/>
+          <ellipse cx="146" cy="146" rx="9" ry="10.5" fill="${cfg.eyeColor}"/>
+          <ellipse cx="146" cy="148" rx="5.5" ry="6" fill="#2d1624"/>
+          <circle cx="142" cy="140" r="4" fill="#ffffff"/>
+          <circle cx="150" cy="151" r="2" fill="#ffffff"/>
+          <path d="M133 135 Q146 127 159 135" fill="none" stroke="#3b1529" stroke-width="2.8" stroke-linecap="round"/>
+        `;
+
+      return `
+        <svg viewBox="0 0 240 290" xmlns="http://www.w3.org/2000/svg" class="w-full h-full object-cover">
+          <defs>
+            <linearGradient id="bg-${cfg.id}" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="${cfg.bg1}"/>
+              <stop offset="100%" stop-color="${cfg.bg2}"/>
+            </linearGradient>
+            <linearGradient id="skin-${cfg.id}" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#fff1e8"/>
+              <stop offset="100%" stop-color="#ffe1d2"/>
+            </linearGradient>
+          </defs>
+
+          <!-- Background -->
+          <rect width="240" height="290" fill="url(#bg-${cfg.id})"/>
+          <circle cx="120" cy="145" r="98" fill="#ffffff" opacity="0.28"/>
+          ${bgDeco}
+
+          <!-- Hair Back -->
+          ${hairBack}
+
+          <!-- Shoulders & Outfit -->
+          <path d="M55 290 C60 228, 86 212, 120 212 C154 212, 180 228, 185 290 Z" fill="${cfg.outfitMain}"/>
+          <path d="M88 214 L120 248 L152 214 L166 226 L120 264 L74 226 Z" fill="${cfg.outfitTrim}"/>
+          <!-- Cute Bow Tie -->
+          <polygon points="120,236 100,226 102,248" fill="${cfg.accent}"/>
+          <polygon points="120,236 140,226 138,248" fill="${cfg.accent}"/>
+          <circle cx="120" cy="236" r="5.5" fill="#ffffff"/>
+
+          <!-- Neck -->
+          <rect x="108" y="188" width="24" height="32" rx="10" fill="#fbd4c4"/>
+
+          <!-- Face -->
+          <path d="M68 134 C68 88, 172 88, 172 134 C172 174, 150 200, 120 202 C90 200, 68 174, 68 134 Z" fill="url(#skin-${cfg.id})"/>
+
+          <!-- Soft Blush -->
+          <ellipse cx="86" cy="162" rx="12" ry="6.5" fill="#fb7185" opacity="0.38"/>
+          <ellipse cx="154" cy="162" rx="12" ry="6.5" fill="#fb7185" opacity="0.38"/>
+
+          <!-- Left Eye (Sparkling Anime Eye) -->
+          <ellipse cx="94" cy="144" rx="11.5" ry="13.5" fill="#2d1624"/>
+          <ellipse cx="94" cy="146" rx="9" ry="10.5" fill="${cfg.eyeColor}"/>
+          <ellipse cx="94" cy="148" rx="5.5" ry="6" fill="#2d1624"/>
+          <circle cx="90" cy="140" r="4" fill="#ffffff"/>
+          <circle cx="98" cy="151" r="2" fill="#ffffff"/>
+          <path d="M81 135 Q94 127 107 135" fill="none" stroke="#3b1529" stroke-width="2.8" stroke-linecap="round"/>
+
+          <!-- Right Eye -->
+          ${rightEye}
+
+          <!-- Cute Nose & Smile -->
+          <circle cx="120" cy="160" r="1.5" fill="#d99a8b"/>
+          <path d="M111 172 Q120 182 129 172" fill="#fda4af" stroke="#be185d" stroke-width="2" stroke-linecap="round"/>
+
+          <!-- Front Bangs & Side Locks -->
+          <path d="M62 126 C64 72, 176 72, 178 126 C168 106, 156 104, 148 126 C142 104, 130 100, 122 128 C114 102, 100 102, 92 126 C84 106, 72 108, 62 126 Z" fill="${cfg.hairMain}"/>
+          <!-- Hair Gloss Highlight -->
+          <path d="M84 96 Q120 84 156 96" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" opacity="0.55"/>
+          <!-- Side Hair Locks -->
+          <path d="M62 118 Q54 166 66 202 Q74 176 72 134 Z" fill="${cfg.hairMain}"/>
+          <path d="M178 118 Q186 166 174 202 Q166 176 168 134 Z" fill="${cfg.hairMain}"/>
+
+          <!-- Headwear / Ears -->
+          ${headwear}
+        </svg>
+      `;
+    }
+
+    const BUILTIN_BEAUTIES = [
+      {
+        id: 'sakura', name: '🌸 櫻花巫女・小櫻', shortName: '小櫻',
+        bg1: '#ffe4ec', bg2: '#fbcfe8', hairMain: '#f472b6', hairDark: '#be185d',
+        eyeColor: '#ec4899', outfitMain: '#ffffff', outfitTrim: '#e11d48', accent: '#f43f5e',
+        hairStyle: 'long', accessory: 'mikoRibbon', deco: 'sakura', wink: false
+      },
+      {
+        id: 'berry', name: '🍓 草莓女僕・小莓', shortName: '小莓',
+        bg1: '#fff1f2', bg2: '#fecdd3', hairMain: '#fb7185', hairDark: '#9f1239',
+        eyeColor: '#e11d48', outfitMain: '#3f1d2e', outfitTrim: '#ffffff', accent: '#f43f5e',
+        hairStyle: 'twintails', accessory: 'maidFrill', deco: 'berry', wink: true
+      },
+      {
+        id: 'luna', name: '⭐ 星空偶像・露娜', shortName: '露娜',
+        bg1: '#f3e8ff', bg2: '#ddd6fe', hairMain: '#a855f7', hairDark: '#6b21a8',
+        eyeColor: '#9333ea', outfitMain: '#c084fc', outfitTrim: '#fef08a', accent: '#ec4899',
+        hairStyle: 'long', accessory: 'starPin', deco: 'star', wink: false
+      },
+      {
+        id: 'boba', name: '🧋 珍奶甜心・珍珠', shortName: '珍珠',
+        bg1: '#fef3c7', bg2: '#fde68a', hairMain: '#92400e', hairDark: '#451a03',
+        eyeColor: '#d97706', outfitMain: '#fffbeb', outfitTrim: '#f59e0b', accent: '#ec4899',
+        hairStyle: 'bob', accessory: 'ribbon', deco: 'boba', wink: true
+      },
+      {
+        id: 'mii', name: '🐱 貓耳睡衣・咪醬', shortName: '咪醬',
+        bg1: '#ecfdf5', bg2: '#a7f3d0', hairMain: '#fdba74', hairDark: '#c2410c',
+        eyeColor: '#10b981', outfitMain: '#f472b6', outfitTrim: '#ffffff', accent: '#fde047',
+        hairStyle: 'bob', accessory: 'catEars', deco: 'cat', wink: false
+      },
+      {
+        id: 'sherry', name: '🐰 兔耳荷官・雪莉', shortName: '小兔',
+        bg1: '#fdf2f8', bg2: '#f5d0fe', hairMain: '#e2e8f0', hairDark: '#94a3b8',
+        eyeColor: '#f43f5e', outfitMain: '#be185d', outfitTrim: '#fde68a', accent: '#fb7185',
+        hairStyle: 'long', accessory: 'bunnyEars', deco: 'bunny', wink: true
+      },
+      {
+        id: 'kana', name: '🌺 夏日海灘・夏奈', shortName: '夏奈',
+        bg1: '#e0f2fe', bg2: '#bae6fd', hairMain: '#facc15', hairDark: '#ca8a04',
+        eyeColor: '#0284c7', outfitMain: '#fb7185', outfitTrim: '#ffffff', accent: '#fde047',
+        hairStyle: 'twintails', accessory: 'hibiscus', deco: 'beach', wink: false
+      },
+      {
+        id: 'alice', name: '👑 夢幻公主・愛麗絲', shortName: '愛麗絲',
+        bg1: '#eff6ff', bg2: '#fbcfe8', hairMain: '#60a5fa', hairDark: '#1d4ed8',
+        eyeColor: '#3b82f6', outfitMain: '#f9a8d4', outfitTrim: '#ffffff', accent: '#fde047',
+        hairStyle: 'long', accessory: 'tiara', deco: 'princess', wink: false
+      }
+    ].map(item => ({ ...item, type: 'svg', svg: buildCuteBeautySvg(item) }));
+
+    const BEAUTY_DIALOGUES = {
+      idle: [
+        '「主人加油喔～這把牌感覺超甜的💖」',
+        '「慢慢擺別著急，小心不要倒水相公喔🌸」',
+        '「點一下上方推薦擺法，就能輕鬆出牌✨」',
+        '「今天的手氣一定會像草莓奶油一樣甜🍰」',
+        '「偷偷告訴你，頭墩衝三可以多拿 3 水喔💕」'
+      ],
+      deal: [
+        '「新的一局發牌囉！祝主人拿到至尊青龍🐉💖」',
+        '「哇～這副牌閃閃發亮呢，快來排排看🌸」'
+      ],
+      chongsan: [
+        '「哇啊啊！頭墩衝三超帥氣的啦～(+3水)✨」',
+        '「衝三成功！甜心為你瘋狂打 Call 💖」'
+      ],
+      shoot: [
+        '「砰砰砰！打槍成功水數翻倍，太神啦🔫💘」',
+        '「三墩全勝直接打槍！對手都臉紅了啦🌸」'
+      ],
+      homerun: [
+        '「全壘打 HOME RUN！！主人橫掃全場超厲害🏆💖」',
+        '「哇！三家全倒！今晚請甜心喝珍奶喔🧋✨」'
+      ],
+      foul: [
+        '「哎呀～倒水相公了啦，下一局我們一定贏回來💦」'
+      ],
+      settleWin: [
+        '「贏水囉！主人的牌技果然是全場最棒的🎉💖」',
+        '「耶～大豐收！我們再來一局吧🌸」'
+      ],
+      settleLose: [
+        '「沒關係沒關係～甜心幫你吹吹氣，下局全壘打💪💕」'
+      ]
+    };
+
+    const photoManager = {
+      playlist: [...BUILTIN_BEAUTIES],
+      customCount: 0,
+      currentIndex: 0,
+      autoRotate: true,
+      timer: null
+    };
+
+    function renderCurrentBeautyPhoto(customDialogue = null) {
+      const item = photoManager.playlist[photoManager.currentIndex] || BUILTIN_BEAUTIES[0];
+      const stage = document.getElementById('beauty-photo-stage');
+      if (!stage) return;
+
+      stage.classList.add('swapping');
+      setTimeout(() => {
+        if (item.type === 'svg') {
+          stage.innerHTML = item.svg;
+        } else {
+          stage.innerHTML = `<img src="${item.url}" alt="${item.name}" class="w-full h-full object-cover" />`;
+        }
+        document.getElementById('beauty-name-tag').textContent = item.name;
+        document.getElementById('beauty-counter-pill').textContent = `${photoManager.currentIndex + 1}/${photoManager.playlist.length}`;
+        if (customDialogue) {
+          document.getElementById('beauty-dialogue').textContent = customDialogue;
+        }
+        stage.classList.remove('swapping');
+      }, 180);
+    }
+
+    function nextBeautyPhoto(manual = false, eventType = 'idle') {
+      if (photoManager.playlist.length <= 1) return;
+      photoManager.currentIndex = (photoManager.currentIndex + 1) % photoManager.playlist.length;
+      const lines = BEAUTY_DIALOGUES[eventType] || BEAUTY_DIALOGUES.idle;
+      const line = lines[Math.floor(Math.random() * lines.length)];
+      renderCurrentBeautyPhoto(line);
+      if (manual) {
+        audioEngine.playSfx('select');
+        resetPhotoAutoTimer();
+      }
+    }
+
+    function triggerBeautyEvent(eventType) {
+      nextBeautyPhoto(false, eventType);
+      resetPhotoAutoTimer();
+    }
+
+    function toggleAutoRotate() {
+      photoManager.autoRotate = !photoManager.autoRotate;
+      const btn = document.getElementById('btn-auto-rotate');
+      btn.textContent = photoManager.autoRotate ? '🔄 自動開' : '⏸ 已暫停';
+      btn.className = photoManager.autoRotate
+        ? 'px-1.5 py-0.5 rounded-full text-[10px] font-black bg-pink-500 text-white shrink-0'
+        : 'px-1.5 py-0.5 rounded-full text-[10px] font-black bg-rose-200 text-rose-700 shrink-0';
+      resetPhotoAutoTimer();
+    }
+
+    function resetPhotoAutoTimer() {
+      if (photoManager.timer) clearInterval(photoManager.timer);
+      if (photoManager.autoRotate) {
+        photoManager.timer = setInterval(() => {
+          if (appState.phase !== 'lobby') {
+            nextBeautyPhoto(false, 'idle');
+          }
+        }, 12000); // Auto-change every 12 seconds
+      }
+    }
+
+    function triggerCustomPhotoUpload() {
+      document.getElementById('custom-photo-input').click();
+    }
+
+    function handleCustomPhotosUpload(inputEl) {
+      const files = Array.from(inputEl.files || []);
+      if (files.length === 0) return;
+
+      files.forEach((file) => {
+        const url = URL.createObjectURL(file);
+        photoManager.customCount++;
+        const cleanName = file.name.replace(/\.[^/.]+$/, '').slice(0, 12) || `自訂寫真 ${photoManager.customCount}`;
+        photoManager.playlist.unshift({
+          id: `custom-${Date.now()}-${photoManager.customCount}`,
+          type: 'img',
+          name: `📷 ${cleanName}`,
+          url
+        });
+      });
+
+      photoManager.currentIndex = 0;
+      renderCurrentBeautyPhoto(`「已匯入 ${files.length} 張自訂寫真！玩牌時會自動輪播喔💖」`);
+      const lobbyStatus = document.getElementById('lobby-album-status');
+      if (lobbyStatus) {
+        lobbyStatus.textContent = `🖼️ 相簿共 ${photoManager.playlist.length} 張（含 ${photoManager.customCount} 張自訂）`;
+      }
+      showToast(`成功加入 ${files.length} 張自訂相簿照片！`, 'success');
+      inputEl.value = '';
+    }
+
+    function openPhotoLightbox() {
+      updateLightboxContent();
+      document.getElementById('lightbox-modal').classList.remove('hidden');
+    }
+    function closePhotoLightbox() {
+      document.getElementById('lightbox-modal').classList.add('hidden');
+    }
+    function updateLightboxContent() {
+      const item = photoManager.playlist[photoManager.currentIndex] || BUILTIN_BEAUTIES[0];
+      document.getElementById('lightbox-title').textContent = `${item.name} (${photoManager.currentIndex + 1}/${photoManager.playlist.length})`;
+      const stage = document.getElementById('lightbox-stage');
+      stage.innerHTML = item.type === 'svg'
+        ? item.svg
+        : `<img src="${item.url}" alt="${item.name}" class="w-full h-full object-cover" />`;
+    }
+
+    /* =========================================================================
+       2. UI UTILITIES (Toast, Fullscreen, Modals)
+       ========================================================================= */
+    function showToast(msg, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const el = document.createElement('div');
+      const colors = {
+        info: 'bg-white/95 border-pink-400 text-rose-700',
+        success: 'bg-pink-500/95 border-pink-200 text-white',
+        warn: 'bg-amber-100/95 border-amber-400 text-amber-900',
+        error: 'bg-rose-600/95 border-rose-200 text-white'
+      };
+      el.className = `px-4 py-2 rounded-2xl border-2 text-xs sm:text-sm font-black shadow-xl transition-all duration-300 ${colors[type] || colors.info}`;
+      el.textContent = msg;
+      container.appendChild(el);
+      setTimeout(() => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(-8px)';
+        setTimeout(() => el.remove(), 300);
+      }, 2600);
+    }
+
+    function showDramaticBanner(title, sub = '') {
+      const overlay = document.getElementById('fx-overlay');
+      const banner = document.getElementById('fx-banner');
+      document.getElementById('fx-title').textContent = title;
+      document.getElementById('fx-sub').textContent = sub;
+      overlay.classList.remove('hidden');
+      banner.classList.remove('banner-pop');
+      void banner.offsetWidth;
+      banner.classList.add('banner-pop');
+      setTimeout(() => overlay.classList.add('hidden'), 1850);
+    }
+
+    function toggleFullscreen() {
+      try {
+        if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+          const el = document.documentElement;
+          if (el.requestFullscreen) el.requestFullscreen();
+          else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+        } else {
+          if (document.exitFullscreen) document.exitFullscreen();
+          else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        }
+      } catch (e) {
+        showToast('目前瀏覽器不支援自動全螢幕，可「加入主畫面」體驗滿版', 'warn');
+      }
+    }
+
+    function openAudioModal() { document.getElementById('audio-modal').classList.remove('hidden'); }
+    function closeAudioModal() { document.getElementById('audio-modal').classList.add('hidden'); }
+    function openRulesModal() { document.getElementById('rules-modal').classList.remove('hidden'); }
+    function closeRulesModal() { document.getElementById('rules-modal').classList.add('hidden'); }
+
+    /* =========================================================================
+       3. AudioMediaEngine: Sweet TTS + Cute Crisp SFX + Soft Pentatonic BGM + Local MP3
+       ========================================================================= */
+    class AudioMediaEngine {
+      constructor() {
+        this.ctx = null;
+        this.muted = false;
+        this.bgmVol = 0.35;
+        this.sfxVol = 0.70;
+        this.voiceVol = 0.90;
+        this.voiceEnabled = true;
+
+        this.bgmPlaying = false;
+        this.bgmTimer = null;
+        this.bgmStep = 0;
+
+        this.customAudio = new Audio();
+        this.customAudio.loop = true;
+        this.useCustomBgm = false;
+
+        // Soft Music-Box Pentatonic Scale
+        this.pentatonic = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.5, 1174.66];
+        this.melodyPattern = [0, 2, 3, 5, 4, 3, 2, 0, 2, 3, 4, 6, 5, 4, 3, 2];
+      }
+
+      ensureContext() {
+        if (!this.ctx) {
+          const AC = window.AudioContext || window.webkitAudioContext;
+          if (AC) this.ctx = new AC();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume().catch(() => {});
+        }
+      }
+
+      toggleMute() {
+        this.muted = !this.muted;
+        document.getElementById('btn-master-mute').textContent = this.muted ? '🔇 已靜音' : '🔊 開啟中';
+        this.customAudio.muted = this.muted;
+        if (this.muted && window.speechSynthesis) window.speechSynthesis.cancel();
+      }
+
+      setBgmVolume(v) {
+        this.bgmVol = parseFloat(v);
+        document.getElementById('val-bgm').textContent = Math.round(this.bgmVol * 100) + '%';
+        this.customAudio.volume = this.bgmVol;
+      }
+
+      setSfxVolume(v) {
+        this.sfxVol = parseFloat(v);
+        document.getElementById('val-sfx').textContent = Math.round(this.sfxVol * 100) + '%';
+      }
+
+      setVoiceVolume(v) {
+        this.voiceVol = parseFloat(v);
+        document.getElementById('val-voice').textContent = Math.round(this.voiceVol * 100) + '%';
+      }
+
+      toggleVoice() {
+        this.voiceEnabled = !this.voiceEnabled;
+        document.getElementById('btn-tts-toggle').textContent = this.voiceEnabled ? '開啟' : '關閉';
+        if (!this.voiceEnabled && window.speechSynthesis) window.speechSynthesis.cancel();
+      }
+
+      loadCustomBgm(inputEl) {
+        const file = inputEl.files && inputEl.files[0];
+        if (!file) return;
+        const url = URL.createObjectURL(file);
+        this.customAudio.src = url;
+        this.customAudio.volume = this.bgmVol;
+        this.customAudio.muted = this.muted;
+        this.useCustomBgm = true;
+        document.getElementById('custom-bgm-name').textContent = `目前：${file.name}`;
+        if (this.bgmPlaying) {
+          this.stopPentatonicLoop();
+          this.customAudio.play().catch(() => {});
+        } else {
+          this.toggleBgm();
+        }
+        showToast(`已載入本機音樂：${file.name}`, 'success');
+      }
+
+      toggleBgm() {
+        this.ensureContext();
+        this.bgmPlaying = !this.bgmPlaying;
+        const btn = document.getElementById('btn-bgm-toggle');
+        if (this.bgmPlaying) {
+          btn.textContent = '⏸ 暫停音樂';
+          if (this.useCustomBgm) {
+            this.customAudio.volume = this.bgmVol;
+            this.customAudio.muted = this.muted;
+            this.customAudio.play().catch(() => {});
+          } else {
+            this.startPentatonicLoop();
+          }
+        } else {
+          btn.textContent = this.useCustomBgm ? '▶ 播放本機音樂' : '▶ 播放五聲音階';
+          this.stopPentatonicLoop();
+          this.customAudio.pause();
+        }
+      }
+
+      startPentatonicLoop() {
+        this.stopPentatonicLoop();
+        const playNote = () => {
+          if (!this.bgmPlaying || this.useCustomBgm) return;
+          if (!this.muted && this.bgmVol > 0 && this.ctx) {
+            const idx = this.melodyPattern[this.bgmStep % this.melodyPattern.length];
+            const freq = this.pentatonic[idx];
+            const now = this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, now);
+            const peak = this.bgmVol * 0.12;
+            gain.gain.setValueAtTime(0.001, now);
+            gain.gain.linearRampToValueAtTime(peak, now + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.0008, now + 1.0);
+            osc.connect(gain); gain.connect(this.ctx.destination);
+            osc.start(now); osc.stop(now + 1.05);
+          }
+          this.bgmStep++;
+          this.bgmTimer = setTimeout(playNote, 600);
+        };
+        playNote();
+      }
+
+      stopPentatonicLoop() {
+        if (this.bgmTimer) { clearTimeout(this.bgmTimer); this.bgmTimer = null; }
+      }
+
+      playSfx(type) {
+        if (this.muted || this.sfxVol <= 0) return;
+        this.ensureContext();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const vol = this.sfxVol * 0.32;
+
+        try {
+          if (type === 'select') {
+            const osc = this.ctx.createOscillator();
+            const g = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, now);
+            osc.frequency.exponentialRampToValueAtTime(1180, now + 0.055);
+            g.gain.setValueAtTime(vol * 0.55, now);
+            g.gain.exponentialRampToValueAtTime(0.001, now + 0.065);
+            osc.connect(g); g.connect(this.ctx.destination);
+            osc.start(now); osc.stop(now + 0.07);
+          } else if (type === 'place' || type === 'deal') {
+            const osc = this.ctx.createOscillator();
+            const g = this.ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(type === 'deal' ? 520 : 640, now);
+            osc.frequency.exponentialRampToValueAtTime(320, now + 0.065);
+            g.gain.setValueAtTime(vol * 0.65, now);
+            g.gain.exponentialRampToValueAtTime(0.001, now + 0.075);
+            osc.connect(g); g.connect(this.ctx.destination);
+            osc.start(now); osc.stop(now + 0.08);
+          } else if (type === 'lock') {
+            [659.25, 783.99, 1046.5].forEach((f, i) => {
+              const osc = this.ctx.createOscillator();
+              const g = this.ctx.createGain();
+              osc.type = 'sine';
+              osc.frequency.setValueAtTime(f, now + i * 0.055);
+              g.gain.setValueAtTime(vol * 0.55, now + i * 0.055);
+              g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.055 + 0.16);
+              osc.connect(g); g.connect(this.ctx.destination);
+              osc.start(now + i * 0.055); osc.stop(now + i * 0.055 + 0.18);
+            });
+          } else if (type === 'reveal') {
+            const osc = this.ctx.createOscillator();
+            const g = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(523.25, now);
+            osc.frequency.exponentialRampToValueAtTime(880, now + 0.12);
+            g.gain.setValueAtTime(vol * 0.6, now);
+            g.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+            osc.connect(g); g.connect(this.ctx.destination);
+            osc.start(now); osc.stop(now + 0.15);
+          } else if (type === 'shoot') {
+            [0, 0.11, 0.22].forEach(offset => {
+              const osc = this.ctx.createOscillator();
+              const g = this.ctx.createGain();
+              osc.type = 'triangle';
+              osc.frequency.setValueAtTime(920, now + offset);
+              osc.frequency.exponentialRampToValueAtTime(180, now + offset + 0.09);
+              g.gain.setValueAtTime(vol * 1.0, now + offset);
+              g.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.1);
+              osc.connect(g); g.connect(this.ctx.destination);
+              osc.start(now + offset); osc.stop(now + offset + 0.11);
+            });
+          } else if (type === 'homerun' || type === 'win') {
+            [523.25, 659.25, 783.99, 1046.5, 1318.5].forEach((f, i) => {
+              const osc = this.ctx.createOscillator();
+              const g = this.ctx.createGain();
+              osc.type = 'sine';
+              osc.frequency.setValueAtTime(f, now + i * 0.08);
+              g.gain.setValueAtTime(vol * 0.75, now + i * 0.08);
+              g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.32);
+              osc.connect(g); g.connect(this.ctx.destination);
+              osc.start(now + i * 0.08); osc.stop(now + i * 0.08 + 0.35);
+            });
+          } else if (type === 'foul') {
+            const osc = this.ctx.createOscillator();
+            const g = this.ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(340, now);
+            osc.frequency.linearRampToValueAtTime(200, now + 0.25);
+            g.gain.setValueAtTime(vol * 0.6, now);
+            g.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+            osc.connect(g); g.connect(this.ctx.destination);
+            osc.start(now); osc.stop(now + 0.3);
+          }
+        } catch (e) {}
+      }
+
+      speak(text) {
+        if (this.muted || !this.voiceEnabled || this.voiceVol <= 0) return;
+        if (!('speechSynthesis' in window)) return;
+        try {
+          window.speechSynthesis.cancel();
+          const utter = new SpeechSynthesisUtterance(text);
+          utter.lang = 'zh-TW';
+          utter.volume = this.voiceVol;
+          utter.rate = 1.08;
+          utter.pitch = 1.24; // Sweet higher pitch
+          const voices = window.speechSynthesis.getVoices();
+          const twVoice = voices.find(v => v.lang.includes('zh-TW') || v.lang.includes('zh_TW'))
+            || voices.find(v => v.lang.includes('zh'));
+          if (twVoice) utter.voice = twVoice;
+          window.speechSynthesis.speak(utter);
+        } catch (e) {}
+      }
+    }
+
+    const audioEngine = new AudioMediaEngine();
+
+    /* =========================================================================
+       4. TAIWAN 13-CARDS CORE EVALUATOR, SPECIAL HANDS & SOLVER
+       ========================================================================= */
+    const SUITS = ['♠', '♥', '♣', '♦'];
+    const SUIT_COLORS = ['black', 'red', 'black', 'red'];
+    const RANK_LABELS = {
+      2: '2', 3: '3', 4: '4', 5: '5', 6: '6', 7: '7', 8: '8',
+      9: '9', 10: '10', 11: 'J', 12: 'Q', 13: 'K', 14: 'A'
+    };
+    const HAND_NAMES = ['烏龍', '一對', '兩對', '三條', '順子', '同花', '葫蘆', '鐵支', '同花順'];
+
+    function createDeck() {
+      const deck = [];
+      let id = 0;
+      for (let s = 0; s < 4; s++) {
+        for (let r = 2; r <= 14; r++) deck.push({ id: id++, suit: s, rank: r });
+      }
+      for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+      }
+      return deck;
+    }
+
+    function eval5(cards) {
+      if (!cards || cards.length !== 5) return null;
+      const ranks = cards.map(c => c.rank).sort((a, b) => b - a);
+      const isFlush = cards.every(c => c.suit === cards[0].suit);
+      const counts = {};
+      for (const r of ranks) counts[r] = (counts[r] || 0) + 1;
+      const groups = Object.entries(counts)
+        .map(([r, cnt]) => ({ rank: Number(r), cnt }))
+        .sort((a, b) => b.cnt - a.cnt || b.rank - a.rank);
+
+      let straightRank = 0;
+      if (groups.length === 5) {
+        if (ranks[0] - ranks[4] === 4) straightRank = ranks[0] * 2;
+        else if (ranks[0] === 14 && ranks[1] === 5 && ranks[2] === 4 && ranks[3] === 3 && ranks[4] === 2) straightRank = 27;
+      }
+
+      let type = 0, tb = [];
+      if (isFlush && straightRank > 0) { type = 8; tb = [straightRank, 0, 0, 0, 0]; }
+      else if (groups[0].cnt === 4) { type = 7; tb = [groups[0].rank, groups[1].rank, 0, 0, 0]; }
+      else if (groups[0].cnt === 3 && groups[1].cnt === 2) { type = 6; tb = [groups[0].rank, groups[1].rank, 0, 0, 0]; }
+      else if (isFlush) { type = 5; tb = ranks; }
+      else if (straightRank > 0) { type = 4; tb = [straightRank, 0, 0, 0, 0]; }
+      else if (groups[0].cnt === 3) { type = 3; tb = [groups[0].rank, groups[1].rank, groups[2].rank, 0, 0]; }
+      else if (groups[0].cnt === 2 && groups[1].cnt === 2) { type = 2; tb = [groups[0].rank, groups[1].rank, groups[2].rank, 0, 0]; }
+      else if (groups[0].cnt === 2) { type = 1; tb = [groups[0].rank, groups[1].rank, groups[2].rank, groups[3].rank, 0]; }
+      else { type = 0; tb = ranks; }
+
+      const score = type * 1e10 + tb[0] * 1e8 + tb[1] * 1e6 + tb[2] * 1e4 + tb[3] * 1e2 + tb[4];
+      return { type, name: HAND_NAMES[type], tiebreakers: tb, score };
+    }
+
+    function eval3(cards) {
+      if (!cards || cards.length !== 3) return null;
+      const ranks = cards.map(c => c.rank).sort((a, b) => b - a);
+      const counts = {};
+      for (const r of ranks) counts[r] = (counts[r] || 0) + 1;
+      const groups = Object.entries(counts)
+        .map(([r, cnt]) => ({ rank: Number(r), cnt }))
+        .sort((a, b) => b.cnt - a.cnt || b.rank - a.rank);
+
+      let type = 0, tb = [];
+      if (groups[0].cnt === 3) { type = 3; tb = [groups[0].rank, 0, 0, 0, 0]; }
+      else if (groups[0].cnt === 2) { type = 1; tb = [groups[0].rank, groups[1].rank, 0, 0, 0]; }
+      else { type = 0; tb = [ranks[0], ranks[1], ranks[2], 0, 0]; }
+
+      const score = type * 1e10 + tb[0] * 1e8 + tb[1] * 1e6 + tb[2] * 1e4 + tb[3] * 1e2 + tb[4];
+      return { type, name: type === 3 ? '衝三(三條)' : HAND_NAMES[type], tiebreakers: tb, score };
+    }
+
+    function getLaneWinShui(lane, evalObj) {
+      if (!evalObj) return 1;
+      if (lane === 'front') return evalObj.type === 3 ? 3 : 1;
+      if (lane === 'mid') return evalObj.type === 8 ? 10 : evalObj.type === 7 ? 8 : evalObj.type === 6 ? 2 : 1;
+      if (lane === 'back') return evalObj.type === 8 ? 5 : evalObj.type === 7 ? 4 : 1;
+      return 1;
+    }
+
+    function detectSpecialHand(cards13) {
+      if (!cards13 || cards13.length !== 13) return null;
+      const rankCounts = new Array(15).fill(0);
+      const suitCounts = [0, 0, 0, 0];
+      for (const c of cards13) { rankCounts[c.rank]++; suitCounts[c.suit]++; }
+
+      let allUnique = true;
+      for (let r = 2; r <= 14; r++) if (rankCounts[r] !== 1) { allUnique = false; break; }
+      if (allUnique) {
+        if (suitCounts.some(cnt => cnt === 13)) return { code: 'royal_dragon', name: '至尊青龍', shui: 26, priority: 5 };
+        return { code: 'dragon', name: '一條龍', shui: 13, priority: 4 };
+      }
+
+      let pairTotal = 0;
+      for (let r = 2; r <= 14; r++) pairTotal += Math.floor(rankCounts[r] / 2);
+      if (pairTotal === 6) return { code: 'six_pairs', name: '六對半', shui: 3, priority: 3 };
+
+      const nz = suitCounts.filter(c => c > 0).sort((a, b) => b - a);
+      const isThreeFlush =
+        (nz.length === 1 && nz[0] === 13) ||
+        (nz.length === 2 && ((nz[0] === 10 && nz[1] === 3) || (nz[0] === 8 && nz[1] === 5))) ||
+        (nz.length === 3 && nz[0] === 5 && nz[1] === 5 && nz[2] === 3);
+      if (isThreeFlush) return { code: 'three_flush', name: '三同花', shui: 3, priority: 2 };
+
+      if (canPartitionThreeStraights(rankCounts.slice())) return { code: 'three_straight', name: '三順子', shui: 3, priority: 1 };
+      return null;
+    }
+
+    function canPartitionThreeStraights(counts) {
+      const s5 = [[14, 2, 3, 4, 5]];
+      for (let s = 2; s <= 10; s++) s5.push([s, s + 1, s + 2, s + 3, s + 4]);
+      const s3 = [[14, 2, 3]];
+      for (let s = 2; s <= 12; s++) s3.push([s, s + 1, s + 2]);
+      const has = (a, seq) => seq.every(r => a[r] > 0);
+      const sub = (a, seq) => seq.forEach(r => a[r]--);
+      const add = (a, seq) => seq.forEach(r => a[r]++);
+
+      for (let i = 0; i < s5.length; i++) {
+        if (!has(counts, s5[i])) continue;
+        sub(counts, s5[i]);
+        for (let j = i; j < s5.length; j++) {
+          if (!has(counts, s5[j])) continue;
+          sub(counts, s5[j]);
+          for (let k = 0; k < s3.length; k++) if (has(counts, s3[k])) return true;
+          add(counts, s5[j]);
+        }
+        add(counts, s5[i]);
+      }
+      return false;
+    }
+
+    function findBestArrangements(cards13) {
+      const n = 13, combos5 = [];
+      for (let a = 0; a < n - 4; a++)
+        for (let b = a + 1; b < n - 3; b++)
+          for (let c = b + 1; c < n - 2; c++)
+            for (let d = c + 1; d < n - 1; d++)
+              for (let e = d + 1; e < n; e++) {
+                const sub = [cards13[a], cards13[b], cards13[c], cards13[d], cards13[e]];
+                const ev = eval5(sub);
+                combos5.push({ indices: [a, b, c, d, e], mask: (1 << a) | (1 << b) | (1 << c) | (1 << d) | (1 << e), ev });
+              }
+
+      combos5.sort((x, y) => y.ev.score - x.ev.score);
+      const backCandidates = [], seen = new Set(), tCnt = new Array(9).fill(0);
+      for (const item of combos5) {
+        if (backCandidates.length < 24 || (tCnt[item.ev.type] < 4 && backCandidates.length < 40)) {
+          if (!seen.has(item.mask)) { backCandidates.push(item); seen.add(item.mask); tCnt[item.ev.type]++; }
+        }
+      }
+
+      const validSolutions = [];
+      for (const backItem of backCandidates) {
+        const remIdx = [];
+        for (let i = 0; i < n; i++) if ((backItem.mask & (1 << i)) === 0) remIdx.push(i);
+        for (let i = 0; i < 6; i++)
+          for (let j = i + 1; j < 7; j++)
+            for (let k = j + 1; k < 8; k++) {
+              const fIdx = [remIdx[i], remIdx[j], remIdx[k]];
+              const mIdx = [];
+              for (let x = 0; x < 8; x++) if (x !== i && x !== j && x !== k) mIdx.push(remIdx[x]);
+              const fCards = fIdx.map(idx => cards13[idx]);
+              const mCards = mIdx.map(idx => cards13[idx]);
+              const fEv = eval3(fCards), mEv = eval5(mCards), bEv = backItem.ev;
+              if (bEv.score >= mEv.score && mEv.score >= fEv.score) {
+                const hF = fEv.type === 3 ? 28 + fEv.tiebreakers[0] * 0.4 : fEv.type === 1 ? 8 + fEv.tiebreakers[0] * 0.7 : fEv.tiebreakers[0] * 0.28;
+                const hM = mEv.type === 8 ? 70 : mEv.type === 7 ? 56 : mEv.type === 6 ? 26 + mEv.tiebreakers[0] * 0.3 : mEv.type * 4.2 + mEv.tiebreakers[0] * 0.25;
+                const hB = bEv.type === 8 ? 40 : bEv.type === 7 ? 32 : bEv.type * 3.1 + bEv.tiebreakers[0] * 0.2;
+                validSolutions.push({
+                  front: fCards, mid: mCards, back: backItem.indices.map(idx => cards13[idx]),
+                  fEv, mEv, bEv, rating: hF + hM + hB, sig: `${fEv.type}-${mEv.type}-${bEv.type}`
+                });
+              }
+            }
+      }
+
+      validSolutions.sort((a, b) => b.rating - a.rating);
+      const diverse = [], usedSig = new Set();
+      for (const sol of validSolutions) {
+        if (!usedSig.has(sol.sig)) { usedSig.add(sol.sig); diverse.push(sol); if (diverse.length === 3) break; }
+      }
+      for (const sol of validSolutions) {
+        if (diverse.length >= 3) break;
+        if (!diverse.includes(sol)) diverse.push(sol);
+      }
+      return { bestList: diverse, allValid: validSolutions };
+    }
+
+    function computeAiArrangement(cards13, difficulty) {
+      const special = detectSpecialHand(cards13);
+      if (special && difficulty !== 'easy') {
+        return { front: cards13.slice(0, 3), mid: cards13.slice(3, 8), back: cards13.slice(8, 13), isSpecial: true, special };
+      }
+      const { bestList, allValid } = findBestArrangements(cards13);
+      if (allValid.length === 0) return { front: cards13.slice(0, 3), mid: cards13.slice(3, 8), back: cards13.slice(8, 13), isSpecial: false, special: null };
+
+      let chosen;
+      if (difficulty === 'master') chosen = bestList[0];
+      else if (difficulty === 'normal') chosen = bestList[Math.floor(Math.random() * Math.min(3, bestList.length))];
+      else {
+        const start = Math.floor(allValid.length * 0.55);
+        chosen = allValid[start + Math.floor(Math.random() * Math.max(1, allValid.length - start))] || allValid[allValid.length - 1];
+      }
+      return { front: chosen.front, mid: chosen.mid, back: chosen.back, isSpecial: false, special: null };
+    }
+
+    function evaluateRoundShowdown(submissions) {
+      const evals = submissions.map(sub => {
+        if (sub.isSpecial && sub.special) return { ...sub, isFoul: false, fEv: null, mEv: null, bEv: null };
+        const fEv = eval3(sub.front), mEv = eval5(sub.mid), bEv = eval5(sub.back);
+        const isFoul = !(bEv && mEv && fEv && bEv.score >= mEv.score && mEv.score >= fEv.score);
+        return { ...sub, fEv, mEv, bEv, isFoul };
+      });
+
+      const pairwise = [], totalDelta = [0, 0, 0, 0], shootsGiven = [[], [], [], []], homeRunSeats = [];
+      const laneNet = { front: [0, 0, 0, 0], mid: [0, 0, 0, 0], back: [0, 0, 0, 0] };
+
+      for (let i = 0; i < 4; i++) {
+        for (let j = i + 1; j < 4; j++) {
+          const A = evals[i], B = evals[j];
+          if (A.isSpecial || B.isSpecial) {
+            let shuiA = 0, note = '';
+            if (A.isSpecial && B.isSpecial) {
+              if (A.special.priority > B.special.priority) { shuiA = A.special.shui; note = `${A.name} 報到(${A.special.name}) 壓制`; }
+              else if (B.special.priority > A.special.priority) { shuiA = -B.special.shui; note = `${B.name} 報到(${B.special.name}) 壓制`; }
+              else note = '雙方同為報到平手';
+            } else if (A.isSpecial) { shuiA = A.special.shui; note = `${A.name} 報到【${A.special.name}】`; }
+            else { shuiA = -B.special.shui; note = `${B.name} 報到【${B.special.name}】`; }
+            totalDelta[i] += shuiA; totalDelta[j] -= shuiA;
+            pairwise.push({ i, j, type: 'special', note, fDiff: 0, mDiff: 0, bDiff: 0, shotBy: null, netA: shuiA });
+            continue;
+          }
+
+          if (A.isFoul && B.isFoul) {
+            pairwise.push({ i, j, type: 'foul_both', note: '雙方倒水平手', fDiff: 0, mDiff: 0, bDiff: 0, shotBy: null, netA: 0 });
+            continue;
+          }
+
+          if (A.isFoul || B.isFoul) {
+            const wIdx = A.isFoul ? j : i, lIdx = A.isFoul ? i : j;
+            const winner = evals[wIdx];
+            const fVal = getLaneWinShui('front', winner.fEv), mVal = getLaneWinShui('mid', winner.mEv), bVal = getLaneWinShui('back', winner.bEv);
+            const totalWin = (fVal + mVal + bVal) * 2;
+            const sign = wIdx === i ? 1 : -1;
+            laneNet.front[wIdx] += fVal; laneNet.front[lIdx] -= fVal;
+            laneNet.mid[wIdx] += mVal; laneNet.mid[lIdx] -= mVal;
+            laneNet.back[wIdx] += bVal; laneNet.back[lIdx] -= bVal;
+            totalDelta[wIdx] += totalWin; totalDelta[lIdx] -= totalWin;
+            shootsGiven[wIdx].push(lIdx);
+            pairwise.push({
+              i, j, type: 'foul', note: `${evals[lIdx].name} 倒水相公（打槍 ×2）`,
+              fDiff: sign * fVal, mDiff: sign * mVal, bDiff: sign * bVal, shotBy: wIdx, netA: sign * totalWin
+            });
+            continue;
+          }
+
+          let fDiff = 0, mDiff = 0, bDiff = 0, winsA = 0, winsB = 0;
+          if (A.fEv.score > B.fEv.score) { fDiff = getLaneWinShui('front', A.fEv); winsA++; }
+          else if (B.fEv.score > A.fEv.score) { fDiff = -getLaneWinShui('front', B.fEv); winsB++; }
+
+          if (A.mEv.score > B.mEv.score) { mDiff = getLaneWinShui('mid', A.mEv); winsA++; }
+          else if (B.mEv.score > A.mEv.score) { mDiff = -getLaneWinShui('mid', B.mEv); winsB++; }
+
+          if (A.bEv.score > B.bEv.score) { bDiff = getLaneWinShui('back', A.bEv); winsA++; }
+          else if (B.bEv.score > A.bEv.score) { bDiff = -getLaneWinShui('back', B.bEv); winsB++; }
+
+          laneNet.front[i] += fDiff; laneNet.front[j] -= fDiff;
+          laneNet.mid[i] += mDiff; laneNet.mid[j] -= mDiff;
+          laneNet.back[i] += bDiff; laneNet.back[j] -= bDiff;
+
+          let baseNetA = fDiff + mDiff + bDiff, shotBy = null, finalNetA = baseNetA, note = '一般比牌';
+          if (winsA === 3) { shotBy = i; finalNetA = baseNetA * 2; shootsGiven[i].push(j); note = `${A.name} 打槍 ${B.name} (×2)`; }
+          else if (winsB === 3) { shotBy = j; finalNetA = baseNetA * 2; shootsGiven[j].push(i); note = `${B.name} 打槍 ${A.name} (×2)`; }
+
+          totalDelta[i] += finalNetA; totalDelta[j] -= finalNetA;
+          pairwise.push({ i, j, type: 'normal', note, fDiff, mDiff, bDiff, shotBy, netA: finalNetA });
+        }
+      }
+
+      for (let i = 0; i < 4; i++) {
+        if (shootsGiven[i].length === 3) {
+          homeRunSeats.push(i);
+          for (const p of pairwise) {
+            if (p.shotBy === i) {
+              const victim = p.i === i ? p.j : p.i;
+              const extra = Math.abs(p.netA);
+              totalDelta[i] += extra; totalDelta[victim] -= extra;
+              p.netA *= 2;
+              p.note += ' + 全壘打再翻倍!';
+            }
+          }
+        }
+      }
+      return { evals, pairwise, totalDelta, laneNet, shootsGiven, homeRunSeats };
+    }
+
+    /* =========================================================================
+       5. STATE & PEERJS P2P MULTIPLAYER (Cute Girls AI: 小櫻、小莓、小兔)
+       ========================================================================= */
+    const AI_GIRLS = [
+      { name: '小櫻', avatarIdx: 0 }, // 櫻花巫女
+      { name: '小莓', avatarIdx: 1 }, // 草莓女僕
+      { name: '小兔', avatarIdx: 5 }  // 兔耳荷官
+    ];
+
+    const appState = {
+      mode: 'local',
+      roomCode: '',
+      peer: null,
+      hostConn: null,
+      guestConns: {},
+      aiDifficulty: 'normal',
+      mySeatIdx: 0,
+      round: 0,
+      phase: 'lobby',
+      seats: [
+        { seatIdx: 0, name: '甜心牌聖', isAi: false, avatarIdx: 7, peerId: 'local', totalShui: 0, locked: false },
+        { seatIdx: 1, name: AI_GIRLS[0].name, isAi: true, avatarIdx: AI_GIRLS[0].avatarIdx, peerId: null, totalShui: 0, locked: false },
+        { seatIdx: 2, name: AI_GIRLS[1].name, isAi: true, avatarIdx: AI_GIRLS[1].avatarIdx, peerId: null, totalShui: 0, locked: false },
+        { seatIdx: 3, name: AI_GIRLS[2].name, isAi: true, avatarIdx: AI_GIRLS[2].avatarIdx, peerId: null, totalShui: 0, locked: false }
+      ],
+      hand: [],
+      lanes: { front: [], mid: [], back: [] },
+      selectedIds: new Set(),
+      sortMode: 'rank',
+      mySpecial: null,
+      suggestions: [],
+      timerSec: 60,
+      timerHandle: null,
+      hostHands: [],
+      hostSubmissions: [null, null, null, null],
+      lastShowdown: null
+    };
+
+    function setNetBadge(text, ok = true) {
+      const desktop = document.getElementById('net-status-badge');
+      const mobile = document.getElementById('mobile-net-badge');
+      desktop.innerHTML = `<span class="w-2 h-2 rounded-full ${ok ? 'bg-emerald-500' : 'bg-amber-400'}"></span> ${text}`;
+      mobile.textContent = text;
+    }
+
+    function setAiDifficulty(diff) {
+      appState.aiDifficulty = diff;
+      document.querySelectorAll('.ai-diff-btn').forEach(btn => {
+        const active = btn.dataset.diff === diff;
+        btn.className = active
+          ? 'ai-diff-btn py-1.5 rounded-2xl text-xs font-black border-2 border-pink-500 bg-pink-100 text-rose-700'
+          : 'ai-diff-btn py-1.5 rounded-2xl text-xs font-bold border border-pink-300 bg-white/80 text-rose-700';
+      });
+      renderLobbySeats();
+    }
+
+    function diffLabel(d) { return d === 'easy' ? '放水新手' : (d === 'master' ? '大師' : '普通'); }
+
+    function renderLobbySeats() {
+      const container = document.getElementById('lobby-seats');
+      container.innerHTML = '';
+      appState.seats.forEach((s, idx) => {
+        const isMe = idx === appState.mySeatIdx;
+        const avatarSvg = BUILTIN_BEAUTIES[s.avatarIdx % BUILTIN_BEAUTIES.length].svg;
+        const card = document.createElement('div');
+        card.className = `p-2 rounded-2xl border flex items-center gap-2 ${
+          isMe ? 'bg-pink-100/90 border-pink-400 shadow-sm' : 'bg-white/75 border-pink-200'
+        }`;
+        card.innerHTML = `
+          <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-pink-300 shrink-0 bg-pink-50">${avatarSvg}</div>
+          <div class="min-w-0 flex-1">
+            <div class="text-xs sm:text-sm font-black text-rose-700 truncate">${s.name}</div>
+            <div class="text-[10px] text-rose-500/80 font-bold truncate">
+              ${isMe ? '💖 你 (本機)' : (s.isAi ? `🎀 AI (${diffLabel(appState.aiDifficulty)})` : '✨ 已連線好友')}
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      const startBtn = document.getElementById('btn-start-match');
+      if (appState.mode === 'guest') {
+        startBtn.disabled = true;
+        startBtn.textContent = '⏳ 等待房主發牌...';
+      } else {
+        startBtn.disabled = false;
+        startBtn.textContent = '🌸 開始發牌對戰 ✨';
+      }
+    }
+
+    function updateInviteQR(code) {
+      const url = `${window.location.origin}${window.location.pathname}?room=${code}`;
+      document.getElementById('room-code-display').textContent = `房號：${code}`;
+      document.getElementById('invite-status-text').textContent = '掃碼或複製網址邀請好友加入';
+      document.getElementById('invite-url-preview').textContent = `?room=${code}`;
+      document.getElementById('btn-copy-invite').disabled = false;
+
+      const qrBox = document.getElementById('qr-container');
+      qrBox.innerHTML = '';
+      try {
+        if (typeof QRCode !== 'undefined') {
+          new QRCode(qrBox, { text: url, width: 68, height: 68, colorDark: '#be185d', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
+        } else {
+          qrBox.innerHTML = `<span class="text-xs font-black text-rose-600 font-mono">${code}</span>`;
+        }
+      } catch (e) {
+        qrBox.innerHTML = `<span class="text-xs font-black text-rose-600 font-mono">${code}</span>`;
+      }
+    }
+
+    function copyInviteLink() {
+      if (!appState.roomCode) return;
+      const url = `${window.location.origin}${window.location.pathname}?room=${appState.roomCode}`;
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+        showToast('已複製邀請網址！快傳給好友一起玩🌸', 'success');
+      } catch (e) {
+        showToast(`請手動分享房號：${appState.roomCode}`, 'warn');
+      }
+    }
+
+    function cleanupPeer() {
+      if (appState.peer) { try { appState.peer.destroy(); } catch (e) {} appState.peer = null; }
+      appState.hostConn = null; appState.guestConns = {};
+    }
+
+    function fallbackToLocal(reason) {
+      cleanupPeer();
+      appState.mode = 'local'; appState.mySeatIdx = 0; appState.roomCode = '';
+      setNetBadge('本機甜心AI模式', false);
+      document.getElementById('room-code-display').textContent = '房號：本機單機';
+      document.getElementById('invite-status-text').textContent = reason || '已自動切換為本機 AI 模式';
+      renderLobbySeats();
+    }
+
+    function createOnlineRoom() {
+      const myName = document.getElementById('player-name-input').value.trim() || '甜心牌聖';
+      appState.seats[0].name = myName;
+      cleanupPeer();
+      if (typeof Peer === 'undefined') {
+        fallbackToLocal('離線環境，自動降級本機 AI 模式');
+        showToast('偵測到離線環境，已自動切換為單機 AI 模式', 'warn');
+        return;
+      }
+
+      const code = String(Math.floor(1000 + Math.random() * 9000));
+      setNetBadge('連線中...', false);
+      let settled = false;
+      const timer = setTimeout(() => {
+        if (!settled) { settled = true; fallbackToLocal('連線逾時，自動切換本機 AI 模式'); showToast('P2P 伺服器受限，已無縫降級為本機 AI 模式', 'warn'); }
+      }, 4500);
+
+      try {
+        const peer = new Peer(`sakura13-${code}`, { debug: 0 });
+        appState.peer = peer;
+        peer.on('open', () => {
+          if (settled) return;
+          settled = true; clearTimeout(timer);
+          appState.mode = 'host'; appState.roomCode = code; appState.mySeatIdx = 0;
+          setNetBadge(`線上房主 #${code}`, true);
+          updateInviteQR(code); renderLobbySeats();
+          showToast(`粉櫻房間 ${code} 建立成功！`, 'success');
+        });
+        peer.on('connection', (conn) => {
+          conn.on('data', (data) => handleHostReceive(conn, data));
+          conn.on('close', () => handleGuestDisconnect(conn.peer));
+        });
+        peer.on('error', () => {
+          if (!settled) { settled = true; clearTimeout(timer); fallbackToLocal('沙盒環境限制，自動切換本機 AI 模式'); showToast('偵測到連線受限，已無縫切換為單機 AI 模式', 'warn'); }
+        });
+      } catch (e) { clearTimeout(timer); fallbackToLocal('自動切換本機 AI 模式'); }
+    }
+
+    function joinOnlineRoom() {
+      const code = document.getElementById('join-room-input').value.trim();
+      if (!code) { showToast('請輸入 4 位數房號', 'warn'); return; }
+      const myName = document.getElementById('player-name-input').value.trim() || '甜心好友';
+      cleanupPeer();
+      if (typeof Peer === 'undefined') { fallbackToLocal('離線環境，已切換單機 AI'); return; }
+
+      setNetBadge(`加入 #${code}...`, false);
+      let connected = false;
+      const timer = setTimeout(() => {
+        if (!connected) { fallbackToLocal('找不到房間，切回單機 AI 模式'); showToast('無法連線至該房間，已切回單機 AI 模式', 'warn'); }
+      }, 5000);
+
+      try {
+        const peer = new Peer(undefined, { debug: 0 });
+        appState.peer = peer;
+        peer.on('open', () => {
+          const conn = peer.connect(`sakura13-${code}`, { reliable: true });
+          appState.hostConn = conn;
+          conn.on('open', () => {
+            connected = true; clearTimeout(timer);
+            appState.mode = 'guest'; appState.roomCode = code;
+            setNetBadge(`已加入 #${code}`, true);
+            document.getElementById('room-code-display').textContent = `房號：${code}`;
+            conn.send({ type: 'JOIN', name: myName });
+            showToast(`成功加入粉櫻房間 ${code}！`, 'success');
+          });
+          conn.on('data', (data) => handleGuestReceive(data));
+          conn.on('close', () => { showToast('與房主斷開連線，返回大廳', 'warn'); leaveToLobby(); });
+        });
+        peer.on('error', () => { if (!connected) { clearTimeout(timer); fallbackToLocal('連線受限，切回單機 AI 模式'); } });
+      } catch (e) { clearTimeout(timer); fallbackToLocal('自動切換本機 AI 模式'); }
+    }
+
+    function handleHostReceive(conn, data) {
+      if (!data || !data.type) return;
+      if (data.type === 'JOIN') {
+        const openSeat = appState.seats.find(s => s.isAi);
+        if (!openSeat) { conn.send({ type: 'FULL' }); return; }
+        openSeat.isAi = false;
+        openSeat.name = (data.name || '連線好友').slice(0, 10);
+        openSeat.peerId = conn.peer;
+        appState.guestConns[conn.peer] = { conn, seatIdx: openSeat.seatIdx };
+        conn.send({ type: 'ASSIGN_SEAT', seatIdx: openSeat.seatIdx });
+        broadcastLobbyState(); renderLobbySeats();
+        showToast(`${openSeat.name} 加入房間囉！`, 'success');
+      } else if (data.type === 'SUBMIT') {
+        const guest = appState.guestConns[conn.peer];
+        if (guest) hostReceiveSubmission(guest.seatIdx, data.submission);
+      }
+    }
+
+    function handleGuestDisconnect(peerId) {
+      const info = appState.guestConns[peerId];
+      if (!info) return;
+      const seat = appState.seats[info.seatIdx];
+      const girl = AI_GIRLS[(info.seatIdx - 1 + 3) % 3];
+      seat.isAi = true; seat.name = girl.name; seat.avatarIdx = girl.avatarIdx; seat.peerId = null;
+      delete appState.guestConns[peerId];
+      broadcastLobbyState(); renderLobbySeats();
+      showToast(`座位 ${info.seatIdx + 1} 玩家離開，已由 ${girl.name} 接管`, 'warn');
+      if (appState.phase === 'arranging' && !appState.hostSubmissions[info.seatIdx]) {
+        hostReceiveSubmission(info.seatIdx, computeAiArrangement(appState.hostHands[info.seatIdx], appState.aiDifficulty));
+      }
+    }
+
+    function broadcastLobbyState() {
+      Object.values(appState.guestConns).forEach(({ conn }) => {
+        try { conn.send({ type: 'LOBBY_STATE', seats: appState.seats, aiDifficulty: appState.aiDifficulty }); } catch (e) {}
+      });
+    }
+
+    function handleGuestReceive(data) {
+      if (!data || !data.type) return;
+      if (data.type === 'FULL') { showToast('該房間已滿員！', 'error'); fallbackToLocal('房間已滿'); }
+      else if (data.type === 'ASSIGN_SEAT') appState.mySeatIdx = data.seatIdx;
+      else if (data.type === 'LOBBY_STATE') { appState.seats = data.seats; appState.aiDifficulty = data.aiDifficulty; renderLobbySeats(); }
+      else if (data.type === 'DEAL') { appState.round = data.round; appState.seats = data.seats; beginLocalArrangementPhase(data.hand); }
+      else if (data.type === 'LOCK_UPDATE') { appState.seats[data.seatIdx].locked = true; renderOpponents(); }
+      else if (data.type === 'SHOWDOWN') { appState.seats = data.seats; runShowdownSequence(data.result); }
+    }
+
+    /* =========================================================================
+       6. GAME FLOW: START, DEAL, ARRANGE, SHOWDOWN & SETTLEMENT
+       ========================================================================= */
+    function startQuickLocalGame() {
+      const myName = document.getElementById('player-name-input').value.trim() || '甜心牌聖';
+      cleanupPeer();
+      appState.mode = 'local'; appState.mySeatIdx = 0; appState.round = 0;
+      appState.seats = [
+        { seatIdx: 0, name: myName, isAi: false, avatarIdx: 7, peerId: 'local', totalShui: 0, locked: false },
+        { seatIdx: 1, name: AI_GIRLS[0].name, isAi: true, avatarIdx: AI_GIRLS[0].avatarIdx, peerId: null, totalShui: 0, locked: false },
+        { seatIdx: 2, name: AI_GIRLS[1].name, isAi: true, avatarIdx: AI_GIRLS[1].avatarIdx, peerId: null, totalShui: 0, locked: false },
+        { seatIdx: 3, name: AI_GIRLS[2].name, isAi: true, avatarIdx: AI_GIRLS[2].avatarIdx, peerId: null, totalShui: 0, locked: false }
+      ];
+      hostStartGame();
+    }
+
+    function hostStartGame() {
+      const myName = document.getElementById('player-name-input').value.trim() || '甜心牌聖';
+      appState.seats[appState.mySeatIdx].name = myName;
+      startNewRoundAsHost();
+    }
+
+    function startNewRoundAsHost() {
+      appState.round++;
+      const deck = createDeck();
+      appState.hostHands = [deck.slice(0, 13), deck.slice(13, 26), deck.slice(26, 39), deck.slice(39, 52)];
+      appState.hostSubmissions = [null, null, null, null];
+      appState.seats.forEach(s => { s.locked = false; });
+
+      Object.values(appState.guestConns).forEach(({ conn, seatIdx }) => {
+        try { conn.send({ type: 'DEAL', round: appState.round, seats: appState.seats, hand: appState.hostHands[seatIdx] }); } catch (e) {}
+      });
+
+      beginLocalArrangementPhase(appState.hostHands[appState.mySeatIdx]);
+
+      appState.seats.forEach((s, idx) => {
+        if (s.isAi) {
+          setTimeout(() => {
+            if (appState.phase === 'arranging' || appState.phase === 'waiting') {
+              hostReceiveSubmission(idx, computeAiArrangement(appState.hostHands[idx], appState.aiDifficulty));
+            }
+          }, 1300 + Math.random() * 1900);
+        }
+      });
+    }
+
+    function beginLocalArrangementPhase(cards13) {
+      document.getElementById('lobby-screen').classList.add('hidden');
+      document.getElementById('game-screen').classList.remove('hidden');
+      document.getElementById('game-screen').classList.add('flex');
+      document.getElementById('settlement-modal').classList.add('hidden');
+
+      appState.phase = 'arranging';
+      appState.hand = cards13.slice();
+      appState.lanes = { front: [], mid: [], back: [] };
+      appState.selectedIds = new Set();
+      appState.lastShowdown = null;
+
+      sortHandArray();
+
+      appState.mySpecial = detectSpecialHand(cards13);
+      const specBtn = document.getElementById('btn-special-declare');
+      if (appState.mySpecial) {
+        specBtn.textContent = `🌟 報到：${appState.mySpecial.name} (+${appState.mySpecial.shui}水)`;
+        specBtn.classList.remove('hidden');
+      } else {
+        specBtn.classList.add('hidden');
+      }
+
+      appState.suggestions = findBestArrangements(cards13).bestList;
+      renderSuggestions();
+
+      document.getElementById('assist-bar').classList.remove('hidden');
+      document.getElementById('hand-control-section').classList.remove('hidden');
+      ['front', 'mid', 'back'].forEach(l => document.getElementById(`score-${l}`).classList.add('hidden'));
+
+      document.getElementById('hud-round').textContent = `第 ${appState.round} 局`;
+      document.getElementById('hud-room-tag').textContent = appState.roomCode ? `房號 #${appState.roomCode}` : '甜心單機模式';
+      document.getElementById('hud-my-score').innerHTML = `總水數：<strong>${appState.seats[appState.mySeatIdx].totalShui}</strong>`;
+      document.getElementById('stage-status-text').textContent = '點選手牌放入頭/中/尾三墩，或套用推薦擺法';
+
+      renderOpponents();
+      renderAllLanes();
+      renderHand();
+
+      // Trigger Beauty Photo swap on new round deal!
+      triggerBeautyEvent('deal');
+      audioEngine.playSfx('deal');
+      audioEngine.speak(`第${appState.round}局發牌囉，主人請開始擺牌`);
+
+      startArrangementTimer(60);
+    }
+
+    function startArrangementTimer(seconds) {
+      if (appState.timerHandle) clearInterval(appState.timerHandle);
+      appState.timerSec = seconds;
+      const el = document.getElementById('timer-display');
+      el.textContent = `${appState.timerSec}s`;
+
+      appState.timerHandle = setInterval(() => {
+        appState.timerSec--;
+        el.textContent = `${Math.max(0, appState.timerSec)}s`;
+        if (appState.timerSec <= 0) {
+          clearInterval(appState.timerHandle);
+          appState.timerHandle = null;
+          if (appState.phase === 'arranging') {
+            showToast('時間到囉！甜心已幫你套用最佳擺法💖', 'warn');
+            if (appState.suggestions.length > 0) applySuggestion(0);
+            confirmPlayerArrangement();
+          }
+        }
+      }, 1000);
+    }
+
+    /* =========================================================================
+       7. CARD INTERACTION & RENDERING
+       ========================================================================= */
+    function createCardElement(card, variant = 'hand', isSelected = false) {
+      const div = document.createElement('div');
+      const colorClass = SUIT_COLORS[card.suit];
+      const rankTxt = RANK_LABELS[card.rank], suitTxt = SUITS[card.suit];
+      div.className = `p-card ${colorClass} ${variant}-card ${isSelected ? 'selected' : ''}`;
+
+      if (variant === 'mini') {
+        div.innerHTML = `<div class="text-[9px] sm:text-[10px] font-black leading-none">${rankTxt}</div><div class="text-[10px] sm:text-xs leading-none self-end">${suitTxt}</div>`;
+      } else {
+        div.innerHTML = `
+          <div class="flex flex-col items-start leading-none">
+            <span class="text-xs sm:text-sm font-black tracking-tighter">${rankTxt}</span>
+            <span class="text-[10px] sm:text-xs -mt-0.5">${suitTxt}</span>
+          </div>
+          <div class="text-base sm:text-2xl leading-none self-end opacity-90">${suitTxt}</div>
+        `;
+      }
+      return div;
+    }
+
+    function sortHandArray() {
+      if (appState.sortMode === 'rank') appState.hand.sort((a, b) => b.rank - a.rank || a.suit - b.suit);
+      else appState.hand.sort((a, b) => a.suit - b.suit || b.rank - a.rank);
+    }
+
+    function toggleHandSort() {
+      appState.sortMode = appState.sortMode === 'rank' ? 'suit' : 'rank';
+      document.getElementById('btn-sort-hand').textContent = appState.sortMode === 'rank' ? '⇅ 依點數' : '⇅ 依花色';
+      sortHandArray(); renderHand(); audioEngine.playSfx('select');
+    }
+
+    function renderHand() {
+      const tray = document.getElementById('hand-tray');
+      tray.innerHTML = '';
+      if (appState.hand.length === 0) {
+        tray.innerHTML = `<div class="text-xs text-rose-500 font-black py-3">13 張牌都擺好囉！確認沒倒水就按「💖 確認擺牌」吧</div>`;
+      } else {
+        appState.hand.forEach(card => {
+          const el = createCardElement(card, 'hand', appState.selectedIds.has(card.id));
+          el.onclick = () => {
+            if (appState.phase !== 'arranging') return;
+            if (appState.selectedIds.has(card.id)) appState.selectedIds.delete(card.id);
+            else appState.selectedIds.add(card.id);
+            audioEngine.playSfx('select');
+            renderHand(); updateLaneHighlights();
+          };
+          tray.appendChild(el);
+        });
+      }
+      document.getElementById('hand-count-hint').textContent = `剩餘 ${appState.hand.length} 張`;
+      updateLaneHighlights();
+    }
+
+    function updateLaneHighlights() {
+      const hasSel = appState.selectedIds.size > 0 && appState.phase === 'arranging';
+      const limits = { front: 3, mid: 5, back: 5 };
+      ['front', 'mid', 'back'].forEach(lane => {
+        const el = document.getElementById(`lane-${lane}`);
+        if (hasSel && limits[lane] - appState.lanes[lane].length > 0) el.classList.add('can-drop');
+        else el.classList.remove('can-drop');
+      });
+    }
+
+    function handleLaneClick(lane) {
+      if (appState.phase !== 'arranging' || appState.selectedIds.size === 0) return;
+      const limits = { front: 3, mid: 5, back: 5 };
+      const space = limits[lane] - appState.lanes[lane].length;
+      if (space <= 0) { showToast('這一墩已經滿囉，點牌可以收回～', 'warn'); return; }
+
+      const toMove = appState.hand.filter(c => appState.selectedIds.has(c.id)).slice(0, space);
+      const moveIds = new Set(toMove.map(c => c.id));
+      appState.hand = appState.hand.filter(c => !moveIds.has(c.id));
+      appState.lanes[lane].push(...toMove);
+      appState.lanes[lane].sort((a, b) => b.rank - a.rank || a.suit - b.suit);
+      appState.selectedIds.clear();
+
+      audioEngine.playSfx('place');
+      renderAllLanes(); renderHand();
+    }
+
+    function returnCardFromLane(lane, cardId, evt) {
+      evt.stopPropagation();
+      if (appState.phase !== 'arranging') return;
+      const idx = appState.lanes[lane].findIndex(c => c.id === cardId);
+      if (idx === -1) return;
+      appState.hand.push(appState.lanes[lane].splice(idx, 1)[0]);
+      sortHandArray(); audioEngine.playSfx('select');
+      renderAllLanes(); renderHand();
+    }
+
+    function clearAllLanes() {
+      if (appState.phase !== 'arranging') return;
+      appState.hand.push(...appState.lanes.front, ...appState.lanes.mid, ...appState.lanes.back);
+      appState.lanes = { front: [], mid: [], back: [] };
+      appState.selectedIds.clear();
+      sortHandArray(); audioEngine.playSfx('select');
+      renderAllLanes(); renderHand();
+    }
+
+    function renderSuggestions() {
+      const box = document.getElementById('suggestions-container');
+      box.innerHTML = `<span class="text-[11px] text-rose-600 font-black shrink-0">💡 推薦：</span>`;
+      appState.suggestions.forEach((sol, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'px-2 py-0.5 rounded-full bg-white hover:bg-pink-100 border border-pink-300 text-[11px] font-bold text-rose-700 whitespace-nowrap shrink-0 shadow-sm active:scale-95';
+        btn.textContent = `${sol.fEv.name} / ${sol.mEv.name} / ${sol.bEv.name}`;
+        btn.onclick = () => applySuggestion(idx);
+        box.appendChild(btn);
+      });
+    }
+
+    function applySuggestion(idx) {
+      if (appState.phase !== 'arranging') return;
+      const sol = appState.suggestions[idx];
+      if (!sol) return;
+      appState.lanes.front = sol.front.slice().sort((a, b) => b.rank - a.rank);
+      appState.lanes.mid = sol.mid.slice().sort((a, b) => b.rank - a.rank);
+      appState.lanes.back = sol.back.slice().sort((a, b) => b.rank - a.rank);
+      appState.hand = []; appState.selectedIds.clear();
+      audioEngine.playSfx('place');
+      renderAllLanes(); renderHand();
+    }
+
+    function renderAllLanes() {
+      const fEv = appState.lanes.front.length === 3 ? eval3(appState.lanes.front) : null;
+      const mEv = appState.lanes.mid.length === 5 ? eval5(appState.lanes.mid) : null;
+      const bEv = appState.lanes.back.length === 5 ? eval5(appState.lanes.back) : null;
+      const evalMap = { front: fEv, mid: mEv, back: bEv };
+
+      ['front', 'mid', 'back'].forEach(lane => {
+        const cardBox = document.getElementById(`cards-${lane}`);
+        cardBox.innerHTML = '';
+        if (appState.lanes[lane].length === 0) {
+          cardBox.innerHTML = `<span class="text-[10px] text-rose-400/70 font-bold">點擊放入牌</span>`;
+        } else {
+          appState.lanes[lane].forEach(c => {
+            const el = createCardElement(c, 'lane');
+            el.onclick = (e) => returnCardFromLane(lane, c.id, e);
+            cardBox.appendChild(el);
+          });
+        }
+
+        const badge = document.getElementById(`rank-${lane}`);
+        const ev = evalMap[lane];
+        if (ev) {
+          const bonus = getLaneWinShui(lane, ev);
+          badge.textContent = bonus > 1 ? `${ev.name} (+${bonus}水)` : ev.name;
+          badge.className = bonus > 1
+            ? 'px-1.5 py-0.5 rounded-full bg-gradient-to-r from-pink-500 to-rose-400 text-[10px] font-black text-white whitespace-nowrap'
+            : 'px-1.5 py-0.5 rounded-full bg-pink-100 text-[10px] font-bold text-rose-700 whitespace-nowrap';
+        } else {
+          badge.textContent = `${appState.lanes[lane].length}/${lane === 'front' ? 3 : 5}`;
+          badge.className = 'px-1.5 py-0.5 rounded-full bg-white/80 text-[10px] font-bold text-rose-400 whitespace-nowrap';
+        }
+      });
+
+      let isFoul = false;
+      if (fEv && mEv && mEv.score < fEv.score) isFoul = true;
+      if (mEv && bEv && bEv.score < mEv.score) isFoul = true;
+      if (fEv && bEv && bEv.score < fEv.score) isFoul = true;
+
+      const foulBadge = document.getElementById('foul-warning-badge');
+      ['front', 'mid', 'back'].forEach(l => document.getElementById(`lane-${l}`).classList.remove('foul-lane'));
+      if (isFoul) {
+        foulBadge.classList.remove('hidden');
+        if (fEv && mEv && mEv.score < fEv.score) { document.getElementById('lane-front').classList.add('foul-lane'); document.getElementById('lane-mid').classList.add('foul-lane'); }
+        if (mEv && bEv && bEv.score < mEv.score) { document.getElementById('lane-mid').classList.add('foul-lane'); document.getElementById('lane-back').classList.add('foul-lane'); }
+      } else {
+        foulBadge.classList.add('hidden');
+      }
+
+      document.getElementById('btn-confirm-hand').disabled = !(appState.lanes.front.length === 3 && appState.lanes.mid.length === 5 && appState.lanes.back.length === 5);
+    }
+
+    function declareSpecialHand() {
+      if (appState.phase !== 'arranging' || !appState.mySpecial) return;
+      const all13 = [...appState.hand, ...appState.lanes.front, ...appState.lanes.mid, ...appState.lanes.back];
+      submitMyHand({ front: all13.slice(0, 3), mid: all13.slice(3, 8), back: all13.slice(8, 13), isSpecial: true, special: appState.mySpecial });
+    }
+
+    function confirmPlayerArrangement() {
+      if (appState.phase !== 'arranging') return;
+      if (appState.lanes.front.length !== 3 || appState.lanes.mid.length !== 5 || appState.lanes.back.length !== 5) return;
+      submitMyHand({ front: appState.lanes.front.slice(), mid: appState.lanes.mid.slice(), back: appState.lanes.back.slice(), isSpecial: false, special: null });
+    }
+
+    function submitMyHand(submission) {
+      if (appState.timerHandle) { clearInterval(appState.timerHandle); appState.timerHandle = null; }
+      appState.phase = 'waiting';
+      document.getElementById('assist-bar').classList.add('hidden');
+      document.getElementById('hand-control-section').classList.add('hidden');
+      document.getElementById('stage-status-text').textContent = submission.isSpecial
+        ? `已宣告報到【${submission.special.name}】，等待大家亮牌...`
+        : '擺牌完成！等待可愛對手們準備好...';
+
+      audioEngine.playSfx('lock');
+      if (submission.isSpecial) audioEngine.speak(`恭喜報到，${submission.special.name}`);
+
+      if (appState.mode === 'guest' && appState.hostConn) {
+        appState.hostConn.send({ type: 'SUBMIT', submission });
+      } else {
+        hostReceiveSubmission(appState.mySeatIdx, submission);
+      }
+    }
+
+    function hostReceiveSubmission(seatIdx, submission) {
+      if (appState.hostSubmissions[seatIdx]) return;
+      appState.hostSubmissions[seatIdx] = { seatIdx, name: appState.seats[seatIdx].name, ...submission };
+      appState.seats[seatIdx].locked = true;
+
+      Object.values(appState.guestConns).forEach(({ conn }) => {
+        try { conn.send({ type: 'LOCK_UPDATE', seatIdx }); } catch (e) {}
+      });
+      renderOpponents();
+
+      if (appState.hostSubmissions.every(s => s !== null)) {
+        const result = evaluateRoundShowdown(appState.hostSubmissions);
+        for (let i = 0; i < 4; i++) appState.seats[i].totalShui += result.totalDelta[i];
+        Object.values(appState.guestConns).forEach(({ conn }) => {
+          try { conn.send({ type: 'SHOWDOWN', result, seats: appState.seats }); } catch (e) {}
+        });
+        runShowdownSequence(result);
+      }
+    }
+
+    /* =========================================================================
+       8. OPPONENTS RENDERING & ANIMATED SHOWDOWN WITH BEAUTY PHOTO TRIGGERS
+       ========================================================================= */
+    function getOpponentSeats() {
+      return [1, 2, 3].map(off => (appState.mySeatIdx + off) % 4);
+    }
+
+    function renderOpponents(revealStage = 0) {
+      const container = document.getElementById('opponents-row');
+      container.innerHTML = '';
+      const sd = appState.lastShowdown;
+
+      getOpponentSeats().forEach(seatIdx => {
+        const seat = appState.seats[seatIdx];
+        const evData = sd ? sd.evals[seatIdx] : null;
+        const avatarSvg = BUILTIN_BEAUTIES[seat.avatarIdx % BUILTIN_BEAUTIES.length].svg;
+        const card = document.createElement('div');
+        card.className = 'glass-card rounded-2xl p-1.5 sm:p-2 flex flex-col gap-1 min-w-0';
+
+        let statusTag = seat.locked
+          ? '<span class="px-1.5 py-0.5 rounded-full bg-emerald-100 text-[9px] sm:text-[10px] text-emerald-700 font-black shrink-0">準備好</span>'
+          : '<span class="px-1.5 py-0.5 rounded-full bg-pink-100 text-[9px] sm:text-[10px] text-rose-600 font-black animate-pulse shrink-0">思考中</span>';
+
+        if (revealStage > 0 && evData) {
+          if (evData.isSpecial) statusTag = `<span class="px-1.5 py-0.5 rounded-full bg-rose-500 text-[9px] text-white font-black shrink-0">🌟 ${evData.special.name}</span>`;
+          else if (evData.isFoul) statusTag = `<span class="px-1.5 py-0.5 rounded-full bg-rose-600 text-[9px] text-white font-black shrink-0">⚠️ 倒水</span>`;
+          else {
+            const d = sd.totalDelta[seatIdx];
+            statusTag = `<span class="px-1.5 py-0.5 rounded-full ${d >= 0 ? 'bg-pink-500 text-white' : 'bg-rose-100 text-rose-700'} text-[9px] font-black shrink-0">${revealStage === 3 ? (d >= 0 ? `+${d}水` : `${d}水`) : '比牌中'}</span>`;
+          }
+        }
+
+        card.innerHTML = `
+          <div class="flex items-center gap-1.5 min-w-0">
+            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full overflow-hidden border border-pink-300 shrink-0 bg-pink-50">${avatarSvg}</div>
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center justify-between gap-1">
+                <span class="text-[11px] sm:text-xs font-black text-rose-800 truncate">${seat.name}</span>
+                ${statusTag}
+              </div>
+              <div class="text-[10px] text-rose-500 font-bold">總水：<strong class="text-rose-700">${seat.totalShui}</strong></div>
+            </div>
+          </div>
+        `;
+
+        if (revealStage > 0 && evData) {
+          const wrap = document.createElement('div');
+          wrap.className = 'space-y-0.5 pt-1 border-t border-pink-200';
+          if (evData.isSpecial) {
+            wrap.innerHTML = `<div class="text-center py-1.5 text-[11px] font-black text-rose-600">報到免比 (+${evData.special.shui}水/家)</div>`;
+          } else {
+            [
+              { label: '頭', cards: evData.front, ev: evData.fEv, min: 1 },
+              { label: '中', cards: evData.mid, ev: evData.mEv, min: 2 },
+              { label: '尾', cards: evData.back, ev: evData.bEv, min: 3 }
+            ].forEach(ld => {
+              const row = document.createElement('div');
+              row.className = 'flex items-center justify-between gap-1';
+              const cBox = document.createElement('div');
+              cBox.className = 'flex items-center';
+              if (revealStage >= ld.min) ld.cards.forEach(c => cBox.appendChild(createCardElement(c, 'mini')));
+              else for (let k = 0; k < ld.cards.length; k++) { const b = document.createElement('div'); b.className = 'p-card mini-card p-card-back'; cBox.appendChild(b); }
+              const lbl = document.createElement('span');
+              lbl.className = 'text-[9px] font-black text-rose-600 shrink-0';
+              lbl.textContent = revealStage >= ld.min ? ld.ev.name : `${ld.label}墩`;
+              row.appendChild(cBox); row.appendChild(lbl);
+              wrap.appendChild(row);
+            });
+          }
+          card.appendChild(wrap);
+        }
+        container.appendChild(card);
+      });
+    }
+
+    async function runShowdownSequence(result) {
+      appState.phase = 'showdown';
+      appState.lastShowdown = result;
+      document.getElementById('timer-display').textContent = '比牌';
+      const myIdx = appState.mySeatIdx;
+      const myEval = result.evals[myIdx];
+      const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+      // Special hand announcement
+      const specials = result.evals.filter(e => e.isSpecial);
+      if (specials.length > 0) {
+        const txt = specials.map(s => `${s.name}【${s.special.name}】`).join('、');
+        document.getElementById('stage-status-text').textContent = `🌟 特殊報到：${txt}`;
+        audioEngine.playSfx('homerun');
+        audioEngine.speak(`恭喜報到，${txt}`);
+        showDramaticBanner('🌟 特殊牌型報到！', txt);
+        triggerBeautyEvent('homerun');
+        renderOpponents(1);
+        await sleep(1650);
+      }
+
+      // Foul alert for player
+      if (myEval.isFoul) {
+        audioEngine.playSfx('foul');
+        audioEngine.speak('哎呀，倒水相公囉');
+        triggerBeautyEvent('foul');
+      }
+
+      // Step 1: Front Lane (Check 衝三 trigger!)
+      document.getElementById('stage-status-text').textContent = '🌸 第一步：比頭墩（3張）';
+      audioEngine.playSfx('reveal');
+      if (!myEval.isSpecial && !myEval.isFoul && myEval.fEv && myEval.fEv.type === 3) {
+        audioEngine.speak('頭墩衝三！太厲害了');
+        triggerBeautyEvent('chongsan');
+        showDramaticBanner('✨ 頭墩衝三 (+3水) ✨', '可愛甜心為你歡呼！');
+      } else {
+        audioEngine.speak('比頭墩');
+      }
+      renderOpponents(1);
+      showMyLaneScore('front', result.laneNet.front[myIdx]);
+      await sleep(1250);
+
+      // Step 2: Mid Lane
+      document.getElementById('stage-status-text').textContent = '🌸 第二步：比中墩（5張）';
+      audioEngine.playSfx('reveal');
+      audioEngine.speak('比中墩');
+      renderOpponents(2);
+      showMyLaneScore('mid', result.laneNet.mid[myIdx]);
+      await sleep(1250);
+
+      // Step 3: Back Lane
+      document.getElementById('stage-status-text').textContent = '🌸 第三步：比尾墩（5張）';
+      audioEngine.playSfx('reveal');
+      audioEngine.speak('比尾墩');
+      renderOpponents(3);
+      showMyLaneScore('back', result.laneNet.back[myIdx]);
+      await sleep(1250);
+
+      // Step 4: Shoot & Home Run FX + Beauty Photo Trigger
+      const totalShoots = result.shootsGiven.reduce((acc, arr) => acc + arr.length, 0);
+      if (result.homeRunSeats.length > 0) {
+        const hrNames = result.homeRunSeats.map(i => appState.seats[i].name).join('、');
+        document.getElementById('stage-status-text').textContent = `🏆 全壘打！${hrNames} 橫掃全場！`;
+        audioEngine.playSfx('shoot');
+        setTimeout(() => audioEngine.playSfx('homerun'), 220);
+        audioEngine.speak(`全壘打！${hrNames} 打槍三家，水數再翻倍！`);
+        showDramaticBanner('🏆 全壘打 HOME RUN!', `${hrNames} 橫掃三家！`);
+        triggerBeautyEvent('homerun');
+        await sleep(1850);
+      } else if (totalShoots > 0) {
+        const shooters = [];
+        result.shootsGiven.forEach((victims, sIdx) => {
+          if (victims.length > 0) shooters.push(`${appState.seats[sIdx].name} 打槍 ${victims.map(v => appState.seats[v].name).join('、')}`);
+        });
+        document.getElementById('stage-status-text').textContent = `💘 ${shooters.join(' ｜ ')}`;
+        audioEngine.playSfx('shoot');
+        audioEngine.speak(`打槍！${shooters[0]}`);
+        showDramaticBanner('💘 打槍 SHOOT ×2', shooters.join(' / '));
+        triggerBeautyEvent('shoot');
+        await sleep(1750);
+      }
+
+      document.getElementById('hud-my-score').innerHTML = `總水數：<strong>${appState.seats[myIdx].totalShui}</strong>`;
+
+      // Settlement Beauty Photo Swap
+      triggerBeautyEvent(result.totalDelta[myIdx] >= 0 ? 'settleWin' : 'settleLose');
+      appState.phase = 'settled';
+      openSettlementModal(result);
+    }
+
+    function showMyLaneScore(lane, net) {
+      const el = document.getElementById(`score-${lane}`);
+      el.classList.remove('hidden');
+      el.textContent = net > 0 ? `+${net} 水` : `${net} 水`;
+      el.className = `text-[11px] font-black px-2 py-0.5 rounded-full ${
+        net > 0 ? 'bg-pink-500 text-white' : net < 0 ? 'bg-rose-200 text-rose-800' : 'bg-white text-rose-500'
+      }`;
+    }
+
+    function openSettlementModal(result) {
+      const myIdx = appState.mySeatIdx;
+      const myDelta = result.totalDelta[myIdx];
+
+      document.getElementById('settle-title').textContent = `第 ${appState.round} 局 甜心結算戰報`;
+      const tags = [];
+      if (result.homeRunSeats.length > 0) tags.push('🏆 本局出現全壘打');
+      if (result.evals.some(e => e.isSpecial)) tags.push('🌟 本局出現特殊報到');
+      if (result.evals.some(e => e.isFoul)) tags.push('⚠️ 本局有玩家倒水');
+      document.getElementById('settle-subtitle').textContent = tags.length ? tags.join('・') : '四家逐墩比牌完成';
+
+      const deltaBadge = document.getElementById('settle-my-delta');
+      deltaBadge.textContent = myDelta >= 0 ? `本局 +${myDelta} 水` : `本局 ${myDelta} 水`;
+      deltaBadge.className = `px-3 py-1 rounded-full text-sm font-black border ${
+        myDelta > 0 ? 'bg-pink-500 border-pink-300 text-white'
+        : myDelta < 0 ? 'bg-rose-100 border-rose-300 text-rose-700'
+        : 'bg-white border-pink-200 text-rose-600'
+      }`;
+
+      const body = document.getElementById('settle-body');
+      body.innerHTML = '';
+
+      // Standings Table
+      const standCard = document.createElement('div');
+      standCard.className = 'rounded-2xl bg-white border border-pink-200 overflow-hidden shadow-sm';
+      let rowsHtml = '';
+      appState.seats.forEach((s, idx) => {
+        const d = result.totalDelta[idx];
+        const ev = result.evals[idx];
+        const badges = [];
+        if (result.homeRunSeats.includes(idx)) badges.push('<span class="px-1.5 py-0.5 rounded-full bg-rose-500 text-[10px] text-white font-black">全壘打</span>');
+        else if (result.shootsGiven[idx].length > 0) badges.push(`<span class="px-1.5 py-0.5 rounded-full bg-pink-400 text-[10px] text-white font-black">打槍×${result.shootsGiven[idx].length}</span>`);
+        if (ev.isSpecial) badges.push(`<span class="px-1.5 py-0.5 rounded-full bg-purple-500 text-[10px] text-white font-black">${ev.special.name}</span>`);
+        if (ev.isFoul) badges.push('<span class="px-1.5 py-0.5 rounded-full bg-rose-700 text-[10px] text-white font-black">倒水</span>');
+
+        rowsHtml += `
+          <tr class="border-t border-pink-100 ${idx === myIdx ? 'bg-pink-50/90' : ''}">
+            <td class="px-3 py-2 font-black text-xs sm:text-sm text-rose-800">${s.name} ${badges.join(' ')}</td>
+            <td class="px-3 py-2 text-right font-mono font-black text-xs sm:text-sm ${d > 0 ? 'text-pink-600' : d < 0 ? 'text-rose-400' : 'text-slate-400'}">${d > 0 ? '+' + d : d} 水</td>
+            <td class="px-3 py-2 text-right font-mono font-bold text-xs sm:text-sm text-rose-700">${s.totalShui} 水</td>
+          </tr>
+        `;
+      });
+      standCard.innerHTML = `
+        <table class="w-full text-left">
+          <thead class="bg-pink-50 text-[11px] text-rose-500">
+            <tr><th class="px-3 py-2">玩家</th><th class="px-3 py-2 text-right">本局水數</th><th class="px-3 py-2 text-right">累計總水數</th></tr>
+          </thead>
+          <tbody>${rowsHtml}</tbody>
+        </table>
+      `;
+      body.appendChild(standCard);
+
+      // Pairwise Breakdown (Player's matches on top)
+      const detailTitle = document.createElement('div');
+      detailTitle.className = 'text-xs font-black text-rose-600 pt-1';
+      detailTitle.textContent = '⚔️ 兩兩捉對逐墩明細';
+      body.appendChild(detailTitle);
+
+      const sortedPairs = result.pairwise.slice().sort((a, b) => ((a.i === myIdx || a.j === myIdx) ? 0 : 1) - ((b.i === myIdx || b.j === myIdx) ? 0 : 1));
+      sortedPairs.forEach(p => {
+        const pA = appState.seats[p.i].name, pB = appState.seats[p.j].name;
+        const isMine = (p.i === myIdx || p.j === myIdx);
+        const fmt = (n) => n > 0 ? `+${n}` : `${n}`;
+        const laneInfo = p.type === 'special' || p.type === 'foul_both'
+          ? `<span class="text-rose-600 font-bold">${p.note}</span>`
+          : `頭(${fmt(p.fDiff)}) / 中(${fmt(p.mDiff)}) / 尾(${fmt(p.bDiff)})・<span class="text-rose-600 font-bold">${p.note}</span>`;
+
+        const item = document.createElement('div');
+        item.className = `p-2.5 rounded-2xl border text-xs space-y-1 ${isMine ? 'bg-pink-50 border-pink-300' : 'bg-white border-pink-100'}`;
+        item.innerHTML = `
+          <div class="flex items-center justify-between font-black">
+            <span class="text-rose-800">${pA} <span class="text-pink-400">VS</span> ${pB}</span>
+            <span class="font-mono ${p.netA > 0 ? 'text-pink-600' : p.netA < 0 ? 'text-rose-400' : 'text-slate-400'}">${pA} ${fmt(p.netA)} 水</span>
+          </div>
+          <div class="text-[11px] text-rose-500">${laneInfo}</div>
+        `;
+        body.appendChild(item);
+      });
+
+      const nextBtn = document.getElementById('btn-next-round');
+      if (appState.mode === 'guest') { nextBtn.disabled = true; nextBtn.textContent = '等待房主開啟下一局...'; }
+      else { nextBtn.disabled = false; nextBtn.textContent = '確定 / 再來一局 🌸'; }
+
+      document.getElementById('settlement-modal').classList.remove('hidden');
+      if (myDelta > 0) audioEngine.playSfx('win');
+    }
+
+    function startNextRound() {
+      if (appState.mode === 'guest') return;
+      document.getElementById('settlement-modal').classList.add('hidden');
+      startNewRoundAsHost();
+    }
+
+    function leaveToLobby() {
+      if (appState.timerHandle) { clearInterval(appState.timerHandle); appState.timerHandle = null; }
+      document.getElementById('settlement-modal').classList.add('hidden');
+      document.getElementById('game-screen').classList.add('hidden');
+      document.getElementById('game-screen').classList.remove('flex');
+      document.getElementById('lobby-screen').classList.remove('hidden');
+      appState.phase = 'lobby';
+      renderLobbySeats();
+    }
+
+    /* =========================================================================
+       9. INITIALIZATION
+       ========================================================================= */
+    window.addEventListener('DOMContentLoaded', () => {
+      renderLobbySeats();
+      renderCurrentBeautyPhoto();
+      resetPhotoAutoTimer();
+
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const roomParam = params.get('room');
+        if (roomParam) {
+          document.getElementById('join-room-input').value = roomParam.trim();
+          showToast(`已自動帶入房號 ${roomParam}，請點「加入房間」🌸`, 'info');
+        }
+      } catch (e) {}
+
+      if ('speechSynthesis' in window) window.speechSynthesis.getVoices();
+    });
+  </script>
+</body>
+</html>
