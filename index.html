@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" content="#072a40" />
-  <title>浪子回頭－攤牌時刻</title>
+  <title>攤牌時刻-浪子回頭｜台灣經典四人十三張</title>
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -305,14 +305,14 @@
 <body class="flex flex-col h-[100dvh] w-full overflow-hidden relative">
 
   <!-- =========================================================================
-       DUAL-LAYER FULL-BLEED WALLPAPER ENGINE (Real Local Image + SVG Fallback)
+       DUAL-LAYER FULL-BLEED WALLPAPER ENGINE (Real Image + SVG Fallback)
        ========================================================================= -->
   <div id="bgLayerA" class="bg-slide-layer active" aria-hidden="true">
-    <img id="bgImgA" alt="盛夏清涼女神寫真A" class="w-full h-full object-cover object-[50%_20%]" />
+    <img id="bgImgA" alt="攤牌時刻-浪子回頭 寫真背景A" referrerpolicy="no-referrer" class="w-full h-full object-cover object-[50%_20%]" />
     <div id="bgSvgA" class="svg-fallback-wrap"></div>
   </div>
   <div id="bgLayerB" class="bg-slide-layer" aria-hidden="true">
-    <img id="bgImgB" alt="盛夏清涼女神寫真B" class="w-full h-full object-cover object-[50%_20%]" />
+    <img id="bgImgB" alt="攤牌時刻-浪子回頭 寫真背景B" referrerpolicy="no-referrer" class="w-full h-full object-cover object-[50%_20%]" />
     <div id="bgSvgB" class="svg-fallback-wrap"></div>
   </div>
   <div id="bg-scrim" aria-hidden="true"></div>
@@ -344,7 +344,7 @@
         <span id="bubble-index" class="font-mono text-rose-200/90 tabular-nums shrink-0">1/13</span>
       </div>
       <div id="bubble-quote" class="text-[11px] sm:text-xs font-bold text-white/95 leading-snug mt-0.5 line-clamp-2">
-        「海風吹起來超涼快！祝你這局起手就拿大牌🌊」
+        「浪子回頭金不換，這把起手就讓你拿王牌🌊」
       </div>
     </div>
   </div>
@@ -370,19 +370,19 @@
     <!-- Lobby Top Bar -->
     <header class="compact-header glass-header shrink-0 px-2.5 sm:px-5 py-2 flex items-center justify-between gap-1.5">
       <div class="flex items-center gap-2 min-w-0">
-        <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-sky-400 via-rose-400 to-orange-300 flex items-center justify-center text-white font-black text-base shadow shrink-0">🏖️</div>
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-sky-400 via-rose-400 to-orange-300 flex items-center justify-center text-white font-black text-base shadow shrink-0">♠</div>
         <div class="min-w-0">
-          <h1 class="text-sm sm:text-lg font-black summer-title truncate leading-tight">盛夏清涼・十三美（GitHub 本機圖庫版）</h1>
-          <p class="hide-on-short text-[11px] text-sky-100/85 truncate font-bold">搭配 ./images/1.jpg~13.jpg・正宗台灣四人十三張（十三支）</p>
+          <h1 class="text-sm sm:text-lg font-black summer-title truncate leading-tight">攤牌時刻-浪子回頭</h1>
+          <p class="hide-on-short text-[11px] text-sky-100/85 truncate font-bold">台灣經典四人十三張・內建保底＋GitHub images/ 自動混播</p>
         </div>
       </div>
 
       <!-- Photo & System Toolbar -->
       <div class="flex items-center gap-1 sm:gap-1.5 shrink-0">
         <button onclick="prevGoddess()" class="btn-ocean px-2 py-1 rounded-lg text-xs font-black" title="上一位">◀</button>
-        <button onclick="randomGoddess(true)" class="btn-ocean px-2 py-1 rounded-lg text-xs font-black" title="隨機換圖">🔀 <span class="hidden lg:inline">隨機</span></button>
+        <button onclick="randomGoddess(true)" class="btn-ocean px-2 py-1 rounded-lg text-xs font-black" title="隨機換圖">🔀 <span class="hidden lg:inline">隨機換圖</span></button>
         <button onclick="nextGoddess()" class="btn-ocean px-2 py-1 rounded-lg text-xs font-black" title="下一位">▶</button>
-        <button onclick="openGalleryModal()" class="btn-ocean px-2 py-1 rounded-lg text-xs font-bold" title="13美寫真集">🖼️ <span class="hidden sm:inline">13美</span></button>
+        <button onclick="openGalleryModal()" class="btn-ocean px-2 py-1 rounded-lg text-xs font-bold" title="寫真集與播放模式">🖼️ <span class="hidden sm:inline">寫真集</span></button>
         <button onclick="cycleScrimLevel()" id="btn-scrim-lobby" class="btn-ocean px-2 py-1 rounded-lg text-xs font-bold" title="遮罩透明度">🌤️ 中</button>
         <button onclick="togglePureView(true)" class="btn-ocean px-2 py-1 rounded-lg text-xs font-black" title="純享賞圖">👁️ <span class="hidden md:inline">賞圖</span></button>
         <button onclick="triggerCustomPhotoUpload()" class="btn-ocean px-2 py-1 rounded-lg text-xs font-bold hidden md:inline-block" title="試看自訂照片">📷 試看自訂圖</button>
@@ -409,7 +409,7 @@
             <!-- Nickname -->
             <div>
               <label class="block text-xs text-sky-100/85 font-bold mb-1">玩家暱稱</label>
-              <input id="player-name-input" type="text" maxlength="10" value="盛夏牌聖"
+              <input id="player-name-input" type="text" maxlength="10" value="回頭浪子"
                 class="w-full px-3 py-2 rounded-2xl bg-black/35 border border-sky-300/40 text-white font-bold text-sm focus:outline-none focus:border-rose-300" />
             </div>
 
@@ -430,19 +430,21 @@
             <div class="p-2 rounded-2xl bg-black/30 border border-sky-300/25 space-y-1.5">
               <div class="flex items-center justify-between gap-2">
                 <span class="text-xs font-bold text-sky-100 truncate" id="lobby-album-status">
-                  📁 圖庫：偵測 ./images/1.jpg ~ 13.jpg 中...
+                  🖼️ 內建 13 張保底・背景掃描 GitHub images/ 中...
                 </span>
                 <button type="button" onclick="triggerCustomPhotoUpload()" class="btn-ocean px-2.5 py-1 rounded-xl text-xs font-black shrink-0">
                   📷 試看自訂圖
                 </button>
               </div>
-              <div id="custom-mode-row" class="hidden flex items-center justify-between gap-1.5 pt-1 border-t border-white/10">
-                <span class="text-[11px] text-rose-200 font-bold">預覽模式：</span>
-                <div class="flex gap-1">
-                  <button type="button" id="btn-mode-replace" onclick="setCustomPlaybackMode('replace')"
-                    class="px-2 py-0.5 rounded-lg text-[10px] font-black bg-rose-500/85 text-white border border-rose-200/60">取代 1~13 號</button>
-                  <button type="button" id="btn-mode-mix" onclick="setCustomPlaybackMode('mix')"
-                    class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-black/40 text-sky-100 border border-white/20">與本機圖混播</button>
+              <div id="custom-mode-row" class="flex flex-wrap items-center justify-between gap-1 pt-1 border-t border-white/10">
+                <span class="text-[11px] text-rose-200 font-bold">播放模式：</span>
+                <div class="flex flex-wrap gap-1">
+                  <button type="button" data-pmode="all" onclick="setPlaybackMode('all')"
+                    class="pmode-btn px-2 py-0.5 rounded-lg text-[10px] font-black bg-rose-500/85 text-white border border-rose-200/60">全部混播</button>
+                  <button type="button" data-pmode="github" onclick="setPlaybackMode('github')"
+                    class="pmode-btn px-2 py-0.5 rounded-lg text-[10px] font-bold bg-black/40 text-sky-100 border border-white/20">僅播 GitHub</button>
+                  <button type="button" data-pmode="custom" onclick="setPlaybackMode('custom')"
+                    class="pmode-btn px-2 py-0.5 rounded-lg text-[10px] font-bold bg-black/40 text-sky-100 border border-white/20">僅播自訂圖</button>
                 </div>
               </div>
             </div>
@@ -469,7 +471,7 @@
           </div>
 
           <p class="hide-on-short text-[11px] text-sky-100/75 leading-relaxed">
-            部署至 GitHub Pages 時，只需將 13 張泳裝寫真放入 <code class="text-amber-200">images/1.jpg~13.jpg</code>（亦自動支援 .png / .webp）；上傳前可點「📷 試看自訂圖」搶先預覽！
+            內建 13 位夏日真人女神保底不破圖，並自動靜默掃描 GitHub <code class="text-amber-200">images/1~30</code>（支援 .jpg/.png/.webp）加入隨機混播！
           </p>
         </section>
 
@@ -518,6 +520,7 @@
     <!-- Top Game HUD + Photo Toolbar -->
     <header class="compact-header glass-header shrink-0 px-2 sm:px-4 py-1.5 flex items-center justify-between gap-1.5 z-20">
       <div class="flex items-center gap-1.5 min-w-0">
+        <span class="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/40 border border-rose-300/40 text-xs font-black summer-title shrink-0">♠ 攤牌時刻-浪子回頭</span>
         <span id="hud-round" class="px-2 py-0.5 rounded-full bg-rose-500/50 border border-rose-200/60 text-white text-[11px] sm:text-xs font-black shrink-0">第 1 局</span>
         <span id="hud-my-score" class="px-2 py-0.5 rounded-full bg-black/45 border border-sky-300/35 text-[11px] sm:text-xs font-bold text-sky-100 shrink-0 tabular-nums">
           總水：<strong class="text-amber-300">0</strong>
@@ -529,7 +532,7 @@
         <button onclick="prevGoddess()" class="btn-ocean px-1.5 sm:px-2 py-1 rounded-lg text-[11px] sm:text-xs font-black" title="上一位">◀</button>
         <button onclick="randomGoddess(true)" class="btn-ocean px-1.5 sm:px-2 py-1 rounded-lg text-[11px] sm:text-xs font-black" title="隨機換圖">🔀</button>
         <button onclick="nextGoddess()" class="btn-ocean px-1.5 sm:px-2 py-1 rounded-lg text-[11px] sm:text-xs font-black" title="下一位">▶</button>
-        <button onclick="openGalleryModal()" class="btn-ocean px-1.5 sm:px-2 py-1 rounded-lg text-[11px] sm:text-xs font-bold" title="13美寫真集">🖼️<span class="hidden md:inline"> 13美</span></button>
+        <button onclick="openGalleryModal()" class="btn-ocean px-1.5 sm:px-2 py-1 rounded-lg text-[11px] sm:text-xs font-bold" title="寫真集">🖼️<span class="hidden md:inline"> 寫真集</span></button>
         <button onclick="cycleScrimLevel()" id="btn-scrim-game" class="btn-ocean px-1.5 sm:px-2 py-1 rounded-lg text-[11px] sm:text-xs font-bold" title="遮罩透明度">🌤️ 中</button>
         <button onclick="togglePureView(true)" class="btn-ocean px-1.5 sm:px-2 py-1 rounded-lg text-[11px] sm:text-xs font-black" title="純享賞圖">👁️<span class="hidden sm:inline"> 賞圖</span></button>
         <button onclick="triggerCustomPhotoUpload()" class="btn-ocean px-1.5 py-1 rounded-lg text-[11px] sm:text-xs font-bold" title="試看自訂圖">📷</button>
@@ -625,7 +628,7 @@
               ⇅ 依點數
             </button>
             <button onclick="clearAllLanes()" class="btn-ocean px-2.5 py-1 rounded-xl text-[11px] sm:text-xs font-black">
-              ↺ 清空重排
+              ↺ 一鍵還原
             </button>
           </div>
           <div class="flex items-center gap-1.5">
@@ -651,7 +654,7 @@
       <!-- TOP: Fixed Header (shrink-0) -->
       <div class="shrink-0 px-4 py-3 bg-gradient-to-r from-sky-950/90 via-[#152d44]/90 to-rose-950/80 border-b border-sky-300/25 flex items-center justify-between gap-2">
         <div>
-          <h3 id="settle-title" class="text-base sm:text-lg font-black summer-title">第 1 局 盛夏結算戰報</h3>
+          <h3 id="settle-title" class="text-base sm:text-lg font-black summer-title">攤牌時刻-浪子回頭｜第 1 局 結算戰報</h3>
           <p id="settle-subtitle" class="text-xs text-sky-100/80 font-bold"></p>
         </div>
         <span id="settle-my-delta" class="px-3 py-1 rounded-full text-sm font-black border tabular-nums"></span>
@@ -673,27 +676,28 @@
   </div>
 
   <!-- =========================================================================
-       MODAL 2: 13美寫真集 DRAWER (Shows ./images/1.jpg~13.jpg Load Status)
+       MODAL 2: 寫真集 DRAWER (Shows Built-in 13 + GitHub images/1~30 + Custom)
        ========================================================================= -->
   <div id="gallery-modal" class="hidden fixed inset-0 z-[94] bg-black/75 backdrop-blur-sm flex items-center justify-center p-2.5 sm:p-4">
     <div class="w-full max-w-3xl max-h-[92dvh] flex flex-col overflow-hidden rounded-3xl border border-sky-300/40 bg-[#082236]/95 shadow-2xl">
       <div class="shrink-0 px-4 py-3 bg-black/40 border-b border-sky-300/25 flex items-center justify-between gap-2">
         <div>
-          <h3 class="text-base font-black summer-title">🖼️ 盛夏清涼・13美本機寫真集</h3>
-          <p class="text-[11px] text-sky-100/75 font-bold">自動偵測 ./images/1.jpg~13.jpg（含 .png/.webp），點擊即可設為當前滿版桌布</p>
+          <h3 class="text-base font-black summer-title">🖼️ 攤牌時刻-浪子回頭｜寫真集與圖庫管理</h3>
+          <p id="gallery-counts-summary" class="text-[11px] text-sky-100/85 font-bold">內建 13 張 ｜ GitHub images/ 掃描：0 張 ｜ 自訂試看：0 張</p>
         </div>
         <button onclick="closeGalleryModal()" class="text-sky-200 hover:text-white text-lg font-black px-2">✕</button>
       </div>
 
       <div class="shrink-0 px-4 py-2 bg-black/25 border-b border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs">
-        <div class="flex items-center gap-1.5">
+        <div class="flex flex-wrap items-center gap-1.5">
           <button onclick="triggerCustomPhotoUpload()" class="btn-coral px-3 py-1 rounded-xl font-black">📷 試看自訂圖</button>
           <button id="btn-gallery-auto" onclick="toggleAutoRotate()" class="btn-ocean px-2.5 py-1 rounded-xl font-bold">🔄 15秒隨機：開</button>
-          <button onclick="probeAllLocalImages()" class="btn-ocean px-2.5 py-1 rounded-xl font-bold">🔍 重新掃描 images/</button>
+          <button onclick="scanGitHubImagesFolder(true)" class="btn-ocean px-2.5 py-1 rounded-xl font-bold">🔍 重新掃描 GitHub</button>
         </div>
-        <div id="gallery-mode-bar" class="hidden flex items-center gap-1">
-          <button id="btn-gal-replace" onclick="setCustomPlaybackMode('replace')" class="px-2.5 py-1 rounded-lg font-black bg-rose-500/85 text-white">取代 1~13 號</button>
-          <button id="btn-gal-mix" onclick="setCustomPlaybackMode('mix')" class="px-2.5 py-1 rounded-lg font-bold bg-black/40 text-sky-100">與本機圖混播</button>
+        <div class="flex flex-wrap items-center gap-1">
+          <button data-pmode="all" onclick="setPlaybackMode('all')" class="pmode-btn px-2.5 py-1 rounded-lg font-black bg-rose-500/85 text-white border border-rose-200/60">全部混播（內建＋GitHub）</button>
+          <button data-pmode="github" onclick="setPlaybackMode('github')" class="pmode-btn px-2.5 py-1 rounded-lg font-bold bg-black/40 text-sky-100 border border-white/20">僅播 GitHub 圖庫</button>
+          <button data-pmode="custom" onclick="setPlaybackMode('custom')" class="pmode-btn px-2.5 py-1 rounded-lg font-bold bg-black/40 text-sky-100 border border-white/20">僅播自訂試看圖</button>
         </div>
       </div>
 
@@ -766,7 +770,7 @@
             <span class="font-black text-sky-200">🗣️ 繁中語音播報 (zh-TW)</span>
             <div class="flex gap-1.5">
               <button id="btn-tts-toggle" onclick="audioEngine.toggleVoice()" class="btn-ocean px-2.5 py-1 rounded-xl text-xs font-black">開啟</button>
-              <button onclick="audioEngine.speak('盛夏清涼十三美，祝你手氣大旺，全壘打！')" class="btn-ocean px-2.5 py-1 rounded-xl text-xs font-black">試聽</button>
+              <button onclick="audioEngine.speak('攤牌時刻，浪子回頭！祝你手氣大旺，全壘打！')" class="btn-ocean px-2.5 py-1 rounded-xl text-xs font-black">試聽</button>
             </div>
           </div>
           <div class="flex items-center gap-2">
@@ -790,14 +794,14 @@
   <div id="rules-modal" class="hidden fixed inset-0 z-[95] bg-black/70 backdrop-blur-sm flex items-center justify-center p-3">
     <div class="w-full max-w-lg max-h-[92dvh] flex flex-col overflow-hidden rounded-3xl border border-sky-300/40 bg-[#082236]/95 shadow-2xl">
       <div class="shrink-0 px-4 py-3 bg-black/35 border-b border-sky-300/25 flex items-center justify-between">
-        <h3 class="text-base font-black summer-title">📖 台灣正宗十三張規則 & GitHub 圖庫說明</h3>
+        <h3 class="text-base font-black summer-title">📖 攤牌時刻-浪子回頭｜十三張規則與圖庫說明</h3>
         <button onclick="closeRulesModal()" class="text-sky-200 hover:text-white text-lg font-black px-2">✕</button>
       </div>
 
       <div class="flex-1 overflow-y-auto custom-scroll p-4 space-y-2.5 text-xs sm:text-sm text-sky-50 leading-relaxed">
         <div class="p-2.5 rounded-2xl bg-sky-900/40 border border-sky-300/30">
-          <div class="font-black text-amber-300 mb-1">📁 GitHub Pages 本機圖庫放法</div>
-          將此檔存為 <code class="text-amber-200">index.html</code>，同目錄建立 <code class="text-amber-200">images/</code> 資料夾並放入 <code class="text-amber-200">1.jpg</code> ～ <code class="text-amber-200">13.jpg</code>（系統也會自動偵測 <code class="text-amber-200">.png</code> 與 <code class="text-amber-200">.webp</code>）。
+          <div class="font-black text-amber-300 mb-1">📁 GitHub Pages 自動混播圖庫放法</div>
+          內建 13 位夏日真人寫真保底。部署至 GitHub Pages 時，只需將您喜歡的照片放入 <code class="text-amber-200">images/1.jpg</code> ～ <code class="text-amber-200">30.jpg</code>（亦自動支援 <code class="text-amber-200">.png</code> 與 <code class="text-amber-200">.webp</code>），網頁會自動靜默掃描並加入隨機混播！
         </div>
         <div class="p-2.5 rounded-2xl bg-black/30 border border-white/15">
           <div class="font-black text-sky-300 mb-1">1. 流暢擺牌與防倒水（相公）</div>
@@ -838,46 +842,52 @@
     'use strict';
 
     /* =========================================================================
-       0. BEAUTY_CONFIG — 方便玩家自行編輯的 13 美本機圖庫設定（對應 ♠A ~ ♠2）
-       預設自動依序嘗試 ./images/{n}.jpg -> ./images/{n}.png -> ./images/{n}.webp
+       0. BEAUTY_CONFIG — 內建 13 位夏日真人寫真保底（♠A~♠2）＋ 浪子回頭幽默台詞
+       每張皆具備高畫質 Unsplash URL 與離線/載入失敗時的優雅霓虹玻璃 SVG 備援
        ========================================================================= */
     const BEAUTY_CONFIG = [
       {
-        num: 1, card: '♠A', name: '海灘小夏', path: './images/1.jpg',
+        num: 1, card: '♠A', name: '海灘小夏', style: '陽光比基尼',
+        url: 'https://images.unsplash.com/photo-1520466809213-7b9a56adcd45?auto=format&fit=crop&w=1600&q=85',
+        thumb: 'https://images.unsplash.com/photo-1520466809213-7b9a56adcd45?auto=format&fit=crop&w=400&q=75',
         palette: ['#073b5c', '#0ea5e9', '#fb7185'],
         quotes: {
-          idle: '「海風吹起來超涼快！祝你這局起手就拿王牌🌊」',
-          deal: '「新局發牌囉！祝你起手就中一條龍或至尊青龍🐉」',
-          chongsan: '「哇！頭墩衝三 (+3水)！這手牌也太帥了吧✨」',
+          idle: '「浪子回頭金不換，這把起手就讓你拿王牌🌊」',
+          deal: '「攤牌時刻到！祝你起手就中一條龍或至尊青龍🐉」',
+          chongsan: '「哇！頭墩衝三 (+3水)！浪子一出手就知有沒有✨」',
           shoot: '「砰砰砰！三墩全勝打槍對手，水數直接 ×2 🔫」',
-          homerun: '「🏆 全壘打 HOME RUN！橫掃三家水數再翻倍！」',
-          foul: '「哎呀～看美圖分心倒水啦！下局幫你吹海風贏回來💦」',
-          settleWin: '「清涼大豐收贏水囉！我們再來一局繼續連勝🎉」',
-          settleLose: '「別灰心～換張新女神轉轉運，下局一定全壘打💪」'
+          homerun: '「🏆 全壘打 HOME RUN！浪子回頭橫掃三家水數再翻倍！」',
+          foul: '「哎呀～看美圖看到倒水相公啦！浪子快回頭重整旗鼓💦」',
+          settleWin: '「浪子回頭大豐收！清涼贏水再戰一局🎉」',
+          settleLose: '「勝敗乃浪子常事～換張新女神轉轉運，下局討回來💪」'
         }
       },
       {
-        num: 2, card: '♠K', name: '泳池莉莉', path: './images/2.jpg',
+        num: 2, card: '♠K', name: '泳池莉莉', style: '池畔渡假',
+        url: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1600&q=85',
+        thumb: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=400&q=75',
         palette: ['#064e3b', '#14b8a6', '#f472b6'],
         quotes: {
           idle: '「池畔氣泡飲準備好了，穩穩排好頭中尾別倒水喔🍹」',
-          deal: '「13 張牌到齊啦，快點挑出最強的三墩組合吧🏖️」',
+          deal: '「13 張牌到齊啦，浪子請拿出真本事攤牌吧🏖️」',
           chongsan: '「頭墩衝三成功！泳池邊為你歡呼尖叫💖」',
           shoot: '「三墩通殺打槍！這波操作超清涼🔫🌊」',
           homerun: '「全壘打橫掃全場！今晚泳池派對你請客🥂」',
-          foul: '「小心尾墩要大於中墩喔，下局一定沒問題💦」',
+          foul: '「小心尾墩要大於中墩喔，浪子別貪心相公了💦」',
           settleWin: '「贏得太漂亮了！手氣跟太陽一樣火熱☀️」',
           settleLose: '「沒關係，下局換莉莉替你加持好運✨」'
         }
       },
       {
-        num: 3, card: '♠Q', name: '衝浪妮娜', path: './images/3.jpg',
+        num: 3, card: '♠Q', name: '衝浪妮娜', style: '熱帶沙灘',
+        url: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1600&q=85',
+        thumb: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=400&q=75',
         palette: ['#1e3a8a', '#38bdf8', '#fb923c'],
         quotes: {
           idle: '「浪來了就要衝！看到好牌就大膽衝頭搶水吧🏄‍♀️」',
           deal: '「發牌囉！這副牌感覺很有大浪要來呢🌊」',
           chongsan: '「衝三出擊！像踏上最高海浪一樣過癮✨」',
-          shoot: '「打槍對手水數翻倍！勢不可擋🔫」',
+          shoot: '「打槍對手水數翻倍！浪子勢不可擋🔫」',
           homerun: '「三家全倒全壘打！你就是牌桌浪王🏆」',
           foul: '「翻船倒水啦～趕快爬回衝浪板再戰一局！」',
           settleWin: '「乘風破浪大贏特贏！太爽快啦🎉」',
@@ -885,25 +895,29 @@
         }
       },
       {
-        num: 4, card: '♠J', name: '白沙語彤', path: './images/4.jpg',
+        num: 4, card: '♠J', name: '白沙語彤', style: '盛夏草帽',
+        url: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=1600&q=85',
+        thumb: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=400&q=75',
         palette: ['#0f4c5c', '#2dd4bf', '#fda4af'],
         quotes: {
-          idle: '「慢慢挑牌別著急，我在白沙灘上陪你一起看牌🌴」',
+          idle: '「慢慢挑牌別著急，我在白沙灘上陪浪子一起看牌🌴」',
           deal: '「剛洗好的牌發下來囉，祝你拿到好牌型💖」',
           chongsan: '「哇～衝三三條！語彤替你拍拍手👏」',
           shoot: '「打槍成功 ×2！對手都看傻眼了💘」',
-          homerun: '「全壘打奇蹟誕生！太神啦🏆✨」',
+          homerun: '「全壘打奇蹟誕生！浪子回頭太神啦🏆✨」',
           foul: '「哎呀不小心相公了，下次點『均衡配置』最穩喔！」',
           settleWin: '「恭喜贏水！這局節奏抓得太好了🌸」',
           settleLose: '「沒關係啦，聽聽海浪聲放鬆一下再戰🌊」'
         }
       },
       {
-        num: 5, card: '♠10', name: '夕陽晴夏', path: './images/5.jpg',
+        num: 5, card: '♠10', name: '夕陽晴夏', style: '黃金海岸',
+        url: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1600&q=85',
+        thumb: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=75',
         palette: ['#7c2d12', '#f97316', '#f43f5e'],
         quotes: {
           idle: '「黃金夕陽灑在海面上好美～點『👁️ 賞圖』獨享滿版🌅」',
-          deal: '「夕陽海風吹來好運，新局發牌開始囉✨」',
+          deal: '「夕陽海風吹來好運，攤牌時刻新局開打✨」',
           chongsan: '「頭墩衝三閃耀登場！+3 水直接入袋🔥」',
           shoot: '「夕陽下的神槍手！打槍對手翻倍得分🔫」',
           homerun: '「全壘打轟爆全場！金色榮耀屬於你🏆」',
@@ -913,21 +927,25 @@
         }
       },
       {
-        num: 6, card: '♠9', name: '珊瑚若微', path: './images/6.jpg',
+        num: 6, card: '♠9', name: '珊瑚若微', style: '輕夏洋裝',
+        url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1600&q=85',
+        thumb: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=75',
         palette: ['#831843', '#fb7185', '#38bdf8'],
         quotes: {
           idle: '「中墩擺出葫蘆可以加 2 水，鐵支更是加 8 水喔💎」',
-          deal: '「新局開打！試試點擊兩張牌互換微調牌型吧💖」',
+          deal: '「新局開打！點擊兩張牌互換微調最順手💖」',
           chongsan: '「衝三成功！這手牌配得太巧妙了✨」',
           shoot: '「三墩全勝打槍！若微為你喝采🥂」',
-          homerun: '「全壘打橫掃三家！牌桌傳說誕生🏆」',
+          homerun: '「全壘打橫掃三家！浪子傳說誕生🏆」',
           foul: '「哎呀倒水了，記得確認尾 ≥ 中 ≥ 頭喔！」',
           settleWin: '「漂亮收割水數！今晚運氣站在你這邊🌊」',
           settleLose: '「小輸不算什麼，下一把直接打槍討回來！」'
         }
       },
       {
-        num: 7, card: '♠8', name: '椰林智妍', path: './images/7.jpg',
+        num: 7, card: '♠8', name: '椰林智妍', style: '南國渡假',
+        url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=1600&q=85',
+        thumb: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=75',
         palette: ['#134e4a', '#22d3ee', '#f59e0b'],
         quotes: {
           idle: '「今天陽光這麼燦爛，你的手氣一定也超級旺☀️」',
@@ -941,10 +959,12 @@
         }
       },
       {
-        num: 8, card: '♠7', name: '碧浪心妍', path: './images/8.jpg',
+        num: 8, card: '♠7', name: '碧浪心妍', style: '海畔清新',
+        url: 'https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?auto=format&fit=crop&w=1600&q=85',
+        thumb: 'https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?auto=format&fit=crop&w=400&q=75',
         palette: ['#0c4a6e', '#06b6d4', '#ec4899'],
         quotes: {
-          idle: '「點開上方『🖼️ 13美』就能一覽 1~13 號圖庫狀態喔🌊」',
+          idle: '「點開上方『🖼️ 寫真集』就能切換混播或 GitHub 專屬圖庫喔🌊」',
           deal: '「碧藍海浪帶來好手氣，13 張牌已發好✨」',
           chongsan: '「頭墩衝三帥翻天！+3 水輕鬆拿💖」',
           shoot: '「砰！三墩全贏打槍翻倍，太過癮了🔫」',
@@ -955,7 +975,9 @@
         }
       },
       {
-        num: 9, card: '♠6', name: '星沙曼妮', path: './images/9.jpg',
+        num: 9, card: '♠6', name: '星沙曼妮', style: '泳池派對',
+        url: 'https://images.unsplash.com/photo-1514315384763-ba401779410f?auto=format&fit=crop&w=1600&q=85',
+        thumb: 'https://images.unsplash.com/photo-1514315384763-ba401779410f?auto=format&fit=crop&w=400&q=75',
         palette: ['#312e81', '#818cf8', '#fb7185'],
         quotes: {
           idle: '「海島派對才剛開始，祝你把把都拿鐵支同花順🥂」',
@@ -969,7 +991,9 @@
         }
       },
       {
-        num: 10, card: '♠5', name: '海風伊娃', path: './images/10.jpg',
+        num: 10, card: '♠5', name: '海風伊娃', style: '陽光超模',
+        url: 'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&w=1600&q=85',
+        thumb: 'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&w=400&q=75',
         palette: ['#0369a1', '#38bdf8', '#f472b6'],
         quotes: {
           idle: '「順子記住 10-J-Q-K-A 最大，A-2-3-4-5 是第二大喔✨」',
@@ -977,16 +1001,18 @@
           chongsan: '「頭墩三條衝三！超漂亮的進攻選擇💖」',
           shoot: '「打槍成功！對手毫無招架之力🔫」',
           homerun: '「全壘打 HOME RUN！完美通殺全場🏆」',
-          foul: '「哎呀倒水了，點『清空重排』可以快速重擺喔！」',
+          foul: '「哎呀倒水了，點『一鍵還原』可以快速重擺喔！」',
           settleWin: '「贏水入袋！牌技與顏值雙重滿分🎉」',
           settleLose: '「轉換一下幸運女神，下局大殺四方💪」'
         }
       },
       {
-        num: 11, card: '♠4', name: '仲夏小櫻', path: './images/11.jpg',
+        num: 11, card: '♠4', name: '仲夏小櫻', style: '海邊甜心',
+        url: 'https://images.unsplash.com/photo-1524250502761-1ac6f2e30d43?auto=format&fit=crop&w=1600&q=85',
+        thumb: 'https://images.unsplash.com/photo-1524250502761-1ac6f2e30d43?auto=format&fit=crop&w=400&q=75',
         palette: ['#701a75', '#e879f9', '#38bdf8'],
         quotes: {
-          idle: '「喜歡自己的泳裝相簿嗎？點『📷 試看自訂圖』馬上套用！」',
+          idle: '「浪子回頭不熬夜～打完這把贏大水就去喝珍奶！」',
           deal: '「仲夏發牌囉！祝你拿到六對半或三同花直接報到🌸」',
           chongsan: '「衝三 (+3水)！小櫻為你瘋狂打 Call 💖」',
           shoot: '「三墩全勝打槍 ×2！太厲害啦💘」',
@@ -997,11 +1023,13 @@
         }
       },
       {
-        num: 12, card: '♠3', name: '陽光宥希', path: './images/12.jpg',
+        num: 12, card: '♠3', name: '陽光宥希', style: '海岸漫步',
+        url: 'https://images.unsplash.com/photo-1519699047748-de8e457a634e?auto=format&fit=crop&w=1600&q=85',
+        thumb: 'https://images.unsplash.com/photo-1519699047748-de8e457a634e?auto=format&fit=crop&w=400&q=75',
         palette: ['#065f46', '#34d399', '#fb923c'],
         quotes: {
           idle: '「充滿活力的一局！三種智慧推薦擺法隨時幫你算牌⚡」',
-          deal: '「陽光滿格！13 張新牌發好，準備出擊☀️」',
+          deal: '「陽光滿格！13 張新牌發好，準備攤牌出擊☀️」',
           chongsan: '「衝三拿 3 水！開局就先聲奪人🔥」',
           shoot: '「漂亮打槍對手！水數雙倍奉上🔫」',
           homerun: '「全壘打橫掃全場！活力爆發無人能敵🏆」',
@@ -1011,10 +1039,12 @@
         }
       },
       {
-        num: 13, card: '♠2', name: '月灣星語', path: './images/13.jpg',
+        num: 13, card: '♠2', name: '月灣星語', style: '海灣暮色',
+        url: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=1600&q=85',
+        thumb: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=400&q=75',
         palette: ['#1e1b4b', '#6366f1', '#fb7185'],
         quotes: {
-          idle: '「聽著海浪聲打十三支最享受了，今晚一起全壘打🌙」',
+          idle: '「攤牌時刻不留遺憾，浪子回頭今晚一起全壘打🌙」',
           deal: '「星光海灣發牌囉，願幸運女神眷顧你✨」',
           chongsan: '「星光閃耀的衝三！+3 水漂亮收下💫」',
           shoot: '「夜空下的完美打槍 ×2！太迷人了💘」',
@@ -1027,12 +1057,11 @@
     ];
 
     /* =========================================================================
-       1. GRACEFUL SVG FALLBACK GENERATOR (Ocean Gradient + Neon Glass)
-       Shown automatically if ./images/{n}.jpg/.png/.webp are not uploaded yet.
+       1. GRACEFUL SVG FALLBACK GENERATOR (Offline / onerror Neon Glass Ocean)
        ========================================================================= */
     function buildFallbackSvg(item) {
       const [c1, c2, c3] = item.palette || ['#073b5c', '#0ea5e9', '#fb7185'];
-      const id = `fb-${item.num}`;
+      const id = `fb-${String(item.id || item.num).replace(/[^a-zA-Z0-9]/g, '')}`;
       return `
         <svg viewBox="0 0 1280 720" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
           <defs>
@@ -1051,24 +1080,20 @@
             </radialGradient>
           </defs>
           <rect width="1280" height="720" fill="url(#g-${id})"/>
-          <!-- Neon Glass Glowing Orbs -->
           <circle cx="240" cy="180" r="240" fill="url(#orb1-${id})"/>
           <circle cx="1030" cy="240" r="260" fill="url(#orb2-${id})"/>
-          <!-- Abstract Ocean Wave Curves -->
           <path d="M0 510 Q320 430 640 500 T1280 470 L1280 720 L0 720 Z" fill="#041c2c" opacity="0.28"/>
           <path d="M0 580 Q360 520 720 580 T1280 540 L1280 720 L0 720 Z" fill="#041c2c" opacity="0.34"/>
-          <!-- Center Neon Glass Preview Frame (Upper-Center so visible above lanes!) -->
           <g transform="translate(640, 225)">
-            <rect x="-250" y="-88" width="500" height="176" rx="28" fill="rgba(6, 26, 42, 0.42)" stroke="rgba(255,255,255,0.36)" stroke-width="2"/>
-            <rect x="-242" y="-80" width="484" height="160" rx="22" fill="none" stroke="rgba(125,211,252,0.28)" stroke-width="1" stroke-dasharray="8 6"/>
-            <text x="0" y="-26" text-anchor="middle" fill="#fde68a" font-size="28" font-weight="900" font-family="Noto Sans TC, sans-serif">
-              ${item.card} ${item.name}・等待載入 ./images/${item.num}.jpg
+            <rect x="-250" y="-82" width="500" height="164" rx="28" fill="rgba(6, 26, 42, 0.42)" stroke="rgba(255,255,255,0.36)" stroke-width="2"/>
+            <text x="0" y="-20" text-anchor="middle" fill="#fde68a" font-size="30" font-weight="900" font-family="Noto Sans TC, sans-serif">
+              攤牌時刻-浪子回頭
             </text>
-            <text x="0" y="18" text-anchor="middle" fill="#e0f2fe" font-size="18" font-weight="700" font-family="Noto Sans TC, sans-serif">
-              自動支援 .jpg / .png / .webp（放進 GitHub images/ 即可顯示）
+            <text x="0" y="22" text-anchor="middle" fill="#e0f2fe" font-size="20" font-weight="700" font-family="Noto Sans TC, sans-serif">
+              ${item.card || '♠'} ${item.name}・霓虹海洋備援視覺
             </text>
-            <text x="0" y="54" text-anchor="middle" fill="#fbcfe8" font-size="16" font-weight="700" font-family="Noto Sans TC, sans-serif">
-              💡 可點上方「📷 試看自訂圖」立即匯入照片搶先預覽
+            <text x="0" y="56" text-anchor="middle" fill="#fbcfe8" font-size="15" font-weight="700" font-family="Noto Sans TC, sans-serif">
+              可放圖至 GitHub images/1~30 或點「📷 試看自訂圖」
             </text>
           </g>
         </svg>
@@ -1076,18 +1101,17 @@
     }
 
     /* =========================================================================
-       2. GITHUB LOCAL GALLERY MANAGER (.jpg -> .png -> .webp -> SVG Fallback)
+       2. HYBRID GALLERY MANAGER: 內建 13 位保底 + GitHub images/1~30 自動掃描混播
        ========================================================================= */
     const photoMgr = {
-      // Each slot tracks resolvedUrl and status: 'checking' | 'local' | 'missing' | 'custom'
-      slots: BEAUTY_CONFIG.map(cfg => ({
+      builtinSlots: BEAUTY_CONFIG.map(cfg => ({
         ...cfg,
-        id: `slot-${cfg.num}`,
-        resolvedUrl: null,
-        status: 'checking'
+        id: `builtin-${cfg.num}`,
+        source: 'builtin'
       })),
-      customExtras: [],
-      customMode: 'replace', // 'replace' (override slots 1..N) | 'mix' (add to playlist)
+      githubPhotos: [],   // Populated silently from ./images/1..30 (.jpg/.png/.webp)
+      customPhotos: [],   // User-uploaded local preview photos
+      playbackMode: 'all', // 'all' (內建+GitHub+自訂) | 'github' (僅播GitHub) | 'custom' (僅播自訂)
       currentId: null,
       currentIndex: 0,
       shuffleBag: [],
@@ -1103,61 +1127,65 @@
     };
 
     /**
-     * Probe ./images/{n}.jpg -> ./images/{n}.png -> ./images/{n}.webp sequentially
+     * Silently probes ./images/{n}.jpg -> .png -> .webp for n = 1..30
      */
-    function probeSingleSlot(slot) {
+    function probeGitHubImageNumber(n) {
       return new Promise(resolve => {
-        if (slot.status === 'custom' && slot.customUrl) {
-          resolve(slot);
-          return;
-        }
-        const base = slot.path.replace(/\.(jpg|jpeg|png|webp)$/i, '');
-        const candidates = [`${base}.jpg`, `${base}.png`, `${base}.webp`];
-        let attempt = 0;
-
+        const exts = ['jpg', 'png', 'webp'];
+        let i = 0;
         const tryNext = () => {
-          if (attempt >= candidates.length) {
-            slot.resolvedUrl = null;
-            slot.status = 'missing';
-            resolve(slot);
-            return;
-          }
-          const testUrl = candidates[attempt++];
+          if (i >= exts.length) { resolve(null); return; }
+          const path = `./images/${n}.${exts[i++]}`;
           const img = new Image();
-          img.onload = () => {
-            slot.resolvedUrl = testUrl;
-            slot.status = 'local';
-            resolve(slot);
-          };
+          img.onload = () => resolve({
+            id: `gh-${n}`,
+            num: n,
+            card: `GH#${n}`,
+            name: `GitHub 寫真 #${n}`,
+            style: `images/${n}`,
+            url: path,
+            thumb: path,
+            source: 'github',
+            palette: BEAUTY_CONFIG[(n - 1) % BEAUTY_CONFIG.length].palette,
+            quotes: BEAUTY_CONFIG[(n - 1) % BEAUTY_CONFIG.length].quotes
+          });
           img.onerror = () => tryNext();
-          img.src = testUrl;
+          img.src = path;
         };
         tryNext();
       });
     }
 
-    async function probeAllLocalImages() {
-      await Promise.all(photoMgr.slots.map(s => probeSingleSlot(s)));
+    async function scanGitHubImagesFolder(notify = false) {
+      const nums = Array.from({ length: 30 }, (_, idx) => idx + 1);
+      const found = (await Promise.all(nums.map(probeGitHubImageNumber))).filter(Boolean);
+      photoMgr.githubPhotos = found;
       updateAlbumStatusLabel();
-      updateAiAvatarsFromSlots();
+      refillShuffleBag();
       renderGalleryGrid();
-      // Refresh currently displayed slide if it just finished resolving
-      const list = getActivePlaylist();
-      const idx = list.findIndex(x => x.id === photoMgr.currentId);
-      if (idx >= 0) renderSlideToActiveLayer(list[idx], idx, list.length, null, false);
+      if (notify) {
+        showToast(found.length > 0
+          ? `掃描完成！從 GitHub images/ 載入 ${found.length} 張寫真`
+          : '未偵測到 ./images/1~30 圖片，目前使用內建 13 位保底寫真', found.length > 0 ? 'success' : 'info');
+      } else if (found.length > 0) {
+        showToast(`已自動掃描並加入 ${found.length} 張 GitHub images/ 寫真！`, 'success');
+      }
     }
 
     function getActivePlaylist() {
-      if (photoMgr.customMode === 'mix' && photoMgr.customExtras.length > 0) {
-        return [...photoMgr.customExtras, ...photoMgr.slots];
+      if (photoMgr.playbackMode === 'github') {
+        return photoMgr.githubPhotos.length > 0 ? photoMgr.githubPhotos : photoMgr.builtinSlots;
       }
-      return photoMgr.slots;
+      if (photoMgr.playbackMode === 'custom') {
+        return photoMgr.customPhotos.length > 0 ? photoMgr.customPhotos : photoMgr.builtinSlots;
+      }
+      // 'all': Built-in 13 + GitHub scanned + Custom uploaded
+      return [...photoMgr.customPhotos, ...photoMgr.githubPhotos, ...photoMgr.builtinSlots];
     }
 
     function refillShuffleBag() {
       const list = getActivePlaylist();
       const ids = list.map(x => x.id);
-      // Fisher-Yates Shuffle
       for (let i = ids.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [ids[i], ids[j]] = [ids[j], ids[i]];
@@ -1168,12 +1196,6 @@
       photoMgr.shuffleBag = ids;
     }
 
-    function getItemImageUrl(item) {
-      if (item.status === 'custom' && item.customUrl) return item.customUrl;
-      if (item.status === 'local' && item.resolvedUrl) return item.resolvedUrl;
-      return null;
-    }
-
     function renderSlideToActiveLayer(item, idx, total, eventType = null, showBubble = false) {
       const nextKey = photoMgr.activeLayer === 'A' ? 'B' : 'A';
       const curLayer = document.getElementById(`bgLayer${photoMgr.activeLayer}`);
@@ -1181,36 +1203,46 @@
       const nextImg = document.getElementById(`bgImg${nextKey}`);
       const nextSvg = document.getElementById(`bgSvg${nextKey}`);
 
-      const imgUrl = getItemImageUrl(item);
-      if (imgUrl) {
-        nextLayer.classList.remove('use-fallback');
-        nextImg.src = imgUrl;
-        nextSvg.innerHTML = '';
-      } else {
-        nextLayer.classList.add('use-fallback');
-        nextImg.removeAttribute('src');
-        nextSvg.innerHTML = buildFallbackSvg(item);
+      const applyTextAndBubble = () => {
+        document.getElementById('bubble-card-code').textContent = item.card || '♠';
+        document.getElementById('bubble-name').textContent = item.style ? `${item.name}・${item.style}` : item.name;
+        document.getElementById('bubble-index').textContent = `${idx + 1}/${total}`;
+        document.getElementById('pure-view-card-tag').textContent = item.card || '♠';
+        document.getElementById('pure-view-name').textContent = item.name;
+        const q = (item.quotes && item.quotes[eventType]) || (item.quotes && item.quotes.idle) || '「攤牌時刻-浪子回頭，祝你這局大殺四方🌊」';
+        document.getElementById('bubble-quote').textContent = q;
+        if (showBubble && appState.phase !== 'lobby') {
+          document.getElementById('goddess-bubble').classList.remove('hidden');
+        }
+      };
+
+      const finishCrossfade = (useFallback) => {
+        if (useFallback) {
+          nextLayer.classList.add('use-fallback');
+          nextImg.removeAttribute('src');
+          nextSvg.innerHTML = buildFallbackSvg(item);
+        } else {
+          nextLayer.classList.remove('use-fallback');
+          nextImg.src = item.url;
+          nextSvg.innerHTML = '';
+        }
+        nextLayer.classList.add('active');
+        curLayer.classList.remove('active');
+        photoMgr.activeLayer = nextKey;
+        applyTextAndBubble();
+      };
+
+      if (!item.url) {
+        finishCrossfade(true);
+        return;
       }
 
-      // 0.8s Smooth Crossfade
-      nextLayer.classList.add('active');
-      curLayer.classList.remove('active');
-      photoMgr.activeLayer = nextKey;
-
-      // Update UI labels & quote bubble
-      document.getElementById('bubble-card-code').textContent = item.card || '📷';
-      document.getElementById('bubble-name').textContent = item.name;
-      document.getElementById('bubble-index').textContent = `${idx + 1}/${total}`;
-
-      document.getElementById('pure-view-card-tag').textContent = item.card || '📷';
-      document.getElementById('pure-view-name').textContent = item.name;
-
-      let quote = (item.quotes && item.quotes[eventType]) || (item.quotes && item.quotes.idle) || '「專屬自訂相簿伴遊中，祝你這把清涼贏大水🌊」';
-      document.getElementById('bubble-quote').textContent = quote;
-
-      if (showBubble && appState.phase !== 'lobby') {
-        document.getElementById('goddess-bubble').classList.remove('hidden');
-      }
+      // Preload with graceful onerror fallback to Neon Glass SVG (never broken!)
+      const preloader = new Image();
+      preloader.referrerPolicy = 'no-referrer';
+      preloader.onload = () => finishCrossfade(false);
+      preloader.onerror = () => finishCrossfade(true);
+      preloader.src = item.url;
     }
 
     function displayGoddessByIndex(idx, eventType = null, showBubble = false) {
@@ -1290,52 +1322,47 @@
     function handleCustomPhotosUpload(inputEl) {
       const files = Array.from(inputEl.files || []);
       if (!files.length) return;
-
-      photoMgr.customExtras = [];
       files.forEach((file, i) => {
         const url = URL.createObjectURL(file);
-        const cleanName = file.name.replace(/\.[^/.]+$/, '').slice(0, 12) || `自訂寫真 ${i + 1}`;
-        // Store for 'mix' mode
-        photoMgr.customExtras.push({
-          id: `custom-${Date.now()}-${i}`,
+        const cleanName = file.name.replace(/\.[^/.]+$/, '').slice(0, 12) || `自訂寫真 ${photoMgr.customPhotos.length + 1}`;
+        photoMgr.customPhotos.unshift({
+          id: `custom-${Date.now()}-${i}-${Math.random().toString(36).slice(2, 5)}`,
           num: i + 1,
           card: '📷',
           name: cleanName,
-          path: file.name,
-          status: 'custom',
-          customUrl: url,
+          style: '自訂試看圖',
+          url,
+          thumb: url,
+          source: 'custom',
           palette: ['#073b5c', '#0ea5e9', '#fb7185'],
           quotes: BEAUTY_CONFIG[i % BEAUTY_CONFIG.length].quotes
         });
-        // Also populate slots 1..13 for 'replace' mode
-        if (i < photoMgr.slots.length) {
-          photoMgr.slots[i].customUrl = url;
-          photoMgr.slots[i].status = 'custom';
-        }
       });
 
-      document.getElementById('custom-mode-row').classList.remove('hidden');
-      document.getElementById('gallery-mode-bar').classList.remove('hidden');
       updateAlbumStatusLabel();
-      updateAiAvatarsFromSlots();
       refillShuffleBag();
       displayGoddessByIndex(0, null, appState.phase !== 'lobby');
       resetPhotoAutoTimer();
       renderGalleryGrid();
-      showToast(`已載入 ${files.length} 張自訂寫真！立即搶先預覽 🏖️`, 'success');
+      showToast(`已加入 ${files.length} 張自訂試看圖並立即套用！`, 'success');
       inputEl.value = '';
     }
 
-    function setCustomPlaybackMode(mode) {
-      photoMgr.customMode = mode;
-      const isRep = mode === 'replace';
-      ['btn-mode-replace', 'btn-gal-replace'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.className = isRep ? 'px-2 py-0.5 rounded-lg text-[10px] sm:text-xs font-black bg-rose-500/85 text-white border border-rose-200/60' : 'px-2 py-0.5 rounded-lg text-[10px] sm:text-xs font-bold bg-black/40 text-sky-100 border border-white/20';
-      });
-      ['btn-mode-mix', 'btn-gal-mix'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.className = !isRep ? 'px-2 py-0.5 rounded-lg text-[10px] sm:text-xs font-black bg-rose-500/85 text-white border border-rose-200/60' : 'px-2 py-0.5 rounded-lg text-[10px] sm:text-xs font-bold bg-black/40 text-sky-100 border border-white/20';
+    function setPlaybackMode(mode) {
+      if (mode === 'github' && photoMgr.githubPhotos.length === 0) {
+        showToast('GitHub images/ 目前偵測為 0 張，已維持內建保底輪播', 'warn');
+        return;
+      }
+      if (mode === 'custom' && photoMgr.customPhotos.length === 0) {
+        showToast('尚未匯入自訂試看圖，請先點「📷 試看自訂圖」', 'warn');
+        return;
+      }
+      photoMgr.playbackMode = mode;
+      document.querySelectorAll('.pmode-btn').forEach(btn => {
+        const active = btn.dataset.pmode === mode;
+        btn.className = active
+          ? 'pmode-btn px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg text-[10px] sm:text-xs font-black bg-rose-500/85 text-white border border-rose-200/60'
+          : 'pmode-btn px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg text-[10px] sm:text-xs font-bold bg-black/40 text-sky-100 border border-white/20';
       });
       updateAlbumStatusLabel();
       refillShuffleBag();
@@ -1345,20 +1372,27 @@
     }
 
     function updateAlbumStatusLabel() {
-      const el = document.getElementById('lobby-album-status');
-      if (!el) return;
-      const loadedLocal = photoMgr.slots.filter(s => s.status === 'local').length;
-      const loadedCustom = photoMgr.slots.filter(s => s.status === 'custom').length;
-      if (loadedCustom > 0) {
-        el.textContent = `📷 已載入 ${loadedCustom} 張自訂預覽圖（共 ${getActivePlaylist().length} 張輪播）`;
-      } else if (loadedLocal > 0) {
-        el.textContent = `✅ 本機 images/ 已載入 ${loadedLocal}/13 位女神`;
-      } else {
-        el.textContent = `⏳ 待放入 ./images/1.jpg~13.jpg（目前顯示預覽備援）`;
+      const ghCount = photoMgr.githubPhotos.length;
+      const cuCount = photoMgr.customPhotos.length;
+      const lobbyEl = document.getElementById('lobby-album-status');
+      const galEl = document.getElementById('gallery-counts-summary');
+
+      if (galEl) {
+        galEl.textContent = `內建 13 張 ｜ GitHub images/ 掃描：${ghCount} 張 ｜ 自訂試看：${cuCount} 張`;
+      }
+      if (lobbyEl) {
+        if (photoMgr.playbackMode === 'github') {
+          lobbyEl.textContent = `📁 僅播 GitHub 圖庫（共 ${ghCount} 張）`;
+        } else if (photoMgr.playbackMode === 'custom') {
+          lobbyEl.textContent = `📷 僅播自訂試看圖（共 ${cuCount} 張）`;
+        } else {
+          lobbyEl.textContent = `🖼️ 混播：內建 13 張 ＋ GitHub ${ghCount} 張${cuCount > 0 ? ` ＋ 自訂 ${cuCount} 張` : ''}`;
+        }
       }
     }
 
     function openGalleryModal() {
+      updateAlbumStatusLabel();
       renderGalleryGrid();
       document.getElementById('gallery-modal').classList.remove('hidden');
     }
@@ -1374,14 +1408,12 @@
 
       list.forEach((item, idx) => {
         const isCurrent = item.id === photoMgr.currentId;
-        const imgUrl = getItemImageUrl(item);
         const [c1, c2, c3] = item.palette || ['#073b5c', '#0ea5e9', '#fb7185'];
-
-        const statusBadge = item.status === 'custom'
-          ? '<span class="px-1.5 py-0.5 rounded bg-rose-500/90 text-[9px] font-black text-white">📷 自訂圖</span>'
-          : item.status === 'local'
-          ? '<span class="px-1.5 py-0.5 rounded bg-emerald-500/90 text-[9px] font-black text-white">✅ 已載入</span>'
-          : '<span class="px-1.5 py-0.5 rounded bg-black/60 border border-sky-300/40 text-[9px] font-bold text-sky-200">⏳ 待放入</span>';
+        const srcBadge = item.source === 'github'
+          ? '<span class="px-1.5 py-0.5 rounded bg-emerald-500/90 text-[9px] font-black text-white">GitHub</span>'
+          : item.source === 'custom'
+          ? '<span class="px-1.5 py-0.5 rounded bg-rose-500/90 text-[9px] font-black text-white">自訂圖</span>'
+          : '<span class="px-1.5 py-0.5 rounded bg-sky-600/85 text-[9px] font-bold text-white">內建保底</span>';
 
         const card = document.createElement('div');
         card.className = `group relative rounded-2xl overflow-hidden border-2 cursor-pointer transition-transform active:scale-95 aspect-[3/4] ${
@@ -1395,25 +1427,20 @@
           closeGalleryModal();
         };
 
-        const mediaHtml = imgUrl
-          ? `<img src="${imgUrl}" alt="${item.name}" class="w-full h-full object-cover object-[50%_20%] group-hover:scale-105 transition-transform duration-300" />`
-          : `<div class="w-full h-full flex flex-col items-center justify-center p-2 text-center">
-               <div class="text-2xl font-black text-white/90 drop-shadow">${item.card}</div>
-               <div class="text-[10px] font-mono text-sky-100/90 mt-1 bg-black/35 px-2 py-0.5 rounded-full">images/${item.num}.jpg</div>
-             </div>`;
-
         card.innerHTML = `
-          ${mediaHtml}
+          <img src="${item.thumb || item.url}" alt="${item.name}" loading="lazy" referrerpolicy="no-referrer"
+            onerror="this.style.display='none'"
+            class="w-full h-full object-cover object-[50%_20%] group-hover:scale-105 transition-transform duration-300" />
           <div class="absolute top-1.5 left-1.5 right-1.5 flex items-center justify-between gap-1">
             <span class="px-1.5 py-0.5 rounded bg-black/60 text-[10px] font-black text-amber-200">${item.card}</span>
-            ${statusBadge}
+            ${srcBadge}
           </div>
           <div class="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/85 via-black/50 to-transparent">
             <div class="flex items-center justify-between gap-1">
               <span class="text-xs font-black text-white truncate">${item.name}</span>
               ${isCurrent ? '<span class="text-[10px] text-rose-300 font-black shrink-0">使用中</span>' : ''}
             </div>
-            <div class="text-[10px] font-mono text-sky-200/85 truncate">${item.resolvedUrl || item.path}</div>
+            <div class="text-[10px] text-sky-200/85 truncate">${item.style || ''}</div>
           </div>
         `;
         grid.appendChild(card);
@@ -1968,7 +1995,7 @@
       round: 0,
       phase: 'lobby',
       seats: [
-        { seatIdx: 0, name: '盛夏牌聖', isAi: false, slotIdx: 4, icon: '👑', avatar: null, peerId: 'local', totalShui: 0, locked: false },
+        { seatIdx: 0, name: '回頭浪子', isAi: false, slotIdx: 4, icon: '👑', avatar: null, peerId: 'local', totalShui: 0, locked: false },
         { seatIdx: 1, name: AI_PRESETS[0].name, isAi: true, slotIdx: 0, icon: AI_PRESETS[0].icon, avatar: null, peerId: null, totalShui: 0, locked: false },
         { seatIdx: 2, name: AI_PRESETS[1].name, isAi: true, slotIdx: 1, icon: AI_PRESETS[1].icon, avatar: null, peerId: null, totalShui: 0, locked: false },
         { seatIdx: 3, name: AI_PRESETS[2].name, isAi: true, slotIdx: 2, icon: AI_PRESETS[2].icon, avatar: null, peerId: null, totalShui: 0, locked: false }
@@ -1989,8 +2016,8 @@
 
     function updateAiAvatarsFromSlots() {
       appState.seats.forEach(s => {
-        const slot = photoMgr.slots[s.slotIdx % photoMgr.slots.length];
-        s.avatar = slot ? getItemImageUrl(slot) : null;
+        const slot = photoMgr.builtinSlots[s.slotIdx % photoMgr.builtinSlots.length];
+        s.avatar = slot ? (slot.thumb || slot.url) : null;
       });
       if (appState.phase === 'lobby') renderLobbySeats();
       else renderOpponents(appState.phase === 'settled' ? 3 : 0);
@@ -2073,7 +2100,7 @@
         const ta = document.createElement('textarea');
         ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0';
         document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
-        showToast('已複製邀請網址！快傳給好友加入🌊', 'success');
+        showToast('已複製「攤牌時刻-浪子回頭」邀請網址！快傳給牌友加入🌊', 'success');
       } catch (e) {
         showToast(`請手動分享房號：${appState.roomCode}`, 'warn');
       }
@@ -2094,7 +2121,7 @@
     }
 
     function createOnlineRoom() {
-      const myName = document.getElementById('player-name-input').value.trim() || '盛夏牌聖';
+      const myName = document.getElementById('player-name-input').value.trim() || '回頭浪子';
       appState.seats[0].name = myName;
       cleanupPeer();
       if (typeof Peer === 'undefined') { fallbackToLocal('離線環境，自動切換本機 AI'); showToast('偵測到離線環境，已切換單機 AI 模式', 'warn'); return; }
@@ -2107,7 +2134,7 @@
       }, 4500);
 
       try {
-        const peer = new Peer(`summergh13-${code}`, { debug: 0 });
+        const peer = new Peer(`tanpai13-${code}`, { debug: 0 });
         appState.peer = peer;
         peer.on('open', () => {
           if (settled) return;
@@ -2115,7 +2142,7 @@
           appState.mode = 'host'; appState.roomCode = code; appState.mySeatIdx = 0;
           setNetBadge(`線上房主 #${code}`, true);
           updateInviteQR(code); renderLobbySeats();
-          showToast(`盛夏房間 ${code} 建立成功！`, 'success');
+          showToast(`「攤牌時刻-浪子回頭」房間 ${code} 建立成功！`, 'success');
         });
         peer.on('connection', conn => {
           conn.on('data', data => handleHostReceive(conn, data));
@@ -2144,7 +2171,7 @@
         const peer = new Peer(undefined, { debug: 0 });
         appState.peer = peer;
         peer.on('open', () => {
-          const conn = peer.connect(`summergh13-${code}`, { reliable: true });
+          const conn = peer.connect(`tanpai13-${code}`, { reliable: true });
           appState.hostConn = conn;
           conn.on('open', () => {
             connected = true; clearTimeout(timer);
@@ -2152,7 +2179,7 @@
             setNetBadge(`已加入 #${code}`, true);
             document.getElementById('room-code-display').textContent = `房號：${code}`;
             conn.send({ type: 'JOIN', name: myName });
-            showToast(`成功加入盛夏房間 ${code}！`, 'success');
+            showToast(`成功加入「攤牌時刻-浪子回頭」房間 ${code}！`, 'success');
           });
           conn.on('data', data => handleGuestReceive(data));
           conn.on('close', () => { showToast('與房主斷開連線，返回大廳', 'warn'); leaveToLobby(); });
@@ -2212,7 +2239,7 @@
        7. GAME FLOW & FLUID ARRANGEMENT (One-Tap Place + Two-Card Swap)
        ========================================================================= */
     function startQuickLocalGame() {
-      const myName = document.getElementById('player-name-input').value.trim() || '盛夏牌聖';
+      const myName = document.getElementById('player-name-input').value.trim() || '回頭浪子';
       cleanupPeer();
       appState.mode = 'local'; appState.mySeatIdx = 0; appState.round = 0;
       appState.seats = [
@@ -2226,7 +2253,7 @@
     }
 
     function hostStartGame() {
-      appState.seats[appState.mySeatIdx].name = document.getElementById('player-name-input').value.trim() || '盛夏牌聖';
+      appState.seats[appState.mySeatIdx].name = document.getElementById('player-name-input').value.trim() || '回頭浪子';
       startNewRoundAsHost();
     }
 
@@ -2298,7 +2325,7 @@
       resetPhotoAutoTimer();
 
       audioEngine.playSfx('deal');
-      audioEngine.speak(`第${appState.round}局發牌，請開始擺牌`);
+      audioEngine.speak(`攤牌時刻，浪子回頭！第${appState.round}局發牌，請開始擺牌`);
       startArrangementTimer(60);
     }
 
@@ -2792,7 +2819,7 @@
       const myIdx = appState.mySeatIdx;
       const myDelta = result.totalDelta[myIdx];
 
-      document.getElementById('settle-title').textContent = `第 ${appState.round} 局 盛夏結算戰報`;
+      document.getElementById('settle-title').textContent = `攤牌時刻-浪子回頭｜第 ${appState.round} 局 結算戰報`;
       const tags = [];
       if (result.homeRunSeats.length > 0) tags.push('🏆 本局出現全壘打');
       if (result.evals.some(e => e.isSpecial)) tags.push('✨ 本局出現特殊報到');
@@ -2894,20 +2921,21 @@
        9. INITIALIZATION
        ========================================================================= */
     window.addEventListener('DOMContentLoaded', () => {
+      updateAiAvatarsFromSlots();
       refillShuffleBag();
       randomGoddess(false, null);
       resetPhotoAutoTimer();
       renderLobbySeats();
 
-      // Probe ./images/1.jpg~13.jpg (with .png & .webp fallback) in background
-      probeAllLocalImages();
+      // Silently scan GitHub ./images/1.jpg ~ 30.jpg (.jpg/.png/.webp) and mix into playlist
+      scanGitHubImagesFolder(false);
 
       try {
         const params = new URLSearchParams(window.location.search);
         const roomParam = params.get('room');
         if (roomParam) {
           document.getElementById('join-room-input').value = roomParam.trim();
-          showToast(`已自動帶入房號 ${roomParam}，請點「加入房間」🏖️`, 'info');
+          showToast(`已自動帶入「攤牌時刻-浪子回頭」房號 ${roomParam}，請點「加入房間」🏖️`, 'info');
         }
       } catch (e) {}
 
