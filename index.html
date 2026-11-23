@@ -5,39 +5,37 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="theme-color" content="#ffdee9" />
-  <title>粉櫻甜心・台灣四人十三張（可愛風美女版）</title>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#072a40" />
+  <title>盛夏清涼・十三美（GitHub 本機圖庫版）台灣四人十三張</title>
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- PeerJS CDN (P2P Multiplayer with seamless local fallback) -->
+  <!-- PeerJS CDN (Pure Frontend P2P Multiplayer with seamless local AI fallback) -->
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-  <!-- QRCodeJS CDN -->
+  <!-- QRCode.js CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
 
     :root {
-      --sakura-bg-1: #fff1f5;
-      --sakura-bg-2: #ffe0ec;
-      --sakura-bg-3: #ffd1e3;
-      --rose-gold: #e89bb4;
-      --rose-deep: #be185d;
-      --cream-glass: rgba(255, 255, 255, 0.78);
+      --ocean-deep: #06253b;
+      --ocean-teal: #0ea5e9;
+      --coral-pink: #fb7185;
+      --sunset-gold: #fdba74;
 
       /* Dynamic Card Dimensions */
-      --hand-card-w: clamp(42px, 10.2vw, 64px);
-      --hand-card-h: clamp(60px, 14.5vw, 90px);
-      --hand-overlap: clamp(-20px, -4.2vw, -10px);
+      --hand-card-w: clamp(44px, 10.2vw, 66px);
+      --hand-card-h: clamp(62px, 14.2vw, 92px);
+      --hand-overlap: clamp(-21px, -4.2vw, -10px);
 
-      --lane-card-w: clamp(36px, 8.4vw, 54px);
-      --lane-card-h: clamp(50px, 11.8vw, 76px);
+      --lane-card-w: clamp(36px, 8.2vw, 54px);
+      --lane-card-h: clamp(50px, 11.4vw, 76px);
       --lane-overlap: clamp(-14px, -2.5vw, -6px);
 
-      --mini-card-w: clamp(22px, 4.6vw, 32px);
-      --mini-card-h: clamp(31px, 6.4vw, 45px);
+      --mini-card-w: clamp(22px, 4.4vw, 32px);
+      --mini-card-h: clamp(31px, 6.2vw, 44px);
     }
 
     * {
@@ -52,88 +50,125 @@
       width: 100%;
       height: 100dvh;
       overflow: hidden;
-      font-family: 'M PLUS Rounded 1c', 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: linear-gradient(155deg, #fff5f8 0%, #ffe4ef 45%, #fce7f3 75%, #ffe9d6 100%);
-      color: #5c1f3c;
+      font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(155deg, #06263b 0%, #0b4661 48%, #3a1c36 100%);
+      color: #f8fafc;
       touch-action: manipulation;
     }
 
-    /* Pastel Macaron Table Background */
-    .sakura-bg {
-      background-image:
-        radial-gradient(circle at 18% 18%, rgba(255, 182, 213, 0.45) 0%, transparent 45%),
-        radial-gradient(circle at 82% 80%, rgba(254, 215, 170, 0.42) 0%, transparent 48%),
-        radial-gradient(circle at 50% 45%, rgba(255, 255, 255, 0.65) 0%, rgba(255, 224, 236, 0.85) 75%);
-    }
-
-    /* Falling Sakura Petals Decoration */
-    .petal-layer {
+    /* =====================================================================
+       DUAL-LAYER FULL-BLEED WALLPAPER ENGINE (0.8s Smooth Opacity Crossfade)
+       ===================================================================== */
+    .bg-slide-layer {
       position: fixed;
       inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
       pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.8s ease-in-out, transform 1.2s ease-out;
+      transform: scale(1.025);
       overflow: hidden;
+    }
+    .bg-slide-layer.active {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .bg-slide-layer img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 50% 20%;
+      display: block;
+    }
+    .bg-slide-layer .svg-fallback-wrap {
+      width: 100%;
+      height: 100%;
+      display: none;
+    }
+    .bg-slide-layer.use-fallback img {
+      display: none;
+    }
+    .bg-slide-layer.use-fallback .svg-fallback-wrap {
+      display: block;
+    }
+
+    /* Adjustable 3-Step Backdrop Scrim (Default: 🌤️ 中) */
+    #bg-scrim {
+      position: fixed;
+      inset: 0;
       z-index: 1;
-    }
-    .petal {
-      position: absolute;
-      top: -10%;
-      width: 14px;
-      height: 10px;
-      background: linear-gradient(135deg, #ffb7d5, #ff85b3);
-      border-radius: 150% 0 150% 0;
-      opacity: 0.45;
-      animation: fallPetal linear infinite;
-    }
-    @keyframes fallPetal {
-      0% { transform: translateY(-10dvh) translateX(0) rotate(0deg); opacity: 0; }
-      10% { opacity: 0.5; }
-      90% { opacity: 0.45; }
-      100% { transform: translateY(110dvh) translateX(65px) rotate(360deg); opacity: 0; }
+      pointer-events: none;
+      background: linear-gradient(180deg, rgba(6, 26, 42, 0.36) 0%, rgba(6, 26, 42, 0.18) 44%, rgba(10, 18, 32, 0.58) 100%);
+      transition: background 0.35s ease;
     }
 
-    /* Frosted Glass & Rose-Gold Borders */
-    .glass-card {
-      background: rgba(255, 255, 255, 0.74);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1.5px solid rgba(244, 143, 177, 0.48);
-      box-shadow: 0 6px 20px rgba(219, 39, 119, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    /* Pure-View Mode (👁️ 賞圖模式) */
+    body.pure-view-active #lobby-screen,
+    body.pure-view-active #game-screen,
+    body.pure-view-active #goddess-bubble {
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+    body.pure-view-active #bg-scrim {
+      background: rgba(0, 0, 0, 0.02) !important;
+    }
+    #lobby-screen, #game-screen, #goddess-bubble {
+      transition: opacity 0.35s ease;
     }
 
-    .rose-title {
-      background: linear-gradient(180deg, #ec4899 0%, #be185d 100%);
+    /* Ocean Teal × Sunset Coral Frosted Glassmorphism */
+    .glass-panel {
+      background: rgba(8, 28, 44, 0.44);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(125, 211, 252, 0.28);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    }
+
+    .glass-header {
+      background: rgba(6, 24, 39, 0.54);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(251, 113, 133, 0.32);
+    }
+
+    .summer-title {
+      background: linear-gradient(90deg, #e0f2fe 0%, #fbcfe8 50%, #fdba74 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.45));
     }
 
-    .btn-sweet {
-      background: linear-gradient(180deg, #ff85b3 0%, #ec4899 100%);
+    .btn-coral {
+      background: linear-gradient(135deg, #fb7185 0%, #f43f5e 52%, #fb923c 100%);
       color: #ffffff;
-      border: 1.5px solid #fbcfe8;
-      box-shadow: 0 3px 10px rgba(236, 72, 153, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.5);
-      transition: transform 0.12s ease, filter 0.12s ease;
+      border: 1px solid rgba(255, 237, 213, 0.65);
+      box-shadow: 0 4px 14px rgba(244, 63, 94, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      transition: transform 0.12s ease, filter 0.15s ease;
     }
-    .btn-sweet:hover:not(:disabled) { filter: brightness(1.06); }
-    .btn-sweet:active:not(:disabled) { transform: scale(0.95); }
-    .btn-sweet:disabled { opacity: 0.45; cursor: not-allowed; filter: grayscale(0.4); }
+    .btn-coral:hover:not(:disabled) { filter: brightness(1.08); }
+    .btn-coral:active:not(:disabled) { transform: scale(0.95); }
+    .btn-coral:disabled { opacity: 0.42; cursor: not-allowed; filter: grayscale(0.5); }
 
-    .btn-cream {
-      background: linear-gradient(180deg, #ffffff 0%, #fff0f6 100%);
-      color: #9d174d;
-      border: 1.5px solid rgba(244, 143, 177, 0.65);
-      box-shadow: 0 2px 6px rgba(219, 39, 119, 0.10);
-      transition: transform 0.12s ease, background 0.12s ease;
+    .btn-ocean {
+      background: rgba(8, 38, 58, 0.52);
+      color: #e0f2fe;
+      border: 1px solid rgba(125, 211, 252, 0.36);
+      backdrop-filter: blur(6px);
+      transition: transform 0.12s ease, background 0.15s ease;
     }
-    .btn-cream:hover:not(:disabled) { background: linear-gradient(180deg, #fff7fa 0%, #ffe0ec 100%); }
-    .btn-cream:active:not(:disabled) { transform: scale(0.95); }
+    .btn-ocean:hover:not(:disabled) { background: rgba(14, 165, 233, 0.38); }
+    .btn-ocean:active:not(:disabled) { transform: scale(0.95); }
 
-    /* Cute Playing Cards */
+    /* High-Contrast Playing Cards */
     .p-card {
       position: relative;
-      background: linear-gradient(160deg, #ffffff 0%, #fff7fa 100%);
+      background: linear-gradient(160deg, #ffffff 0%, #f0f9ff 100%);
       border-radius: 8px;
-      border: 1.5px solid #f9a8d4;
-      box-shadow: -2px 2px 6px rgba(190, 24, 93, 0.16);
+      border: 1.5px solid #bae6fd;
+      box-shadow: -2px 3px 8px rgba(0, 0, 0, 0.44);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -142,9 +177,8 @@
       transition: transform 0.15s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.15s ease, border-color 0.15s ease;
       flex-shrink: 0;
     }
-
-    .p-card.red { color: #e11d48; }
-    .p-card.black { color: #3b1d36; }
+    .p-card.red { color: #dc2626; }
+    .p-card.black { color: #0f172a; }
 
     .p-card.hand-card {
       width: var(--hand-card-w);
@@ -153,12 +187,6 @@
     }
     .p-card.hand-card:first-child { margin-left: 0; }
     .p-card.hand-card:hover { transform: translateY(-6px); z-index: 20; }
-    .p-card.hand-card.selected {
-      transform: translateY(-14px);
-      border: 2px solid #ec4899;
-      box-shadow: 0 8px 16px rgba(236, 72, 153, 0.38);
-      z-index: 30;
-    }
 
     .p-card.lane-card {
       width: var(--lane-card-w);
@@ -167,6 +195,12 @@
     }
     .p-card.lane-card:first-child { margin-left: 0; }
     .p-card.lane-card:hover { transform: translateY(-4px); z-index: 20; }
+    .p-card.lane-card.swap-selected {
+      transform: translateY(-10px);
+      border: 2.5px solid #fbbf24;
+      box-shadow: 0 0 16px rgba(251, 191, 36, 0.85);
+      z-index: 30;
+    }
 
     .p-card.mini-card {
       width: var(--mini-card-w);
@@ -178,54 +212,43 @@
     }
     .p-card.mini-card:first-child { margin-left: 0; }
 
-    /* Pink Lace / Heart Card Back */
     .p-card-back {
       background:
-        radial-gradient(circle at 50% 50%, #fff0f6 15%, transparent 16%),
-        repeating-linear-gradient(135deg, #f472b6, #f472b6 4px, #ec4899 4px, #ec4899 8px);
-      border: 1.5px solid #ffffff;
-      box-shadow: inset 0 0 0 1px #fbcfe8;
+        radial-gradient(circle at 50% 50%, #e0f2fe 14%, transparent 16%),
+        repeating-linear-gradient(135deg, #0284c7, #0284c7 4px, #0369a1 4px, #0369a1 8px);
+      border: 1.5px solid #fda4af;
     }
 
+    /* Translucent Lane Slots */
     .lane-slot {
-      border: 1.5px dashed rgba(236, 72, 153, 0.42);
-      background: rgba(255, 255, 255, 0.55);
+      border: 1.5px dashed rgba(125, 211, 252, 0.42);
+      background: rgba(6, 26, 42, 0.38);
+      backdrop-filter: blur(8px);
       transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
     }
-    .lane-slot.can-drop {
-      border-color: #ec4899;
-      background: rgba(255, 228, 240, 0.85);
-      box-shadow: 0 0 12px rgba(236, 72, 153, 0.25);
-      cursor: pointer;
+    .lane-slot.active-target {
+      border-style: solid;
+      border-color: #fb7185;
+      background: rgba(251, 113, 133, 0.16);
+      box-shadow: 0 0 12px rgba(251, 113, 133, 0.28);
     }
     .lane-slot.foul-lane {
-      border-color: #e11d48;
-      background: rgba(254, 205, 211, 0.72);
+      border-style: solid;
+      border-color: #ef4444;
+      background: rgba(220, 38, 38, 0.36);
     }
 
-    /* Beauty Photo Cross-fade */
-    .photo-fade {
-      transition: opacity 0.45s ease, transform 0.45s ease;
-    }
-    .photo-fade.swapping {
-      opacity: 0;
-      transform: scale(0.96);
-    }
-
-    /* Dramatic Banner Animation */
     @keyframes bannerPop {
       0% { opacity: 0; transform: scale(0.75); }
       18% { opacity: 1; transform: scale(1.04); }
       82% { opacity: 1; transform: scale(1); }
-      100% { opacity: 0; transform: scale(0.96); }
+      100% { opacity: 0; transform: scale(0.95); }
     }
-    .banner-pop {
-      animation: bannerPop 1.85s ease forwards;
-    }
+    .banner-pop { animation: bannerPop 1.85s ease forwards; }
 
     .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
-    .custom-scroll::-webkit-scrollbar-track { background: rgba(244, 143, 177, 0.15); border-radius: 99px; }
-    .custom-scroll::-webkit-scrollbar-thumb { background: rgba(236, 72, 153, 0.45); border-radius: 99px; }
+    .custom-scroll::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.08); border-radius: 99px; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: rgba(251, 113, 133, 0.55); border-radius: 99px; }
 
     /* =====================================================================
        MANDATORY: Landscape Short Screen Compact Mode
@@ -233,52 +256,37 @@
        ===================================================================== */
     @media (orientation: landscape) and (max-height: 540px) {
       :root {
-        --hand-card-w: clamp(34px, 5.2vw, 48px);
-        --hand-card-h: clamp(46px, 11dvh, 66px);
+        --hand-card-w: clamp(34px, 5.4vw, 48px);
+        --hand-card-h: clamp(46px, 11.2dvh, 66px);
         --hand-overlap: clamp(-14px, -1.7vw, -6px);
 
-        --lane-card-w: clamp(30px, 4.4vw, 42px);
-        --lane-card-h: clamp(42px, 9.6dvh, 58px);
+        --lane-card-w: clamp(30px, 4.6vw, 42px);
+        --lane-card-h: clamp(42px, 9.8dvh, 58px);
         --lane-overlap: clamp(-12px, -1.5vw, -5px);
 
-        --mini-card-w: clamp(19px, 2.9vw, 26px);
+        --mini-card-w: clamp(19px, 3vw, 26px);
         --mini-card-h: clamp(26px, 6.2dvh, 36px);
       }
 
-      .hide-on-short {
-        display: none !important;
-      }
+      .hide-on-short { display: none !important; }
 
       .lobby-grid {
         grid-template-columns: 1fr 1fr !important;
-        gap: 0.6rem !important;
+        gap: 0.55rem !important;
       }
 
-      .lobby-card {
-        padding: 0.6rem !important;
-      }
+      .lobby-card { padding: 0.55rem !important; }
 
       .compact-header {
-        padding-top: 0.18rem !important;
-        padding-bottom: 0.18rem !important;
+        padding-top: 0.15rem !important;
+        padding-bottom: 0.15rem !important;
         min-height: 34px !important;
       }
 
-      .compact-stage-wrap {
-        flex-direction: row !important;
-        gap: 0.4rem !important;
-        padding: 0.2rem 0.4rem !important;
-      }
-
-      .beauty-panel {
-        width: clamp(128px, 21vw, 175px) !important;
-        flex-direction: column !important;
-        padding: 0.35rem !important;
-      }
-
-      .beauty-photo-box {
-        width: 100% !important;
-        height: clamp(110px, 44dvh, 175px) !important;
+      .compact-stage {
+        gap: 0.18rem !important;
+        padding-top: 0.15rem !important;
+        padding-bottom: 0.15rem !important;
       }
 
       .compact-lanes {
@@ -287,140 +295,189 @@
         gap: 0.3rem !important;
       }
 
-      .p-card.hand-card.selected {
-        transform: translateY(-9px);
-      }
-
       #qr-container canvas, #qr-container img {
-        width: 68px !important;
-        height: 68px !important;
+        width: 64px !important;
+        height: 64px !important;
       }
     }
   </style>
 </head>
-<body class="sakura-bg flex flex-col h-[100dvh] w-full overflow-hidden relative">
+<body class="flex flex-col h-[100dvh] w-full overflow-hidden relative">
 
-  <!-- Decorative Falling Sakura Petals -->
-  <div class="petal-layer" aria-hidden="true">
-    <div class="petal" style="left: 8%; animation-duration: 11s; animation-delay: 0s;"></div>
-    <div class="petal" style="left: 24%; animation-duration: 14s; animation-delay: 2s; width: 11px; height: 8px;"></div>
-    <div class="petal" style="left: 42%; animation-duration: 10s; animation-delay: 4s;"></div>
-    <div class="petal" style="left: 63%; animation-duration: 13s; animation-delay: 1s; width: 12px; height: 9px;"></div>
-    <div class="petal" style="left: 79%; animation-duration: 12s; animation-delay: 3.5s;"></div>
-    <div class="petal" style="left: 91%; animation-duration: 15s; animation-delay: 5s; width: 10px; height: 7px;"></div>
+  <!-- =========================================================================
+       DUAL-LAYER FULL-BLEED WALLPAPER ENGINE (Real Local Image + SVG Fallback)
+       ========================================================================= -->
+  <div id="bgLayerA" class="bg-slide-layer active" aria-hidden="true">
+    <img id="bgImgA" alt="盛夏清涼女神寫真A" class="w-full h-full object-cover object-[50%_20%]" />
+    <div id="bgSvgA" class="svg-fallback-wrap"></div>
   </div>
+  <div id="bgLayerB" class="bg-slide-layer" aria-hidden="true">
+    <img id="bgImgB" alt="盛夏清涼女神寫真B" class="w-full h-full object-cover object-[50%_20%]" />
+    <div id="bgSvgB" class="svg-fallback-wrap"></div>
+  </div>
+  <div id="bg-scrim" aria-hidden="true"></div>
 
-  <!-- ===================== TOAST CONTAINER (NO alert()) ===================== -->
-  <div id="toast-container" class="fixed top-14 left-1/2 -translate-x-1/2 z-[120] flex flex-col gap-2 pointer-events-none w-[90vw] max-w-sm items-center"></div>
-
-  <!-- ===================== DRAMATIC EFFECT OVERLAY ===================== -->
-  <div id="fx-overlay" class="fixed inset-0 z-[100] pointer-events-none flex items-center justify-center hidden">
-    <div id="fx-banner" class="px-7 py-4 rounded-3xl border-2 border-pink-300 bg-gradient-to-r from-pink-500/95 via-rose-400/95 to-pink-500/95 shadow-2xl text-center">
-      <div id="fx-title" class="text-2xl sm:text-4xl font-black text-white tracking-wider drop-shadow"></div>
-      <div id="fx-sub" class="text-xs sm:text-base font-bold text-pink-50 mt-1"></div>
+  <!-- PURE-VIEW FLOATING CONTROLS (👁️ 賞圖模式) -->
+  <div id="pure-view-controls" class="hidden fixed inset-0 z-[110] pointer-events-none">
+    <div class="fixed top-4 left-4 px-3.5 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-sky-200/35 text-xs sm:text-sm font-bold text-sky-50 shadow-lg">
+      <span id="pure-view-card-tag" class="text-rose-300 font-black mr-1">♠A</span>
+      <span id="pure-view-name">海灘小夏</span>
+    </div>
+    <div class="fixed bottom-5 right-4 sm:right-6 pointer-events-auto flex items-center gap-2">
+      <button onclick="randomGoddess(true)" class="px-3.5 py-2 rounded-full bg-black/45 hover:bg-black/65 backdrop-blur-md border border-sky-200/40 text-sky-100 text-xs sm:text-sm font-black shadow-lg">
+        ✨ 換下一張
+      </button>
+      <button onclick="togglePureView(false)" class="px-4 py-2 rounded-full bg-rose-500/80 hover:bg-rose-500 backdrop-blur-md border border-rose-200/70 text-white text-xs sm:text-sm font-black shadow-xl">
+        ↩ 返回牌局
+      </button>
     </div>
   </div>
 
-  <!-- Hidden Multi-File Input for Custom Beauty Photo Album -->
+  <!-- CORNER SUMMER DIALOGUE BUBBLE (Unobtrusive) -->
+  <div id="goddess-bubble" class="hidden fixed left-2.5 sm:left-4 top-[48px] sm:top-[56px] z-30 pointer-events-none max-w-[240px] sm:max-w-[300px]">
+    <div class="px-3 py-1.5 rounded-2xl bg-[#062236]/62 backdrop-blur-md border border-sky-200/35 shadow-xl">
+      <div class="flex items-center justify-between gap-2 text-[10px] sm:text-[11px] font-black">
+        <span class="truncate text-sky-200">
+          <span id="bubble-card-code" class="px-1.5 py-0.5 rounded bg-rose-500/75 text-white mr-1">♠A</span>
+          <span id="bubble-name">海灘小夏</span>
+        </span>
+        <span id="bubble-index" class="font-mono text-rose-200/90 tabular-nums shrink-0">1/13</span>
+      </div>
+      <div id="bubble-quote" class="text-[11px] sm:text-xs font-bold text-white/95 leading-snug mt-0.5 line-clamp-2">
+        「海風吹起來超涼快！祝你這局起手就拿大牌🌊」
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER (No alert()) -->
+  <div id="toast-container" class="fixed top-14 left-1/2 -translate-x-1/2 z-[120] flex flex-col gap-2 pointer-events-none w-[90vw] max-w-sm items-center"></div>
+
+  <!-- DRAMATIC EFFECT OVERLAY -->
+  <div id="fx-overlay" class="fixed inset-0 z-[100] pointer-events-none flex items-center justify-center hidden">
+    <div id="fx-banner" class="px-7 py-4 rounded-3xl border-2 border-sky-200 bg-gradient-to-r from-sky-600/90 via-rose-500/90 to-orange-400/90 shadow-2xl text-center backdrop-blur-md">
+      <div id="fx-title" class="text-2xl sm:text-4xl font-black text-white tracking-wider drop-shadow"></div>
+      <div id="fx-sub" class="text-xs sm:text-base font-bold text-sky-50 mt-1"></div>
+    </div>
+  </div>
+
+  <!-- Hidden Multi-File Input for Local Preview / Custom Album -->
   <input id="custom-photo-input" type="file" accept="image/jpeg,image/png,image/webp,image/*" multiple class="hidden" onchange="handleCustomPhotosUpload(this)" />
 
   <!-- =========================================================================
        SCREEN 1: LOBBY & WAITING ROOM
        ========================================================================= -->
   <div id="lobby-screen" class="relative z-10 flex flex-col h-[100dvh] w-full overflow-hidden">
-    <!-- Lobby Header -->
-    <header class="compact-header shrink-0 px-3 sm:px-6 py-2 bg-white/75 backdrop-blur-md border-b border-pink-300/60 flex items-center justify-between gap-2">
+    <!-- Lobby Top Bar -->
+    <header class="compact-header glass-header shrink-0 px-2.5 sm:px-5 py-2 flex items-center justify-between gap-1.5">
       <div class="flex items-center gap-2 min-w-0">
-        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center text-white font-black text-base sm:text-lg shadow shrink-0">🌸</div>
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-sky-400 via-rose-400 to-orange-300 flex items-center justify-center text-white font-black text-base shadow shrink-0">🏖️</div>
         <div class="min-w-0">
-          <h1 class="text-sm sm:text-xl font-black rose-title truncate leading-tight">粉櫻甜心・台灣四人十三張</h1>
-          <p class="hide-on-short text-[11px] text-rose-500/80 truncate font-bold">可愛美女寫真伴遊・自動換照・P2P 連線對戰</p>
+          <h1 class="text-sm sm:text-lg font-black summer-title truncate leading-tight">盛夏清涼・十三美（GitHub 本機圖庫版）</h1>
+          <p class="hide-on-short text-[11px] text-sky-100/85 truncate font-bold">搭配 ./images/1.jpg~13.jpg・正宗台灣四人十三張（十三支）</p>
         </div>
       </div>
 
-      <div class="flex items-center gap-1.5 shrink-0">
-        <span id="net-status-badge" class="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-pink-100 border border-pink-300 text-rose-700">
-          <span class="w-2 h-2 rounded-full bg-emerald-500"></span> 準備就緒
-        </span>
-        <button onclick="openRulesModal()" class="btn-cream px-2.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold" title="玩法規則">📖 規則</button>
-        <button onclick="openAudioModal()" class="btn-cream px-2.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold" title="音效與語音設定">🔊 音效</button>
-        <button onclick="toggleFullscreen()" class="btn-sweet px-2.5 py-1.5 rounded-xl text-xs sm:text-sm font-black" title="切換全螢幕">⛶ 全螢幕</button>
+      <!-- Photo & System Toolbar -->
+      <div class="flex items-center gap-1 sm:gap-1.5 shrink-0">
+        <button onclick="prevGoddess()" class="btn-ocean px-2 py-1 rounded-lg text-xs font-black" title="上一位">◀</button>
+        <button onclick="randomGoddess(true)" class="btn-ocean px-2 py-1 rounded-lg text-xs font-black" title="隨機換圖">🔀 <span class="hidden lg:inline">隨機</span></button>
+        <button onclick="nextGoddess()" class="btn-ocean px-2 py-1 rounded-lg text-xs font-black" title="下一位">▶</button>
+        <button onclick="openGalleryModal()" class="btn-ocean px-2 py-1 rounded-lg text-xs font-bold" title="13美寫真集">🖼️ <span class="hidden sm:inline">13美</span></button>
+        <button onclick="cycleScrimLevel()" id="btn-scrim-lobby" class="btn-ocean px-2 py-1 rounded-lg text-xs font-bold" title="遮罩透明度">🌤️ 中</button>
+        <button onclick="togglePureView(true)" class="btn-ocean px-2 py-1 rounded-lg text-xs font-black" title="純享賞圖">👁️ <span class="hidden md:inline">賞圖</span></button>
+        <button onclick="triggerCustomPhotoUpload()" class="btn-ocean px-2 py-1 rounded-lg text-xs font-bold hidden md:inline-block" title="試看自訂照片">📷 試看自訂圖</button>
+        <button onclick="openRulesModal()" class="btn-ocean px-2 py-1 rounded-lg text-xs font-bold hidden sm:inline-block" title="玩法規則">📖</button>
+        <button onclick="openAudioModal()" class="btn-ocean px-2 py-1 rounded-lg text-xs font-bold" title="音效設定">🔊</button>
+        <button onclick="toggleFullscreen()" class="btn-coral px-2.5 py-1 rounded-lg text-xs font-black" title="切換全螢幕">⛶ <span class="hidden sm:inline">全螢幕</span></button>
       </div>
     </header>
 
     <!-- Lobby Main Content -->
-    <main class="flex-1 min-h-0 p-2.5 sm:p-5 flex items-center justify-center overflow-y-auto custom-scroll">
+    <main class="flex-1 min-h-0 p-2.5 sm:p-5 flex items-end sm:items-center justify-center overflow-y-auto custom-scroll">
       <div class="lobby-grid w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-5 items-stretch">
 
-        <!-- Left Column: Player & Room Controls -->
-        <section class="lobby-card glass-card rounded-3xl p-3.5 sm:p-5 flex flex-col justify-between gap-2.5">
+        <!-- Left Column: Player, AI & Local Gallery Status -->
+        <section class="lobby-card glass-panel rounded-3xl p-3.5 sm:p-5 flex flex-col justify-between gap-2.5">
           <div class="space-y-2.5">
-            <div class="flex items-center justify-between">
-              <h2 class="text-sm sm:text-base font-black text-rose-600 flex items-center gap-1.5">🎀 玩家與甜心設定</h2>
-              <span id="mobile-net-badge" class="sm:hidden text-[11px] px-2 py-0.5 rounded-full bg-pink-100 border border-pink-300 text-rose-600 font-bold">就緒</span>
+            <div class="flex items-center justify-between gap-2">
+              <h2 class="text-sm sm:text-base font-black text-sky-200 flex items-center gap-1.5">🌴 玩家與本機圖庫設定</h2>
+              <span id="net-status-badge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-black/40 border border-sky-300/35 text-sky-100">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span> 準備就緒
+              </span>
             </div>
 
             <!-- Nickname -->
             <div>
-              <label class="block text-xs text-rose-700/80 font-bold mb-1">玩家暱稱</label>
-              <input id="player-name-input" type="text" maxlength="10" value="甜心牌聖"
-                class="w-full px-3 py-2 rounded-2xl bg-white/90 border border-pink-300 text-rose-900 font-bold text-sm focus:outline-none focus:border-pink-500" />
+              <label class="block text-xs text-sky-100/85 font-bold mb-1">玩家暱稱</label>
+              <input id="player-name-input" type="text" maxlength="10" value="盛夏牌聖"
+                class="w-full px-3 py-2 rounded-2xl bg-black/35 border border-sky-300/40 text-white font-bold text-sm focus:outline-none focus:border-rose-300" />
             </div>
 
             <!-- AI Difficulty -->
             <div>
-              <label class="block text-xs text-rose-700/80 font-bold mb-1">少女 AI 補位難度（小櫻・小莓・小兔）</label>
+              <label class="block text-xs text-sky-100/85 font-bold mb-1">AI 補位難度（海灘小夏・泳池莉莉・衝浪妮娜）</label>
               <div class="grid grid-cols-3 gap-1.5" id="ai-diff-group">
                 <button type="button" data-diff="easy" onclick="setAiDifficulty('easy')"
-                  class="ai-diff-btn py-1.5 rounded-2xl text-xs font-bold border border-pink-300 bg-white/80 text-rose-700">放水新手</button>
+                  class="ai-diff-btn py-1.5 rounded-2xl text-xs font-bold border border-sky-300/30 bg-black/30 text-sky-100">放水新手</button>
                 <button type="button" data-diff="normal" onclick="setAiDifficulty('normal')"
-                  class="ai-diff-btn py-1.5 rounded-2xl text-xs font-black border-2 border-pink-500 bg-pink-100 text-rose-700">普通</button>
+                  class="ai-diff-btn py-1.5 rounded-2xl text-xs font-black border-2 border-rose-300 bg-rose-500/45 text-white">普通</button>
                 <button type="button" data-diff="master" onclick="setAiDifficulty('master')"
-                  class="ai-diff-btn py-1.5 rounded-2xl text-xs font-bold border border-pink-300 bg-white/80 text-rose-700">大師</button>
+                  class="ai-diff-btn py-1.5 rounded-2xl text-xs font-bold border border-sky-300/30 bg-black/30 text-sky-100">大師</button>
               </div>
             </div>
 
-            <!-- Custom Album Quick Import in Lobby -->
-            <div class="flex items-center justify-between gap-2 p-2 rounded-2xl bg-pink-50/90 border border-pink-200">
-              <div class="text-xs font-bold text-rose-700 truncate" id="lobby-album-status">
-                🖼️ 內建 8 位甜心寫真（自動輪播）
+            <!-- Local GitHub Images & Instant Custom Preview -->
+            <div class="p-2 rounded-2xl bg-black/30 border border-sky-300/25 space-y-1.5">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-xs font-bold text-sky-100 truncate" id="lobby-album-status">
+                  📁 圖庫：偵測 ./images/1.jpg ~ 13.jpg 中...
+                </span>
+                <button type="button" onclick="triggerCustomPhotoUpload()" class="btn-ocean px-2.5 py-1 rounded-xl text-xs font-black shrink-0">
+                  📷 試看自訂圖
+                </button>
               </div>
-              <button type="button" onclick="triggerCustomPhotoUpload()" class="btn-cream px-2.5 py-1 rounded-xl text-xs font-black shrink-0">
-                📷 匯入相簿
-              </button>
+              <div id="custom-mode-row" class="hidden flex items-center justify-between gap-1.5 pt-1 border-t border-white/10">
+                <span class="text-[11px] text-rose-200 font-bold">預覽模式：</span>
+                <div class="flex gap-1">
+                  <button type="button" id="btn-mode-replace" onclick="setCustomPlaybackMode('replace')"
+                    class="px-2 py-0.5 rounded-lg text-[10px] font-black bg-rose-500/85 text-white border border-rose-200/60">取代 1~13 號</button>
+                  <button type="button" id="btn-mode-mix" onclick="setCustomPlaybackMode('mix')"
+                    class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-black/40 text-sky-100 border border-white/20">與本機圖混播</button>
+                </div>
+              </div>
             </div>
 
             <!-- Room Create / Join -->
-            <div class="pt-1 border-t border-pink-200 space-y-2">
+            <div class="pt-1 border-t border-white/15 space-y-2">
               <div class="grid grid-cols-2 gap-2">
-                <button id="btn-create-room" onclick="createOnlineRoom()" class="btn-sweet py-2 px-3 rounded-2xl font-black text-xs sm:text-sm">
+                <button id="btn-create-room" onclick="createOnlineRoom()" class="btn-coral py-2 px-3 rounded-2xl font-black text-xs sm:text-sm">
                   🏠 建立連線房間
                 </button>
-                <button onclick="startQuickLocalGame()" class="btn-cream py-2 px-3 rounded-2xl font-black text-xs sm:text-sm">
-                  🌸 立即單機開局
+                <button onclick="startQuickLocalGame()" class="btn-ocean py-2 px-3 rounded-2xl font-black text-xs sm:text-sm">
+                  🌊 立即單機開局
                 </button>
               </div>
 
               <div class="flex gap-1.5">
-                <input id="join-room-input" type="text" maxlength="8" placeholder="輸入房號加入 (例: 5201)"
-                  class="flex-1 min-w-0 px-3 py-1.5 rounded-2xl bg-white/90 border border-pink-300 text-rose-900 text-xs sm:text-sm font-bold uppercase focus:outline-none focus:border-pink-500" />
-                <button id="btn-join-room" onclick="joinOnlineRoom()" class="btn-cream px-3.5 py-1.5 rounded-2xl font-black text-xs sm:text-sm shrink-0">
+                <input id="join-room-input" type="text" maxlength="8" placeholder="輸入房號加入 (例: 7788)"
+                  class="flex-1 min-w-0 px-3 py-1.5 rounded-2xl bg-black/35 border border-sky-300/40 text-white text-xs sm:text-sm font-bold uppercase focus:outline-none focus:border-rose-300" />
+                <button id="btn-join-room" onclick="joinOnlineRoom()" class="btn-ocean px-3.5 py-1.5 rounded-2xl font-black text-xs sm:text-sm shrink-0">
                   加入房間
                 </button>
               </div>
             </div>
           </div>
 
-          <p class="hide-on-short text-[11px] text-rose-600/75 leading-relaxed font-medium">
-            支援 1~4 人 P2P 連線，空位由可愛少女 AI 自動補滿；玩牌過程自動輪播 8 位甜心寫真，也支援匯入自己的相簿照片！
+          <p class="hide-on-short text-[11px] text-sky-100/75 leading-relaxed">
+            部署至 GitHub Pages 時，只需將 13 張泳裝寫真放入 <code class="text-amber-200">images/1.jpg~13.jpg</code>（亦自動支援 .png / .webp）；上傳前可點「📷 試看自訂圖」搶先預覽！
           </p>
         </section>
 
         <!-- Right Column: Waiting Room & Invite QR -->
-        <section class="lobby-card glass-card rounded-3xl p-3.5 sm:p-5 flex flex-col justify-between gap-2.5">
+        <section class="lobby-card glass-panel rounded-3xl p-3.5 sm:p-5 flex flex-col justify-between gap-2.5">
           <div class="flex items-center justify-between gap-2">
-            <h2 class="text-sm sm:text-base font-black text-rose-600">🍰 粉櫻等待室 (1~4人)</h2>
-            <span id="room-code-display" class="px-2.5 py-0.5 rounded-full bg-pink-100 border border-pink-300 text-xs font-mono font-bold text-rose-700">
+            <h2 class="text-sm sm:text-base font-black text-sky-200">🪑 等待室座位 (1~4人)</h2>
+            <span id="room-code-display" class="px-2.5 py-0.5 rounded-full bg-black/40 border border-sky-300/35 text-xs font-mono font-bold text-sky-100">
               房號：單機預備
             </span>
           </div>
@@ -429,23 +486,23 @@
           <div id="lobby-seats" class="grid grid-cols-2 gap-2"></div>
 
           <!-- Invite QR + Copy Link -->
-          <div id="invite-box" class="flex items-center gap-3 p-2.5 rounded-2xl bg-white/75 border border-pink-200">
-            <div id="qr-container" class="w-18 h-18 sm:w-20 sm:h-20 bg-white rounded-xl p-1 border border-pink-200 flex items-center justify-center shrink-0 overflow-hidden">
-              <span class="text-[10px] text-rose-400 text-center font-bold leading-tight">建立房間<br/>生成 QR</span>
+          <div class="flex items-center gap-3 p-2.5 rounded-2xl bg-black/30 border border-sky-300/20">
+            <div id="qr-container" class="w-18 h-18 sm:w-20 sm:h-20 bg-white rounded-xl p-1 flex items-center justify-center shrink-0 overflow-hidden">
+              <span class="text-[10px] text-sky-800 text-center font-bold leading-tight">建立房間<br/>生成 QR</span>
             </div>
             <div class="flex-1 min-w-0 space-y-1">
-              <div class="text-xs font-black text-rose-700 truncate" id="invite-status-text">建立連線房後可邀請好友</div>
-              <div class="text-[11px] text-rose-500/80 truncate font-mono" id="invite-url-preview">?room=------</div>
+              <div class="text-xs font-black text-sky-100 truncate" id="invite-status-text">建立連線房後可邀請好友</div>
+              <div class="text-[11px] text-rose-200/80 truncate font-mono" id="invite-url-preview">?room=------</div>
               <button id="btn-copy-invite" onclick="copyInviteLink()" disabled
-                class="btn-cream w-full py-1.5 px-2 rounded-xl text-xs font-black disabled:opacity-40">
+                class="btn-ocean w-full py-1.5 px-2 rounded-xl text-xs font-black disabled:opacity-40">
                 📋 複製邀請網址
               </button>
             </div>
           </div>
 
           <!-- Start Match Button -->
-          <button id="btn-start-match" onclick="hostStartGame()" class="btn-sweet w-full py-2.5 sm:py-3 rounded-2xl font-black text-sm sm:text-base tracking-wide">
-            🌸 開始發牌對戰 ✨
+          <button id="btn-start-match" onclick="hostStartGame()" class="btn-coral w-full py-2.5 sm:py-3 rounded-2xl font-black text-sm sm:text-base tracking-wide">
+            🏖️ 開始發牌對戰 ✨
           </button>
         </section>
 
@@ -454,214 +511,196 @@
   </div>
 
   <!-- =========================================================================
-       SCREEN 2: GAME TABLE + BEAUTY PHOTO SHOWCASE
+       SCREEN 2: GAME TABLE (Open Upper-Center View for Full-Bleed Wallpaper)
        ========================================================================= -->
   <div id="game-screen" class="relative z-10 hidden flex-col h-[100dvh] w-full overflow-hidden">
 
-    <!-- Top Game HUD Bar -->
-    <header class="compact-header shrink-0 px-2.5 sm:px-4 py-1.5 bg-white/80 backdrop-blur-md border-b border-pink-300/60 flex items-center justify-between gap-2 z-20">
-      <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
-        <span id="hud-round" class="px-2 py-0.5 rounded-full bg-pink-100 border border-pink-300 text-rose-700 text-xs font-black shrink-0">第 1 局</span>
-        <span id="hud-room-tag" class="hidden sm:inline text-xs text-rose-500 font-mono font-bold truncate">單機模式</span>
-        <span id="hud-my-score" class="px-2 py-0.5 rounded-full bg-rose-500 text-xs font-bold text-white shrink-0 shadow-sm">
-          總水數：<strong>0</strong>
+    <!-- Top Game HUD + Photo Toolbar -->
+    <header class="compact-header glass-header shrink-0 px-2 sm:px-4 py-1.5 flex items-center justify-between gap-1.5 z-20">
+      <div class="flex items-center gap-1.5 min-w-0">
+        <span id="hud-round" class="px-2 py-0.5 rounded-full bg-rose-500/50 border border-rose-200/60 text-white text-[11px] sm:text-xs font-black shrink-0">第 1 局</span>
+        <span id="hud-my-score" class="px-2 py-0.5 rounded-full bg-black/45 border border-sky-300/35 text-[11px] sm:text-xs font-bold text-sky-100 shrink-0 tabular-nums">
+          總水：<strong class="text-amber-300">0</strong>
         </span>
       </div>
 
-      <div class="flex items-center gap-1 sm:gap-1.5 shrink-0">
-        <button onclick="openRulesModal()" class="btn-cream px-2 py-1 rounded-xl text-xs font-bold">📖</button>
-        <button onclick="openAudioModal()" class="btn-cream px-2 py-1 rounded-xl text-xs font-bold">🔊</button>
-        <button onclick="toggleFullscreen()" class="btn-sweet px-2 py-1 rounded-xl text-xs font-black">⛶ 全螢幕</button>
-        <button onclick="leaveToLobby()" class="px-2 py-1 rounded-xl text-xs font-bold bg-rose-100 hover:bg-rose-200 border border-rose-300 text-rose-700">離開</button>
+      <!-- Compact Photo & System Controls -->
+      <div class="flex items-center gap-1 shrink-0">
+        <button onclick="prevGoddess()" class="btn-ocean px-1.5 sm:px-2 py-1 rounded-lg text-[11px] sm:text-xs font-black" title="上一位">◀</button>
+        <button onclick="randomGoddess(true)" class="btn-ocean px-1.5 sm:px-2 py-1 rounded-lg text-[11px] sm:text-xs font-black" title="隨機換圖">🔀</button>
+        <button onclick="nextGoddess()" class="btn-ocean px-1.5 sm:px-2 py-1 rounded-lg text-[11px] sm:text-xs font-black" title="下一位">▶</button>
+        <button onclick="openGalleryModal()" class="btn-ocean px-1.5 sm:px-2 py-1 rounded-lg text-[11px] sm:text-xs font-bold" title="13美寫真集">🖼️<span class="hidden md:inline"> 13美</span></button>
+        <button onclick="cycleScrimLevel()" id="btn-scrim-game" class="btn-ocean px-1.5 sm:px-2 py-1 rounded-lg text-[11px] sm:text-xs font-bold" title="遮罩透明度">🌤️ 中</button>
+        <button onclick="togglePureView(true)" class="btn-ocean px-1.5 sm:px-2 py-1 rounded-lg text-[11px] sm:text-xs font-black" title="純享賞圖">👁️<span class="hidden sm:inline"> 賞圖</span></button>
+        <button onclick="triggerCustomPhotoUpload()" class="btn-ocean px-1.5 py-1 rounded-lg text-[11px] sm:text-xs font-bold" title="試看自訂圖">📷</button>
+        <button onclick="openRulesModal()" class="btn-ocean px-1.5 py-1 rounded-lg text-[11px] sm:text-xs font-bold hidden sm:inline-block" title="規則">📖</button>
+        <button onclick="openAudioModal()" class="btn-ocean px-1.5 py-1 rounded-lg text-[11px] sm:text-xs font-bold" title="音效">🔊</button>
+        <button onclick="toggleFullscreen()" class="btn-coral px-2 py-1 rounded-lg text-[11px] sm:text-xs font-black" title="全螢幕">⛶</button>
+        <button onclick="leaveToLobby()" class="px-2 py-1 rounded-lg text-[11px] sm:text-xs font-bold bg-rose-950/75 hover:bg-rose-900 border border-rose-300/40 text-rose-100">離開</button>
       </div>
     </header>
 
-    <!-- Main Game Content Wrapper: Portrait=Column, Desktop/Landscape=Row (Left Table + Right Beauty Showcase) -->
-    <div class="compact-stage-wrap flex-1 min-h-0 flex flex-col md:flex-row gap-1.5 sm:gap-2.5 p-1.5 sm:p-3 overflow-hidden max-w-7xl w-full mx-auto">
+    <!-- Main Stage: Top Opponents -> Open Portrait Window -> Bottom Lanes & Hand -->
+    <main class="compact-stage flex-1 min-h-0 flex flex-col justify-between px-2 sm:px-4 py-1.5 gap-1 overflow-hidden">
 
-      <!-- LEFT / MAIN TABLE COLUMN -->
-      <main class="flex-1 min-w-0 min-h-0 flex flex-col justify-between gap-1 sm:gap-1.5 overflow-hidden">
+      <!-- TOP: 3 Compact Opponents Strip -->
+      <section id="opponents-row" class="shrink-0 grid grid-cols-3 gap-1.5 sm:gap-2.5 w-full max-w-5xl mx-auto"></section>
 
-        <!-- TOP: 3 Cute AI/Player Opponents Strip -->
-        <section id="opponents-row" class="shrink-0 grid grid-cols-3 gap-1.5 sm:gap-2.5 w-full"></section>
+      <!-- OPEN PORTRAIT VIEWPORT SPACER (Keeps Upper-Center Wallpaper Clear & Unobstructed) -->
+      <div class="flex-1 min-h-[18px] pointer-events-none"></div>
 
-        <!-- CENTER ANTI-JITTER STATUS & TIMER BAR (Fixed Width/Height + animate-pulse ONLY) -->
-        <section class="shrink-0 flex items-center justify-center">
-          <div class="w-full max-w-xl h-7 sm:h-8 px-2.5 sm:px-3 rounded-full bg-white/80 border border-pink-300 shadow-sm flex items-center justify-between gap-2 overflow-hidden">
+      <!-- LOWER-MIDDLE: Anti-Jitter Status Bar + 3 Lanes -->
+      <section class="shrink-0 w-full max-w-5xl mx-auto flex flex-col gap-1">
+        <!-- Fixed-Height Anti-Jitter Status & Countdown Bar (tabular-nums + animate-pulse ONLY) -->
+        <div class="flex items-center justify-center">
+          <div class="w-full max-w-2xl h-8 px-2.5 sm:px-3 rounded-full bg-[#062236]/68 backdrop-blur-md border border-sky-300/40 flex items-center justify-between gap-2 overflow-hidden">
             <div class="flex items-center gap-1.5 min-w-0">
-              <span class="w-2 h-2 rounded-full bg-pink-500 animate-pulse shrink-0"></span>
-              <span id="stage-status-text" class="text-[11px] sm:text-xs font-black text-rose-700 truncate">點選手牌放入頭/中/尾三墩，或套用推薦擺法</span>
+              <span class="w-2 h-2 rounded-full bg-rose-400 animate-pulse shrink-0"></span>
+              <span id="stage-status-text" class="text-[11px] sm:text-xs font-bold text-sky-50 truncate">點擊手牌放入紅框墩位，點任兩張牌互換位置</span>
             </div>
-            <!-- Fixed-width countdown pill (Zero jitter) -->
-            <div class="w-14 sm:w-16 h-5 sm:h-6 rounded-full bg-gradient-to-r from-pink-500 to-rose-400 flex items-center justify-center shrink-0">
-              <span id="timer-display" class="font-mono text-[11px] sm:text-xs font-black text-white animate-pulse">60s</span>
-            </div>
-          </div>
-        </section>
-
-        <!-- MIDDLE: Player's 3 Lanes -->
-        <section id="player-lanes-section" class="flex-1 min-h-0 flex flex-col justify-center gap-1 overflow-hidden">
-          <!-- Smart Suggestions & Special Hand Bar -->
-          <div id="assist-bar" class="shrink-0 flex flex-wrap items-center justify-between gap-1 px-0.5">
-            <div class="flex items-center gap-1 overflow-x-auto custom-scroll py-0.5" id="suggestions-container">
-              <span class="text-[11px] text-rose-600 font-black shrink-0">💡 推薦：</span>
-            </div>
-            <div class="flex items-center gap-1 shrink-0">
-              <button id="btn-special-declare" onclick="declareSpecialHand()" class="hidden px-2.5 py-0.5 rounded-full bg-gradient-to-r from-rose-500 to-amber-400 border border-white text-white text-[11px] font-black shadow animate-pulse">
-                🌟 立即報到！
-              </button>
-              <span id="foul-warning-badge" class="hidden px-2 py-0.5 rounded-full bg-rose-600 text-white text-[11px] font-black">
-                ⚠️ 倒水（相公）
-              </span>
+            <!-- Fixed-width countdown pill (zero layout shift) -->
+            <div class="w-16 h-6 rounded-full bg-gradient-to-r from-rose-500 to-orange-400 flex items-center justify-center shrink-0">
+              <span id="timer-display" class="font-mono tabular-nums text-xs font-black text-white animate-pulse">60s</span>
             </div>
           </div>
-
-          <!-- 3 Lanes Grid -->
-          <div class="compact-lanes flex-1 min-h-0 flex flex-col sm:grid sm:grid-cols-3 gap-1 sm:gap-2 items-stretch">
-            <!-- Front Lane -->
-            <div id="lane-front" onclick="handleLaneClick('front')"
-              class="lane-slot rounded-2xl p-1 sm:p-1.5 flex sm:flex-col items-center justify-between gap-1 min-h-0">
-              <div class="flex sm:w-full items-center justify-between gap-1 shrink-0">
-                <span class="text-[11px] sm:text-xs font-black text-rose-600 whitespace-nowrap">頭墩 <span class="text-[10px] text-rose-400">(3張)</span></span>
-                <span id="rank-front" class="px-1.5 py-0.5 rounded-full bg-pink-100 text-[10px] font-bold text-rose-700 whitespace-nowrap">0/3</span>
-              </div>
-              <div id="cards-front" class="flex-1 flex items-center justify-center min-h-[42px]"></div>
-              <div id="score-front" class="hidden text-[11px] font-black px-2 py-0.5 rounded-full"></div>
-            </div>
-
-            <!-- Middle Lane -->
-            <div id="lane-mid" onclick="handleLaneClick('mid')"
-              class="lane-slot rounded-2xl p-1 sm:p-1.5 flex sm:flex-col items-center justify-between gap-1 min-h-0">
-              <div class="flex sm:w-full items-center justify-between gap-1 shrink-0">
-                <span class="text-[11px] sm:text-xs font-black text-rose-600 whitespace-nowrap">中墩 <span class="text-[10px] text-rose-400">(5張)</span></span>
-                <span id="rank-mid" class="px-1.5 py-0.5 rounded-full bg-pink-100 text-[10px] font-bold text-rose-700 whitespace-nowrap">0/5</span>
-              </div>
-              <div id="cards-mid" class="flex-1 flex items-center justify-center min-h-[42px]"></div>
-              <div id="score-mid" class="hidden text-[11px] font-black px-2 py-0.5 rounded-full"></div>
-            </div>
-
-            <!-- Back Lane -->
-            <div id="lane-back" onclick="handleLaneClick('back')"
-              class="lane-slot rounded-2xl p-1 sm:p-1.5 flex sm:flex-col items-center justify-between gap-1 min-h-0">
-              <div class="flex sm:w-full items-center justify-between gap-1 shrink-0">
-                <span class="text-[11px] sm:text-xs font-black text-rose-600 whitespace-nowrap">尾墩 <span class="text-[10px] text-rose-400">(5張)</span></span>
-                <span id="rank-back" class="px-1.5 py-0.5 rounded-full bg-pink-100 text-[10px] font-bold text-rose-700 whitespace-nowrap">0/5</span>
-              </div>
-              <div id="cards-back" class="flex-1 flex items-center justify-center min-h-[42px]"></div>
-              <div id="score-back" class="hidden text-[11px] font-black px-2 py-0.5 rounded-full"></div>
-            </div>
-          </div>
-        </section>
-
-        <!-- BOTTOM: Hand Tray & Controls -->
-        <section id="hand-control-section" class="shrink-0 w-full flex flex-col gap-1">
-          <div id="arrange-actions" class="flex items-center justify-between gap-1.5 px-0.5">
-            <div class="flex items-center gap-1">
-              <button onclick="toggleHandSort()" id="btn-sort-hand" class="btn-cream px-2.5 py-1 rounded-xl text-[11px] sm:text-xs font-black">
-                ⇅ 依點數
-              </button>
-              <button onclick="clearAllLanes()" class="btn-cream px-2.5 py-1 rounded-xl text-[11px] sm:text-xs font-black">
-                ↺ 清空
-              </button>
-            </div>
-            <div class="flex items-center gap-1.5">
-              <span id="hand-count-hint" class="text-[11px] text-rose-600 font-bold hidden sm:inline">剩餘 13 張</span>
-              <button id="btn-confirm-hand" onclick="confirmPlayerArrangement()" disabled
-                class="btn-sweet px-4 sm:px-6 py-1 rounded-xl text-xs sm:text-sm font-black">
-                💖 確認擺牌
-              </button>
-            </div>
-          </div>
-
-          <div id="hand-tray" class="w-full min-h-[54px] sm:min-h-[82px] flex items-end justify-center px-1.5 pt-2 pb-0.5 overflow-x-auto custom-scroll"></div>
-        </section>
-      </main>
-
-      <!-- =====================================================================
-           RIGHT / COMPACT BEAUTY PHOTO SHOWCASE (甜心寫真伴遊框)
-           Portrait Mobile: Sleek horizontal bar | Desktop & Landscape: Tall vertical showcase
-           ===================================================================== -->
-      <aside id="beauty-showcase" class="beauty-panel glass-card rounded-2xl p-1.5 sm:p-2.5 shrink-0 flex flex-row md:flex-col items-center justify-between gap-2 md:w-[205px] lg:w-[235px]">
-        <!-- Photo Display Frame -->
-        <div class="beauty-photo-box relative w-[64px] h-[78px] md:w-full md:h-[245px] lg:h-[285px] rounded-xl overflow-hidden border-2 border-pink-300 bg-pink-50 shadow-inner shrink-0 cursor-pointer"
-          onclick="openPhotoLightbox()" title="點擊放大欣賞甜心寫真">
-          <div id="beauty-photo-stage" class="photo-fade w-full h-full flex items-center justify-center"></div>
-          <span id="beauty-counter-pill" class="absolute top-1 right-1 px-1.5 py-0.5 rounded-full bg-rose-500/85 text-white text-[9px] font-black">1/8</span>
         </div>
 
-        <!-- Character Info + Dialogue Bubble + Controls -->
-        <div class="flex-1 min-w-0 w-full flex flex-col justify-between gap-1 h-full">
-          <div class="space-y-1">
-            <div class="flex items-center justify-between gap-1">
-              <span id="beauty-name-tag" class="text-xs sm:text-sm font-black text-rose-700 truncate">🌸 櫻花巫女・小櫻</span>
-              <button id="btn-auto-rotate" onclick="toggleAutoRotate()"
-                class="px-1.5 py-0.5 rounded-full text-[10px] font-black bg-pink-500 text-white shrink-0" title="切換 12 秒自動換照">
-                🔄 自動開
-              </button>
+        <!-- Smart Recommendations (均衡配置 / 衝頭搶水 / 拚尾保底) + Special Hand + Foul Warning -->
+        <div id="assist-bar" class="flex flex-wrap items-center justify-between gap-1 px-0.5">
+          <div class="flex items-center gap-1 overflow-x-auto custom-scroll py-0.5" id="suggestions-container">
+            <span class="text-[11px] text-sky-200 font-black shrink-0">💡 推薦：</span>
+          </div>
+          <div class="flex items-center gap-1 shrink-0">
+            <button id="btn-special-declare" onclick="declareSpecialHand()" class="hidden px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-rose-500 border border-white text-white text-[11px] font-black shadow animate-pulse">
+              ✨ 報到亮牌！
+            </button>
+            <span id="foul-warning-badge" class="hidden px-2 py-0.5 rounded-full bg-red-600/95 border border-red-200 text-white text-[11px] font-black">
+              ⚠️ 倒水（相公）
+            </span>
+          </div>
+        </div>
+
+        <!-- 3 Lanes Grid -->
+        <div class="compact-lanes flex flex-col sm:grid sm:grid-cols-3 gap-1 sm:gap-2 items-stretch">
+          <!-- Front Lane (3 cards) -->
+          <div id="lane-front" onclick="handleLaneClick('front')"
+            class="lane-slot active-target rounded-2xl p-1 sm:p-1.5 flex sm:flex-col items-center justify-between gap-1 min-h-0">
+            <div class="flex sm:w-full items-center justify-between gap-1 shrink-0">
+              <span class="text-[11px] sm:text-xs font-black text-sky-200 whitespace-nowrap">頭墩 <span class="text-[10px] text-rose-200/80">(3張)</span></span>
+              <span id="rank-front" class="px-1.5 py-0.5 rounded-full bg-black/45 text-[10px] font-bold text-sky-100 whitespace-nowrap">0/3</span>
             </div>
-            <!-- Cute Dialogue Bubble -->
-            <div class="relative p-1.5 sm:p-2 rounded-xl bg-white/90 border border-pink-200 text-[11px] sm:text-xs font-bold text-rose-700 leading-snug line-clamp-2">
-              <span id="beauty-dialogue">「主人加油喔～祝你這局大殺四方💖」</span>
-            </div>
+            <div id="cards-front" class="flex-1 flex items-center justify-center min-h-[42px]"></div>
+            <div id="score-front" class="hidden text-[11px] font-black px-2 py-0.5 rounded-full"></div>
           </div>
 
-          <!-- Action Buttons: Next Photo + Custom Album -->
-          <div class="grid grid-cols-2 gap-1.5 pt-0.5">
-            <button onclick="nextBeautyPhoto(true)" class="btn-sweet py-1 px-1.5 rounded-xl text-[11px] font-black truncate">
-              ✨ 換一張
+          <!-- Middle Lane (5 cards) -->
+          <div id="lane-mid" onclick="handleLaneClick('mid')"
+            class="lane-slot rounded-2xl p-1 sm:p-1.5 flex sm:flex-col items-center justify-between gap-1 min-h-0">
+            <div class="flex sm:w-full items-center justify-between gap-1 shrink-0">
+              <span class="text-[11px] sm:text-xs font-black text-sky-200 whitespace-nowrap">中墩 <span class="text-[10px] text-rose-200/80">(5張)</span></span>
+              <span id="rank-mid" class="px-1.5 py-0.5 rounded-full bg-black/45 text-[10px] font-bold text-sky-100 whitespace-nowrap">0/5</span>
+            </div>
+            <div id="cards-mid" class="flex-1 flex items-center justify-center min-h-[42px]"></div>
+            <div id="score-mid" class="hidden text-[11px] font-black px-2 py-0.5 rounded-full"></div>
+          </div>
+
+          <!-- Back Lane (5 cards) -->
+          <div id="lane-back" onclick="handleLaneClick('back')"
+            class="lane-slot rounded-2xl p-1 sm:p-1.5 flex sm:flex-col items-center justify-between gap-1 min-h-0">
+            <div class="flex sm:w-full items-center justify-between gap-1 shrink-0">
+              <span class="text-[11px] sm:text-xs font-black text-sky-200 whitespace-nowrap">尾墩 <span class="text-[10px] text-rose-200/80">(5張)</span></span>
+              <span id="rank-back" class="px-1.5 py-0.5 rounded-full bg-black/45 text-[10px] font-bold text-sky-100 whitespace-nowrap">0/5</span>
+            </div>
+            <div id="cards-back" class="flex-1 flex items-center justify-center min-h-[42px]"></div>
+            <div id="score-back" class="hidden text-[11px] font-black px-2 py-0.5 rounded-full"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- BOTTOM: Hand Tray & Action Buttons -->
+      <section id="hand-control-section" class="shrink-0 w-full max-w-5xl mx-auto flex flex-col gap-1 pb-0.5">
+        <div id="arrange-actions" class="flex items-center justify-between gap-1.5 px-0.5">
+          <div class="flex items-center gap-1">
+            <button onclick="toggleHandSort()" id="btn-sort-hand" class="btn-ocean px-2.5 py-1 rounded-xl text-[11px] sm:text-xs font-black">
+              ⇅ 依點數
             </button>
-            <button onclick="triggerCustomPhotoUpload()" class="btn-cream py-1 px-1.5 rounded-xl text-[11px] font-black truncate">
-              📷 自訂相簿
+            <button onclick="clearAllLanes()" class="btn-ocean px-2.5 py-1 rounded-xl text-[11px] sm:text-xs font-black">
+              ↺ 清空重排
+            </button>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span id="hand-count-hint" class="text-[11px] text-sky-100 font-bold hidden sm:inline bg-black/40 px-2 py-0.5 rounded-full tabular-nums">剩餘 13 張</span>
+            <button id="btn-confirm-hand" onclick="confirmPlayerArrangement()" disabled
+              class="btn-coral px-4 sm:px-6 py-1 rounded-xl text-xs sm:text-sm font-black">
+              💖 確認擺牌
             </button>
           </div>
         </div>
-      </aside>
 
-    </div>
+        <div id="hand-tray" class="w-full min-h-[54px] sm:min-h-[82px] flex items-end justify-center px-1.5 pt-2 pb-0.5 overflow-x-auto custom-scroll"></div>
+      </section>
+
+    </main>
   </div>
 
   <!-- =========================================================================
        MODAL 1: 3-SECTION STICKY FOOTER SETTLEMENT MODAL (MANDATORY STRUCTURE)
        ========================================================================= -->
-  <div id="settlement-modal" class="hidden fixed inset-0 z-[90] bg-rose-950/55 backdrop-blur-sm flex items-center justify-center p-2.5 sm:p-4">
-    <div class="w-full max-w-2xl max-h-[92dvh] flex flex-col overflow-hidden rounded-3xl border-2 border-pink-300 bg-gradient-to-b from-white to-pink-50 shadow-2xl">
+  <div id="settlement-modal" class="hidden fixed inset-0 z-[90] bg-black/70 backdrop-blur-sm flex items-center justify-center p-2.5 sm:p-4">
+    <div class="w-full max-w-2xl max-h-[92dvh] flex flex-col overflow-hidden rounded-3xl border border-sky-300/40 bg-[#082236]/95 shadow-2xl">
       <!-- TOP: Fixed Header (shrink-0) -->
-      <div class="shrink-0 px-4 py-3 bg-gradient-to-r from-pink-100 via-rose-50 to-pink-100 border-b border-pink-200 flex items-center justify-between gap-2">
+      <div class="shrink-0 px-4 py-3 bg-gradient-to-r from-sky-950/90 via-[#152d44]/90 to-rose-950/80 border-b border-sky-300/25 flex items-center justify-between gap-2">
         <div>
-          <h3 id="settle-title" class="text-base sm:text-lg font-black rose-title">第 1 局 甜心結算戰報</h3>
-          <p id="settle-subtitle" class="text-xs text-rose-500 font-bold"></p>
+          <h3 id="settle-title" class="text-base sm:text-lg font-black summer-title">第 1 局 盛夏結算戰報</h3>
+          <p id="settle-subtitle" class="text-xs text-sky-100/80 font-bold"></p>
         </div>
-        <span id="settle-my-delta" class="px-3 py-1 rounded-full text-sm font-black border"></span>
+        <span id="settle-my-delta" class="px-3 py-1 rounded-full text-sm font-black border tabular-nums"></span>
       </div>
 
       <!-- MIDDLE: Scrollable Scoreboard & Pairwise Details (flex-1 overflow-y-auto) -->
       <div id="settle-body" class="flex-1 overflow-y-auto custom-scroll p-3.5 sm:p-4 space-y-3"></div>
 
       <!-- BOTTOM: Permanently Pinned Footer (shrink-0) -->
-      <div class="shrink-0 px-4 py-3 bg-white/90 border-t border-pink-200 flex items-center justify-end gap-2.5">
-        <button onclick="leaveToLobby()" class="btn-cream px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-black">
+      <div class="shrink-0 px-4 py-3 bg-black/45 border-t border-sky-300/25 flex items-center justify-end gap-2.5">
+        <button onclick="leaveToLobby()" class="btn-ocean px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-black">
           返回大廳
         </button>
-        <button id="btn-next-round" onclick="startNextRound()" class="btn-sweet flex-1 sm:flex-none sm:px-8 py-2.5 rounded-2xl text-sm font-black">
-          確定 / 再來一局 🌸
+        <button id="btn-next-round" onclick="startNextRound()" class="btn-coral flex-1 sm:flex-none sm:px-8 py-2.5 rounded-2xl text-sm font-black">
+          再來一局 🏖️
         </button>
       </div>
     </div>
   </div>
 
   <!-- =========================================================================
-       MODAL 2: PHOTO LIGHTBOX (Tap beauty photo to view full size)
+       MODAL 2: 13美寫真集 DRAWER (Shows ./images/1.jpg~13.jpg Load Status)
        ========================================================================= -->
-  <div id="lightbox-modal" class="hidden fixed inset-0 z-[96] bg-rose-950/75 backdrop-blur-sm flex items-center justify-center p-4" onclick="closePhotoLightbox()">
-    <div class="w-full max-w-sm rounded-3xl border-2 border-pink-300 bg-white p-3 shadow-2xl space-y-2.5" onclick="event.stopPropagation()">
-      <div class="flex items-center justify-between">
-        <span id="lightbox-title" class="text-sm font-black text-rose-700"></span>
-        <button onclick="closePhotoLightbox()" class="text-rose-400 hover:text-rose-700 font-black text-lg px-2">✕</button>
+  <div id="gallery-modal" class="hidden fixed inset-0 z-[94] bg-black/75 backdrop-blur-sm flex items-center justify-center p-2.5 sm:p-4">
+    <div class="w-full max-w-3xl max-h-[92dvh] flex flex-col overflow-hidden rounded-3xl border border-sky-300/40 bg-[#082236]/95 shadow-2xl">
+      <div class="shrink-0 px-4 py-3 bg-black/40 border-b border-sky-300/25 flex items-center justify-between gap-2">
+        <div>
+          <h3 class="text-base font-black summer-title">🖼️ 盛夏清涼・13美本機寫真集</h3>
+          <p class="text-[11px] text-sky-100/75 font-bold">自動偵測 ./images/1.jpg~13.jpg（含 .png/.webp），點擊即可設為當前滿版桌布</p>
+        </div>
+        <button onclick="closeGalleryModal()" class="text-sky-200 hover:text-white text-lg font-black px-2">✕</button>
       </div>
-      <div id="lightbox-stage" class="w-full aspect-[4/5] rounded-2xl overflow-hidden border border-pink-200 bg-pink-50 flex items-center justify-center"></div>
-      <div class="flex gap-2">
-        <button onclick="nextBeautyPhoto(true); updateLightboxContent();" class="btn-sweet flex-1 py-2 rounded-xl text-xs font-black">✨ 換下一張寫真</button>
-        <button onclick="triggerCustomPhotoUpload()" class="btn-cream flex-1 py-2 rounded-xl text-xs font-black">📷 匯入自訂相簿</button>
+
+      <div class="shrink-0 px-4 py-2 bg-black/25 border-b border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs">
+        <div class="flex items-center gap-1.5">
+          <button onclick="triggerCustomPhotoUpload()" class="btn-coral px-3 py-1 rounded-xl font-black">📷 試看自訂圖</button>
+          <button id="btn-gallery-auto" onclick="toggleAutoRotate()" class="btn-ocean px-2.5 py-1 rounded-xl font-bold">🔄 15秒隨機：開</button>
+          <button onclick="probeAllLocalImages()" class="btn-ocean px-2.5 py-1 rounded-xl font-bold">🔍 重新掃描 images/</button>
+        </div>
+        <div id="gallery-mode-bar" class="hidden flex items-center gap-1">
+          <button id="btn-gal-replace" onclick="setCustomPlaybackMode('replace')" class="px-2.5 py-1 rounded-lg font-black bg-rose-500/85 text-white">取代 1~13 號</button>
+          <button id="btn-gal-mix" onclick="setCustomPlaybackMode('mix')" class="px-2.5 py-1 rounded-lg font-bold bg-black/40 text-sky-100">與本機圖混播</button>
+        </div>
+      </div>
+
+      <div id="gallery-grid" class="flex-1 overflow-y-auto custom-scroll p-3.5 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5"></div>
+
+      <div class="shrink-0 px-4 py-2.5 bg-black/45 border-t border-sky-300/25 flex justify-end">
+        <button onclick="closeGalleryModal()" class="btn-coral px-6 py-2 rounded-2xl text-sm font-black">關閉寫真集</button>
       </div>
     </div>
   </div>
@@ -669,455 +708,579 @@
   <!-- =========================================================================
        MODAL 3: AUDIO & MEDIA ENGINE SETTINGS
        ========================================================================= -->
-  <div id="audio-modal" class="hidden fixed inset-0 z-[95] bg-rose-950/55 backdrop-blur-sm flex items-center justify-center p-3">
-    <div class="w-full max-w-md max-h-[92dvh] flex flex-col overflow-hidden rounded-3xl border-2 border-pink-300 bg-white shadow-2xl">
-      <div class="shrink-0 px-4 py-3 bg-pink-50 border-b border-pink-200 flex items-center justify-between">
-        <h3 class="text-base font-black rose-title">🔊 甜心語音、音效與背景音樂</h3>
-        <button onclick="closeAudioModal()" class="text-rose-400 hover:text-rose-700 text-lg font-black px-2">✕</button>
+  <div id="audio-modal" class="hidden fixed inset-0 z-[95] bg-black/70 backdrop-blur-sm flex items-center justify-center p-3">
+    <div class="w-full max-w-md max-h-[92dvh] flex flex-col overflow-hidden rounded-3xl border border-sky-300/40 bg-[#082236]/95 shadow-2xl">
+      <div class="shrink-0 px-4 py-3 bg-black/35 border-b border-sky-300/25 flex items-center justify-between">
+        <h3 class="text-base font-black summer-title">🔊 語音、音效與夏日背景音樂</h3>
+        <button onclick="closeAudioModal()" class="text-sky-200 hover:text-white text-lg font-black px-2">✕</button>
       </div>
 
       <div class="flex-1 overflow-y-auto custom-scroll p-4 space-y-3.5 text-sm">
-        <div class="flex items-center justify-between p-2.5 rounded-2xl bg-pink-50 border border-pink-200">
-          <span class="font-black text-rose-700">全域靜音開關</span>
-          <button id="btn-master-mute" onclick="audioEngine.toggleMute()" class="btn-cream px-3 py-1 rounded-xl text-xs font-black">
+        <div class="flex items-center justify-between p-2.5 rounded-2xl bg-black/30 border border-white/15">
+          <span class="font-black text-sky-100">一鍵靜音開關</span>
+          <button id="btn-master-mute" onclick="audioEngine.toggleMute()" class="btn-ocean px-3 py-1 rounded-xl text-xs font-black">
             🔊 開啟中
           </button>
         </div>
 
-        <div class="space-y-2 p-3 rounded-2xl bg-pink-50 border border-pink-200">
+        <div class="space-y-2 p-3 rounded-2xl bg-black/30 border border-white/15">
           <div class="flex items-center justify-between">
-            <span class="font-black text-rose-700">🎵 柔和背景音樂 (BGM)</span>
-            <button id="btn-bgm-toggle" onclick="audioEngine.toggleBgm()" class="btn-sweet px-3 py-1 rounded-xl text-xs font-black">
-              ▶ 播放五聲音階
+            <span class="font-black text-sky-200">🎵 夏日五聲音階 / 本機音樂</span>
+            <button id="btn-bgm-toggle" onclick="audioEngine.toggleBgm()" class="btn-coral px-3 py-1 rounded-xl text-xs font-black">
+              ▶ 播放音樂
             </button>
           </div>
           <div class="flex items-center gap-2">
-            <span class="text-xs text-rose-600 font-bold w-10">音量</span>
+            <span class="text-xs text-sky-200 font-bold w-10">音量</span>
             <input id="slider-bgm" type="range" min="0" max="1" step="0.05" value="0.35"
-              oninput="audioEngine.setBgmVolume(this.value)" class="flex-1 accent-pink-500" />
-            <span id="val-bgm" class="text-xs font-mono font-bold text-rose-700 w-9 text-right">35%</span>
+              oninput="audioEngine.setBgmVolume(this.value)" class="flex-1 accent-rose-400" />
+            <span id="val-bgm" class="text-xs font-mono tabular-nums font-bold text-sky-100 w-9 text-right">35%</span>
           </div>
-          <div class="pt-2 border-t border-pink-200 space-y-1.5">
-            <label class="block text-xs text-rose-600 font-bold">匯入本機音樂檔循環播放 (MP3 / WAV)：</label>
+          <div class="pt-2 border-t border-white/10 space-y-1.5">
+            <label class="block text-xs text-sky-100/80 font-bold">匯入本機音樂檔循環播放 (MP3 / WAV)：</label>
             <div class="flex items-center gap-2">
-              <label class="btn-cream px-3 py-1.5 rounded-xl text-xs font-black cursor-pointer">
+              <label class="btn-ocean px-3 py-1.5 rounded-xl text-xs font-black cursor-pointer">
                 📂 選擇音樂檔
                 <input id="custom-bgm-file" type="file" accept="audio/mp3,audio/wav,audio/*" class="hidden" onchange="audioEngine.loadCustomBgm(this)" />
               </label>
-              <span id="custom-bgm-name" class="text-xs text-rose-500 font-bold truncate flex-1">目前：內建柔和五聲音階</span>
+              <span id="custom-bgm-name" class="text-xs text-rose-200/85 font-bold truncate flex-1">目前：內建夏日五聲音階</span>
             </div>
           </div>
         </div>
 
-        <div class="space-y-2 p-3 rounded-2xl bg-pink-50 border border-pink-200">
+        <div class="space-y-2 p-3 rounded-2xl bg-black/30 border border-white/15">
           <div class="flex items-center justify-between">
-            <span class="font-black text-rose-700">✨ 可愛合成音效 (SFX)</span>
-            <button onclick="audioEngine.playSfx('homerun')" class="btn-cream px-2.5 py-1 rounded-xl text-xs font-black">測試音效</button>
+            <span class="font-black text-sky-200">✨ 遊戲合成音效 (SFX)</span>
+            <button onclick="audioEngine.playSfx('homerun')" class="btn-ocean px-2.5 py-1 rounded-xl text-xs font-black">測試音效</button>
           </div>
           <div class="flex items-center gap-2">
-            <span class="text-xs text-rose-600 font-bold w-10">音量</span>
+            <span class="text-xs text-sky-200 font-bold w-10">音量</span>
             <input id="slider-sfx" type="range" min="0" max="1" step="0.05" value="0.7"
-              oninput="audioEngine.setSfxVolume(this.value)" class="flex-1 accent-pink-500" />
-            <span id="val-sfx" class="text-xs font-mono font-bold text-rose-700 w-9 text-right">70%</span>
+              oninput="audioEngine.setSfxVolume(this.value)" class="flex-1 accent-rose-400" />
+            <span id="val-sfx" class="text-xs font-mono tabular-nums font-bold text-sky-100 w-9 text-right">70%</span>
           </div>
         </div>
 
-        <div class="space-y-2 p-3 rounded-2xl bg-pink-50 border border-pink-200">
+        <div class="space-y-2 p-3 rounded-2xl bg-black/30 border border-white/15">
           <div class="flex items-center justify-between">
-            <span class="font-black text-rose-700">🗣️ 繁中甜美語音播報 (TTS)</span>
+            <span class="font-black text-sky-200">🗣️ 繁中語音播報 (zh-TW)</span>
             <div class="flex gap-1.5">
-              <button id="btn-tts-toggle" onclick="audioEngine.toggleVoice()" class="btn-cream px-2.5 py-1 rounded-xl text-xs font-black">開啟</button>
-              <button onclick="audioEngine.speak('主人加油喔，粉櫻甜心祝你全壘打！')" class="btn-cream px-2.5 py-1 rounded-xl text-xs font-black">試聽</button>
+              <button id="btn-tts-toggle" onclick="audioEngine.toggleVoice()" class="btn-ocean px-2.5 py-1 rounded-xl text-xs font-black">開啟</button>
+              <button onclick="audioEngine.speak('盛夏清涼十三美，祝你手氣大旺，全壘打！')" class="btn-ocean px-2.5 py-1 rounded-xl text-xs font-black">試聽</button>
             </div>
           </div>
           <div class="flex items-center gap-2">
-            <span class="text-xs text-rose-600 font-bold w-10">音量</span>
+            <span class="text-xs text-sky-200 font-bold w-10">音量</span>
             <input id="slider-voice" type="range" min="0" max="1" step="0.05" value="0.9"
-              oninput="audioEngine.setVoiceVolume(this.value)" class="flex-1 accent-pink-500" />
-            <span id="val-voice" class="text-xs font-mono font-bold text-rose-700 w-9 text-right">90%</span>
+              oninput="audioEngine.setVoiceVolume(this.value)" class="flex-1 accent-rose-400" />
+            <span id="val-voice" class="text-xs font-mono tabular-nums font-bold text-sky-100 w-9 text-right">90%</span>
           </div>
         </div>
       </div>
 
-      <div class="shrink-0 px-4 py-2.5 bg-pink-50 border-t border-pink-200 flex justify-end">
-        <button onclick="closeAudioModal()" class="btn-sweet px-6 py-2 rounded-2xl text-sm font-black">完成設定 💖</button>
+      <div class="shrink-0 px-4 py-2.5 bg-black/40 border-t border-sky-300/25 flex justify-end">
+        <button onclick="closeAudioModal()" class="btn-coral px-6 py-2 rounded-2xl text-sm font-black">完成設定 🌊</button>
       </div>
     </div>
   </div>
 
   <!-- =========================================================================
-       MODAL 4: TAIWAN 13-CARDS RULES REFERENCE
+       MODAL 4: TAIWAN 13-CARDS RULES & GITHUB DEPLOYMENT GUIDE
        ========================================================================= -->
-  <div id="rules-modal" class="hidden fixed inset-0 z-[95] bg-rose-950/55 backdrop-blur-sm flex items-center justify-center p-3">
-    <div class="w-full max-w-lg max-h-[92dvh] flex flex-col overflow-hidden rounded-3xl border-2 border-pink-300 bg-white shadow-2xl">
-      <div class="shrink-0 px-4 py-3 bg-pink-50 border-b border-pink-200 flex items-center justify-between">
-        <h3 class="text-base font-black rose-title">📖 台灣經典十三張（十三支）規則</h3>
-        <button onclick="closeRulesModal()" class="text-rose-400 hover:text-rose-700 text-lg font-black px-2">✕</button>
+  <div id="rules-modal" class="hidden fixed inset-0 z-[95] bg-black/70 backdrop-blur-sm flex items-center justify-center p-3">
+    <div class="w-full max-w-lg max-h-[92dvh] flex flex-col overflow-hidden rounded-3xl border border-sky-300/40 bg-[#082236]/95 shadow-2xl">
+      <div class="shrink-0 px-4 py-3 bg-black/35 border-b border-sky-300/25 flex items-center justify-between">
+        <h3 class="text-base font-black summer-title">📖 台灣正宗十三張規則 & GitHub 圖庫說明</h3>
+        <button onclick="closeRulesModal()" class="text-sky-200 hover:text-white text-lg font-black px-2">✕</button>
       </div>
 
-      <div class="flex-1 overflow-y-auto custom-scroll p-4 space-y-2.5 text-xs sm:text-sm text-rose-900 leading-relaxed">
-        <div class="p-2.5 rounded-2xl bg-pink-50 border border-pink-200">
-          <div class="font-black text-rose-600 mb-1">1. 基本分墩與防倒水</div>
-          每人 13 張牌，分成 <strong>頭墩(3張)、中墩(5張)、尾墩(5張)</strong>。必須符合 <strong>尾墩 ≥ 中墩 ≥ 頭墩</strong>，否則為「<strong>倒水（相公）</strong>」，無條件輸給所有未倒水對手並以打槍倍數賠付。
+      <div class="flex-1 overflow-y-auto custom-scroll p-4 space-y-2.5 text-xs sm:text-sm text-sky-50 leading-relaxed">
+        <div class="p-2.5 rounded-2xl bg-sky-900/40 border border-sky-300/30">
+          <div class="font-black text-amber-300 mb-1">📁 GitHub Pages 本機圖庫放法</div>
+          將此檔存為 <code class="text-amber-200">index.html</code>，同目錄建立 <code class="text-amber-200">images/</code> 資料夾並放入 <code class="text-amber-200">1.jpg</code> ～ <code class="text-amber-200">13.jpg</code>（系統也會自動偵測 <code class="text-amber-200">.png</code> 與 <code class="text-amber-200">.webp</code>）。
         </div>
-        <div class="p-2.5 rounded-2xl bg-pink-50 border border-pink-200">
-          <div class="font-black text-rose-600 mb-1">2. 牌型大小（只比點數不比花色）</div>
+        <div class="p-2.5 rounded-2xl bg-black/30 border border-white/15">
+          <div class="font-black text-sky-300 mb-1">1. 流暢擺牌與防倒水（相公）</div>
+          每人 13 張牌，分成 <strong>頭墩(3張)、中墩(5張)、尾墩(5張)</strong>。點手牌自動放入紅框墩位；點已擺的牌再點任一張牌可直接互換（點同張兩次收回手牌）。<br/>
+          須滿足 <strong>尾墩 ≥ 中墩 ≥ 頭墩</strong>，違反即「<strong>倒水（相公）</strong>」，無條件輸給所有未倒水玩家並以打槍倍數賠付。
+        </div>
+        <div class="p-2.5 rounded-2xl bg-black/30 border border-white/15">
+          <div class="font-black text-sky-300 mb-1">2. 牌型大小（只比點數不比花色）</div>
           同花順 &gt; 鐵支 &gt; 葫蘆 &gt; 同花 &gt; 順子 &gt; 三條 &gt; 兩對 &gt; 一對 &gt; 烏龍。<br/>
-          A 最大、2 最小，同點數平手（0 水）。順子以 <strong>10-J-Q-K-A</strong> 最大，<strong>A-2-3-4-5</strong> 第二大。
+          A 最大、2 最小，同點平手 0 水。順子以 <strong>10-J-Q-K-A</strong> 最大，<strong>A-2-3-4-5</strong> 第二大。
         </div>
-        <div class="p-2.5 rounded-2xl bg-pink-50 border border-pink-200">
-          <div class="font-black text-rose-600 mb-1">3. 單墩加水、打槍與全壘打</div>
+        <div class="p-2.5 rounded-2xl bg-black/30 border border-white/15">
+          <div class="font-black text-sky-300 mb-1">3. 單墩加水、打槍與全壘打</div>
           <ul class="list-disc pl-4 space-y-0.5">
             <li><strong>頭墩三條（衝三）</strong>：3 水 ｜ <strong>中墩葫蘆</strong>：2 水</li>
             <li><strong>尾墩鐵支</strong>：4 水 ｜ <strong>中墩鐵支</strong>：8 水</li>
             <li><strong>尾墩同花順</strong>：5 水 ｜ <strong>中墩同花順</strong>：10 水</li>
-            <li><strong>打槍</strong>：三墩全贏同一位對手，對該對手總水數 <strong>×2</strong>。</li>
-            <li><strong>全壘打</strong>：打槍全部三位對手，總水數 <strong>再翻倍</strong>！</li>
+            <li><strong>打槍</strong>：三墩全贏同一家，該家總水數 <strong>×2</strong>。</li>
+            <li><strong>全壘打</strong>：打槍全部 3 家，總水數 <strong>再 ×2</strong>！</li>
           </ul>
         </div>
-        <div class="p-2.5 rounded-2xl bg-pink-50 border border-pink-200">
-          <div class="font-black text-rose-600 mb-1">4. 特殊報到牌型（免比牌直接贏）</div>
-          <strong>至尊青龍</strong>（各 26 水）、<strong>一條龍</strong>（各 13 水）、<strong>三同花 / 三順子 / 六對半</strong>（各 3 水）。
+        <div class="p-2.5 rounded-2xl bg-black/30 border border-white/15">
+          <div class="font-black text-sky-300 mb-1">4. 5 種報到特殊牌型（免比牌直接收水）</div>
+          <strong>至尊青龍</strong>（26 水）、<strong>一條龍</strong>（13 水）、<strong>三同花 / 三順子 / 六對半</strong>（各 3 水）。
         </div>
       </div>
 
-      <div class="shrink-0 px-4 py-2.5 bg-pink-50 border-t border-pink-200 flex justify-end">
-        <button onclick="closeRulesModal()" class="btn-sweet px-6 py-2 rounded-2xl text-sm font-black">我知道了 🌸</button>
+      <div class="shrink-0 px-4 py-2.5 bg-black/40 border-t border-sky-300/25 flex justify-end">
+        <button onclick="closeRulesModal()" class="btn-coral px-6 py-2 rounded-2xl text-sm font-black">我知道了 🏖️</button>
       </div>
     </div>
   </div>
 
   <!-- =========================================================================
-       JAVASCRIPT ENGINE:
-       1. 8 Original Cute Anime Beauty SVG Generator & Photo Showcase Manager
-       2. AudioMediaEngine (Sweet TTS, Cute SFX, Soft Pentatonic BGM, Local MP3)
-       3. Authentic Taiwan 13-Cards Evaluator, Solver & AI
-       4. PeerJS Multiplayer with Seamless Local Fallback
+       JAVASCRIPT ENGINE
        ========================================================================= -->
   <script>
     'use strict';
 
     /* =========================================================================
-       1. 8 ORIGINAL CUTE ANIME BEAUTY SVG PORTRAITS (Embedded, Zero Broken Links)
+       0. BEAUTY_CONFIG — 方便玩家自行編輯的 13 美本機圖庫設定（對應 ♠A ~ ♠2）
+       預設自動依序嘗試 ./images/{n}.jpg -> ./images/{n}.png -> ./images/{n}.webp
        ========================================================================= */
-    function buildCuteBeautySvg(cfg) {
-      // Generates a rich, original anime-style cute beauty portrait SVG
-      const bgDeco = cfg.deco === 'sakura'
-        ? `<circle cx="35" cy="40" r="9" fill="#fff" opacity="0.55"/><circle cx="205" cy="55" r="7" fill="#fff" opacity="0.6"/><text x="22" y="88" font-size="20">🌸</text><text x="195" y="108" font-size="18">🌸</text><text x="188" y="230" font-size="16">✨</text>`
-        : cfg.deco === 'berry'
-        ? `<text x="20" y="55" font-size="20">🍓</text><text x="194" y="65" font-size="20">🍓</text><text x="25" y="230" font-size="17">🍰</text><text x="196" y="220" font-size="16">💖</text>`
-        : cfg.deco === 'star'
-        ? `<text x="22" y="50" font-size="20">⭐</text><text x="192" y="62" font-size="20">🌙</text><text x="196" y="150" font-size="16">✨</text><text x="22" y="210" font-size="16">🎵</text>`
-        : cfg.deco === 'boba'
-        ? `<text x="22" y="58" font-size="22">🧋</text><text x="192" y="65" font-size="18">💛</text><text x="194" y="225" font-size="18">✨</text>`
-        : cfg.deco === 'cat'
-        ? `<text x="22" y="55" font-size="19">🐾</text><text x="192" y="60" font-size="19">💤</text><text x="192" y="220" font-size="18">💗</text>`
-        : cfg.deco === 'bunny'
-        ? `<text x="22" y="55" font-size="20">♠️</text><text x="192" y="55" font-size="20">♥️</text><text x="24" y="225" font-size="18">♦️</text><text x="192" y="225" font-size="18">♣️</text>`
-        : cfg.deco === 'beach'
-        ? `<circle cx="195" cy="42" r="22" fill="#fde047" opacity="0.85"/><text x="20" y="62" font-size="20">🌺</text><text x="190" y="225" font-size="18">🌊</text>`
-        : `<text x="24" y="54" font-size="20">👑</text><text x="190" y="60" font-size="19">💎</text><text x="22" y="220" font-size="18">🎀</text><text x="194" y="225" font-size="18">✨</text>`;
-
-      // Hair back shape variations
-      let hairBack = '';
-      if (cfg.hairStyle === 'twintails') {
-        hairBack = `
-          <ellipse cx="48" cy="175" rx="28" ry="62" fill="${cfg.hairMain}" transform="rotate(14 48 175)"/>
-          <ellipse cx="192" cy="175" rx="28" ry="62" fill="${cfg.hairMain}" transform="rotate(-14 192 175)"/>
-          <circle cx="62" cy="112" r="10" fill="${cfg.accent}"/>
-          <circle cx="178" cy="112" r="10" fill="${cfg.accent}"/>
-          <path d="M60 110 C60 45, 180 45, 180 110 L176 185 L64 185 Z" fill="${cfg.hairDark}"/>
-        `;
-      } else if (cfg.hairStyle === 'bob') {
-        hairBack = `
-          <path d="M52 125 C48 45, 192 45, 188 125 C192 178, 178 205, 162 208 L78 208 C62 205, 48 178, 52 125 Z" fill="${cfg.hairMain}"/>
-        `;
-      } else {
-        // Long flowing hair
-        hairBack = `
-          <path d="M46 130 C44 38, 196 38, 194 130 L204 285 L36 285 Z" fill="${cfg.hairMain}"/>
-          <path d="M58 135 C58 55, 182 55, 182 135 L188 275 L52 275 Z" fill="${cfg.hairDark}" opacity="0.35"/>
-        `;
+    const BEAUTY_CONFIG = [
+      {
+        num: 1, card: '♠A', name: '海灘小夏', path: './images/1.jpg',
+        palette: ['#073b5c', '#0ea5e9', '#fb7185'],
+        quotes: {
+          idle: '「海風吹起來超涼快！祝你這局起手就拿王牌🌊」',
+          deal: '「新局發牌囉！祝你起手就中一條龍或至尊青龍🐉」',
+          chongsan: '「哇！頭墩衝三 (+3水)！這手牌也太帥了吧✨」',
+          shoot: '「砰砰砰！三墩全勝打槍對手，水數直接 ×2 🔫」',
+          homerun: '「🏆 全壘打 HOME RUN！橫掃三家水數再翻倍！」',
+          foul: '「哎呀～看美圖分心倒水啦！下局幫你吹海風贏回來💦」',
+          settleWin: '「清涼大豐收贏水囉！我們再來一局繼續連勝🎉」',
+          settleLose: '「別灰心～換張新女神轉轉運，下局一定全壘打💪」'
+        }
+      },
+      {
+        num: 2, card: '♠K', name: '泳池莉莉', path: './images/2.jpg',
+        palette: ['#064e3b', '#14b8a6', '#f472b6'],
+        quotes: {
+          idle: '「池畔氣泡飲準備好了，穩穩排好頭中尾別倒水喔🍹」',
+          deal: '「13 張牌到齊啦，快點挑出最強的三墩組合吧🏖️」',
+          chongsan: '「頭墩衝三成功！泳池邊為你歡呼尖叫💖」',
+          shoot: '「三墩通殺打槍！這波操作超清涼🔫🌊」',
+          homerun: '「全壘打橫掃全場！今晚泳池派對你請客🥂」',
+          foul: '「小心尾墩要大於中墩喔，下局一定沒問題💦」',
+          settleWin: '「贏得太漂亮了！手氣跟太陽一樣火熱☀️」',
+          settleLose: '「沒關係，下局換莉莉替你加持好運✨」'
+        }
+      },
+      {
+        num: 3, card: '♠Q', name: '衝浪妮娜', path: './images/3.jpg',
+        palette: ['#1e3a8a', '#38bdf8', '#fb923c'],
+        quotes: {
+          idle: '「浪來了就要衝！看到好牌就大膽衝頭搶水吧🏄‍♀️」',
+          deal: '「發牌囉！這副牌感覺很有大浪要來呢🌊」',
+          chongsan: '「衝三出擊！像踏上最高海浪一樣過癮✨」',
+          shoot: '「打槍對手水數翻倍！勢不可擋🔫」',
+          homerun: '「三家全倒全壘打！你就是牌桌浪王🏆」',
+          foul: '「翻船倒水啦～趕快爬回衝浪板再戰一局！」',
+          settleWin: '「乘風破浪大贏特贏！太爽快啦🎉」',
+          settleLose: '「等下一波好浪，馬上連本帶利贏回來💪」'
+        }
+      },
+      {
+        num: 4, card: '♠J', name: '白沙語彤', path: './images/4.jpg',
+        palette: ['#0f4c5c', '#2dd4bf', '#fda4af'],
+        quotes: {
+          idle: '「慢慢挑牌別著急，我在白沙灘上陪你一起看牌🌴」',
+          deal: '「剛洗好的牌發下來囉，祝你拿到好牌型💖」',
+          chongsan: '「哇～衝三三條！語彤替你拍拍手👏」',
+          shoot: '「打槍成功 ×2！對手都看傻眼了💘」',
+          homerun: '「全壘打奇蹟誕生！太神啦🏆✨」',
+          foul: '「哎呀不小心相公了，下次點『均衡配置』最穩喔！」',
+          settleWin: '「恭喜贏水！這局節奏抓得太好了🌸」',
+          settleLose: '「沒關係啦，聽聽海浪聲放鬆一下再戰🌊」'
+        }
+      },
+      {
+        num: 5, card: '♠10', name: '夕陽晴夏', path: './images/5.jpg',
+        palette: ['#7c2d12', '#f97316', '#f43f5e'],
+        quotes: {
+          idle: '「黃金夕陽灑在海面上好美～點『👁️ 賞圖』獨享滿版🌅」',
+          deal: '「夕陽海風吹來好運，新局發牌開始囉✨」',
+          chongsan: '「頭墩衝三閃耀登場！+3 水直接入袋🔥」',
+          shoot: '「夕陽下的神槍手！打槍對手翻倍得分🔫」',
+          homerun: '「全壘打轟爆全場！金色榮耀屬於你🏆」',
+          foul: '「夕陽太美看到倒水了嗎？下局專心贏回來😆」',
+          settleWin: '「金光閃閃大勝利！這局贏水超開心🎉」',
+          settleLose: '「換張新桌布換個心情，下局馬上反超💪」'
+        }
+      },
+      {
+        num: 6, card: '♠9', name: '珊瑚若微', path: './images/6.jpg',
+        palette: ['#831843', '#fb7185', '#38bdf8'],
+        quotes: {
+          idle: '「中墩擺出葫蘆可以加 2 水，鐵支更是加 8 水喔💎」',
+          deal: '「新局開打！試試點擊兩張牌互換微調牌型吧💖」',
+          chongsan: '「衝三成功！這手牌配得太巧妙了✨」',
+          shoot: '「三墩全勝打槍！若微為你喝采🥂」',
+          homerun: '「全壘打橫掃三家！牌桌傳說誕生🏆」',
+          foul: '「哎呀倒水了，記得確認尾 ≥ 中 ≥ 頭喔！」',
+          settleWin: '「漂亮收割水數！今晚運氣站在你這邊🌊」',
+          settleLose: '「小輸不算什麼，下一把直接打槍討回來！」'
+        }
+      },
+      {
+        num: 7, card: '♠8', name: '椰林智妍', path: './images/7.jpg',
+        palette: ['#134e4a', '#22d3ee', '#f59e0b'],
+        quotes: {
+          idle: '「今天陽光這麼燦爛，你的手氣一定也超級旺☀️」',
+          deal: '「椰林微風吹來好牌運，發牌開始囉🌴」',
+          chongsan: '「頭墩三條衝三！直接拉開差距⚡」',
+          shoot: '「精準打槍 ×2！智妍超佩服你的牌技💘」',
+          homerun: '「全壘打大滿貫！全場焦點都是你🏆」',
+          foul: '「倒水相公好可惜，下局一定穩穩拿下！」',
+          settleWin: '「大豐收的一局！繼續保持這股氣勢🎉」',
+          settleLose: '「喝口椰子水消消暑，下局一定大逆轉🥥」'
+        }
+      },
+      {
+        num: 8, card: '♠7', name: '碧浪心妍', path: './images/8.jpg',
+        palette: ['#0c4a6e', '#06b6d4', '#ec4899'],
+        quotes: {
+          idle: '「點開上方『🖼️ 13美』就能一覽 1~13 號圖庫狀態喔🌊」',
+          deal: '「碧藍海浪帶來好手氣，13 張牌已發好✨」',
+          chongsan: '「頭墩衝三帥翻天！+3 水輕鬆拿💖」',
+          shoot: '「砰！三墩全贏打槍翻倍，太過癮了🔫」',
+          homerun: '「全壘打橫掃全場！水數翻倍再翻倍🏆」',
+          foul: '「不小心倒水啦～記得看紅框警示喔！」',
+          settleWin: '「清涼贏大水！這把判斷超神準🎉」',
+          settleLose: '「沒關係～心妍陪你再戰下一局💪」'
+        }
+      },
+      {
+        num: 9, card: '♠6', name: '星沙曼妮', path: './images/9.jpg',
+        palette: ['#312e81', '#818cf8', '#fb7185'],
+        quotes: {
+          idle: '「海島派對才剛開始，祝你把把都拿鐵支同花順🥂」',
+          deal: '「新局發牌！會不會直接開出特殊報到牌呢✨」',
+          chongsan: '「衝三登場！氣勢瞬間壓制全場🔥」',
+          shoot: '「打槍對手水數 ×2！曼妮為你乾杯🍾」',
+          homerun: '「全壘打王者降臨！橫掃三家太狂啦🏆」',
+          foul: '「倒水小失誤，下局穩扎穩打贏回來！」',
+          settleWin: '「華麗收水！你就是今晚的十三支之王👑」',
+          settleLose: '「好戲在後頭，下一局馬上翻盤✨」'
+        }
+      },
+      {
+        num: 10, card: '♠5', name: '海風伊娃', path: './images/10.jpg',
+        palette: ['#0369a1', '#38bdf8', '#f472b6'],
+        quotes: {
+          idle: '「順子記住 10-J-Q-K-A 最大，A-2-3-4-5 是第二大喔✨」',
+          deal: '「海風吹拂～新局發牌，看看這手牌怎麼配最猛🌊」',
+          chongsan: '「頭墩三條衝三！超漂亮的進攻選擇💖」',
+          shoot: '「打槍成功！對手毫無招架之力🔫」',
+          homerun: '「全壘打 HOME RUN！完美通殺全場🏆」',
+          foul: '「哎呀倒水了，點『清空重排』可以快速重擺喔！」',
+          settleWin: '「贏水入袋！牌技與顏值雙重滿分🎉」',
+          settleLose: '「轉換一下幸運女神，下局大殺四方💪」'
+        }
+      },
+      {
+        num: 11, card: '♠4', name: '仲夏小櫻', path: './images/11.jpg',
+        palette: ['#701a75', '#e879f9', '#38bdf8'],
+        quotes: {
+          idle: '「喜歡自己的泳裝相簿嗎？點『📷 試看自訂圖』馬上套用！」',
+          deal: '「仲夏發牌囉！祝你拿到六對半或三同花直接報到🌸」',
+          chongsan: '「衝三 (+3水)！小櫻為你瘋狂打 Call 💖」',
+          shoot: '「三墩全勝打槍 ×2！太厲害啦💘」',
+          homerun: '「全壘打！！全場三家都被你收服了🏆」',
+          foul: '「倒水相公了啦～下局小櫻提醒你看牌型喔💦」',
+          settleWin: '「耶～贏水大成功！再來一局吧🌸」',
+          settleLose: '「拍拍～下局手氣馬上回溫贏大水✨」'
+        }
+      },
+      {
+        num: 12, card: '♠3', name: '陽光宥希', path: './images/12.jpg',
+        palette: ['#065f46', '#34d399', '#fb923c'],
+        quotes: {
+          idle: '「充滿活力的一局！三種智慧推薦擺法隨時幫你算牌⚡」',
+          deal: '「陽光滿格！13 張新牌發好，準備出擊☀️」',
+          chongsan: '「衝三拿 3 水！開局就先聲奪人🔥」',
+          shoot: '「漂亮打槍對手！水數雙倍奉上🔫」',
+          homerun: '「全壘打橫掃全場！活力爆發無人能敵🏆」',
+          foul: '「不小心倒水了，調整呼吸下局再衝！」',
+          settleWin: '「大獲全勝！今天狀態好到爆表🎉」',
+          settleLose: '「越戰越勇！下一把把水數全部贏回來💪」'
+        }
+      },
+      {
+        num: 13, card: '♠2', name: '月灣星語', path: './images/13.jpg',
+        palette: ['#1e1b4b', '#6366f1', '#fb7185'],
+        quotes: {
+          idle: '「聽著海浪聲打十三支最享受了，今晚一起全壘打🌙」',
+          deal: '「星光海灣發牌囉，願幸運女神眷顧你✨」',
+          chongsan: '「星光閃耀的衝三！+3 水漂亮收下💫」',
+          shoot: '「夜空下的完美打槍 ×2！太迷人了💘」',
+          homerun: '「全壘打傳奇達成！星語為你獻上祝福🏆🌙」',
+          foul: '「哎呀倒水了，月光下慢慢排下局必勝！」',
+          settleWin: '「美好的勝利之夜！繼續連勝吧🎉」',
+          settleLose: '「海風吹散壞運氣，下局換你好運降臨🌊」'
+        }
       }
+    ];
 
-      // Headwear / Ears / Accessories
-      let headwear = '';
-      if (cfg.accessory === 'catEars') {
-        headwear = `
-          <polygon points="62,86 74,38 104,70" fill="${cfg.hairMain}" stroke="${cfg.hairDark}" stroke-width="2"/>
-          <polygon points="71,78 78,49 96,70" fill="#fbcfe8"/>
-          <polygon points="178,86 166,38 136,70" fill="${cfg.hairMain}" stroke="${cfg.hairDark}" stroke-width="2"/>
-          <polygon points="169,78 162,49 144,70" fill="#fbcfe8"/>
-        `;
-      } else if (cfg.accessory === 'bunnyEars') {
-        headwear = `
-          <ellipse cx="86" cy="42" rx="14" ry="38" fill="#ffffff" stroke="${cfg.accent}" stroke-width="2.5" transform="rotate(-14 86 42)"/>
-          <ellipse cx="86" cy="45" rx="7" ry="26" fill="#fbcfe8" transform="rotate(-14 86 45)"/>
-          <ellipse cx="154" cy="42" rx="14" ry="38" fill="#ffffff" stroke="${cfg.accent}" stroke-width="2.5" transform="rotate(14 154 42)"/>
-          <ellipse cx="154" cy="45" rx="7" ry="26" fill="#fbcfe8" transform="rotate(14 154 45)"/>
-        `;
-      } else if (cfg.accessory === 'maidFrill') {
-        headwear = `
-          <path d="M62 84 Q120 44 178 84 Q158 64 140 72 Q120 56 100 72 Q82 64 62 84 Z" fill="#ffffff" stroke="#f472b6" stroke-width="2"/>
-          <circle cx="120" cy="64" r="6" fill="${cfg.accent}"/>
-        `;
-      } else if (cfg.accessory === 'tiara') {
-        headwear = `
-          <polygon points="88,74 100,48 112,66 120,40 128,66 140,48 152,74" fill="#fde047" stroke="#eab308" stroke-width="2"/>
-          <circle cx="120" cy="59" r="4.5" fill="#ec4899"/>
-        `;
-      } else if (cfg.accessory === 'mikoRibbon') {
-        headwear = `
-          <polygon points="150,74 185,56 178,88" fill="#e11d48"/>
-          <polygon points="150,74 128,58 134,84" fill="#fb7185"/>
-          <circle cx="152" cy="74" r="6" fill="#fde047"/>
-        `;
-      } else if (cfg.accessory === 'starPin') {
-        headwear = `
-          <text x="148" y="88" font-size="22">⭐</text>
-          <text x="72" y="92" font-size="16">✨</text>
-        `;
-      } else if (cfg.accessory === 'hibiscus') {
-        headwear = `<text x="150" y="92" font-size="28">🌺</text>`;
-      } else {
-        headwear = `
-          <ellipse cx="164" cy="78" rx="14" ry="8" fill="${cfg.accent}" transform="rotate(20 164 78)"/>
-          <circle cx="164" cy="78" r="4" fill="#fff"/>
-        `;
-      }
-
-      // Cute Eyes (wink or both open sparkling)
-      const rightEye = cfg.wink
-        ? `<path d="M135 144 Q146 135 157 144" fill="none" stroke="#4a1d35" stroke-width="3.2" stroke-linecap="round"/>`
-        : `
-          <ellipse cx="146" cy="144" rx="11.5" ry="13.5" fill="#2d1624"/>
-          <ellipse cx="146" cy="146" rx="9" ry="10.5" fill="${cfg.eyeColor}"/>
-          <ellipse cx="146" cy="148" rx="5.5" ry="6" fill="#2d1624"/>
-          <circle cx="142" cy="140" r="4" fill="#ffffff"/>
-          <circle cx="150" cy="151" r="2" fill="#ffffff"/>
-          <path d="M133 135 Q146 127 159 135" fill="none" stroke="#3b1529" stroke-width="2.8" stroke-linecap="round"/>
-        `;
-
+    /* =========================================================================
+       1. GRACEFUL SVG FALLBACK GENERATOR (Ocean Gradient + Neon Glass)
+       Shown automatically if ./images/{n}.jpg/.png/.webp are not uploaded yet.
+       ========================================================================= */
+    function buildFallbackSvg(item) {
+      const [c1, c2, c3] = item.palette || ['#073b5c', '#0ea5e9', '#fb7185'];
+      const id = `fb-${item.num}`;
       return `
-        <svg viewBox="0 0 240 290" xmlns="http://www.w3.org/2000/svg" class="w-full h-full object-cover">
+        <svg viewBox="0 0 1280 720" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
           <defs>
-            <linearGradient id="bg-${cfg.id}" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="${cfg.bg1}"/>
-              <stop offset="100%" stop-color="${cfg.bg2}"/>
+            <linearGradient id="g-${id}" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="${c1}"/>
+              <stop offset="52%" stop-color="${c2}"/>
+              <stop offset="100%" stop-color="${c3}"/>
             </linearGradient>
-            <linearGradient id="skin-${cfg.id}" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#fff1e8"/>
-              <stop offset="100%" stop-color="#ffe1d2"/>
-            </linearGradient>
+            <radialGradient id="orb1-${id}" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#ffffff" stop-opacity="0.45"/>
+              <stop offset="100%" stop-color="${c2}" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="orb2-${id}" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#fed7aa" stop-opacity="0.45"/>
+              <stop offset="100%" stop-color="${c3}" stop-opacity="0"/>
+            </radialGradient>
           </defs>
-
-          <!-- Background -->
-          <rect width="240" height="290" fill="url(#bg-${cfg.id})"/>
-          <circle cx="120" cy="145" r="98" fill="#ffffff" opacity="0.28"/>
-          ${bgDeco}
-
-          <!-- Hair Back -->
-          ${hairBack}
-
-          <!-- Shoulders & Outfit -->
-          <path d="M55 290 C60 228, 86 212, 120 212 C154 212, 180 228, 185 290 Z" fill="${cfg.outfitMain}"/>
-          <path d="M88 214 L120 248 L152 214 L166 226 L120 264 L74 226 Z" fill="${cfg.outfitTrim}"/>
-          <!-- Cute Bow Tie -->
-          <polygon points="120,236 100,226 102,248" fill="${cfg.accent}"/>
-          <polygon points="120,236 140,226 138,248" fill="${cfg.accent}"/>
-          <circle cx="120" cy="236" r="5.5" fill="#ffffff"/>
-
-          <!-- Neck -->
-          <rect x="108" y="188" width="24" height="32" rx="10" fill="#fbd4c4"/>
-
-          <!-- Face -->
-          <path d="M68 134 C68 88, 172 88, 172 134 C172 174, 150 200, 120 202 C90 200, 68 174, 68 134 Z" fill="url(#skin-${cfg.id})"/>
-
-          <!-- Soft Blush -->
-          <ellipse cx="86" cy="162" rx="12" ry="6.5" fill="#fb7185" opacity="0.38"/>
-          <ellipse cx="154" cy="162" rx="12" ry="6.5" fill="#fb7185" opacity="0.38"/>
-
-          <!-- Left Eye (Sparkling Anime Eye) -->
-          <ellipse cx="94" cy="144" rx="11.5" ry="13.5" fill="#2d1624"/>
-          <ellipse cx="94" cy="146" rx="9" ry="10.5" fill="${cfg.eyeColor}"/>
-          <ellipse cx="94" cy="148" rx="5.5" ry="6" fill="#2d1624"/>
-          <circle cx="90" cy="140" r="4" fill="#ffffff"/>
-          <circle cx="98" cy="151" r="2" fill="#ffffff"/>
-          <path d="M81 135 Q94 127 107 135" fill="none" stroke="#3b1529" stroke-width="2.8" stroke-linecap="round"/>
-
-          <!-- Right Eye -->
-          ${rightEye}
-
-          <!-- Cute Nose & Smile -->
-          <circle cx="120" cy="160" r="1.5" fill="#d99a8b"/>
-          <path d="M111 172 Q120 182 129 172" fill="#fda4af" stroke="#be185d" stroke-width="2" stroke-linecap="round"/>
-
-          <!-- Front Bangs & Side Locks -->
-          <path d="M62 126 C64 72, 176 72, 178 126 C168 106, 156 104, 148 126 C142 104, 130 100, 122 128 C114 102, 100 102, 92 126 C84 106, 72 108, 62 126 Z" fill="${cfg.hairMain}"/>
-          <!-- Hair Gloss Highlight -->
-          <path d="M84 96 Q120 84 156 96" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" opacity="0.55"/>
-          <!-- Side Hair Locks -->
-          <path d="M62 118 Q54 166 66 202 Q74 176 72 134 Z" fill="${cfg.hairMain}"/>
-          <path d="M178 118 Q186 166 174 202 Q166 176 168 134 Z" fill="${cfg.hairMain}"/>
-
-          <!-- Headwear / Ears -->
-          ${headwear}
+          <rect width="1280" height="720" fill="url(#g-${id})"/>
+          <!-- Neon Glass Glowing Orbs -->
+          <circle cx="240" cy="180" r="240" fill="url(#orb1-${id})"/>
+          <circle cx="1030" cy="240" r="260" fill="url(#orb2-${id})"/>
+          <!-- Abstract Ocean Wave Curves -->
+          <path d="M0 510 Q320 430 640 500 T1280 470 L1280 720 L0 720 Z" fill="#041c2c" opacity="0.28"/>
+          <path d="M0 580 Q360 520 720 580 T1280 540 L1280 720 L0 720 Z" fill="#041c2c" opacity="0.34"/>
+          <!-- Center Neon Glass Preview Frame (Upper-Center so visible above lanes!) -->
+          <g transform="translate(640, 225)">
+            <rect x="-250" y="-88" width="500" height="176" rx="28" fill="rgba(6, 26, 42, 0.42)" stroke="rgba(255,255,255,0.36)" stroke-width="2"/>
+            <rect x="-242" y="-80" width="484" height="160" rx="22" fill="none" stroke="rgba(125,211,252,0.28)" stroke-width="1" stroke-dasharray="8 6"/>
+            <text x="0" y="-26" text-anchor="middle" fill="#fde68a" font-size="28" font-weight="900" font-family="Noto Sans TC, sans-serif">
+              ${item.card} ${item.name}・等待載入 ./images/${item.num}.jpg
+            </text>
+            <text x="0" y="18" text-anchor="middle" fill="#e0f2fe" font-size="18" font-weight="700" font-family="Noto Sans TC, sans-serif">
+              自動支援 .jpg / .png / .webp（放進 GitHub images/ 即可顯示）
+            </text>
+            <text x="0" y="54" text-anchor="middle" fill="#fbcfe8" font-size="16" font-weight="700" font-family="Noto Sans TC, sans-serif">
+              💡 可點上方「📷 試看自訂圖」立即匯入照片搶先預覽
+            </text>
+          </g>
         </svg>
       `;
     }
 
-    const BUILTIN_BEAUTIES = [
-      {
-        id: 'sakura', name: '🌸 櫻花巫女・小櫻', shortName: '小櫻',
-        bg1: '#ffe4ec', bg2: '#fbcfe8', hairMain: '#f472b6', hairDark: '#be185d',
-        eyeColor: '#ec4899', outfitMain: '#ffffff', outfitTrim: '#e11d48', accent: '#f43f5e',
-        hairStyle: 'long', accessory: 'mikoRibbon', deco: 'sakura', wink: false
-      },
-      {
-        id: 'berry', name: '🍓 草莓女僕・小莓', shortName: '小莓',
-        bg1: '#fff1f2', bg2: '#fecdd3', hairMain: '#fb7185', hairDark: '#9f1239',
-        eyeColor: '#e11d48', outfitMain: '#3f1d2e', outfitTrim: '#ffffff', accent: '#f43f5e',
-        hairStyle: 'twintails', accessory: 'maidFrill', deco: 'berry', wink: true
-      },
-      {
-        id: 'luna', name: '⭐ 星空偶像・露娜', shortName: '露娜',
-        bg1: '#f3e8ff', bg2: '#ddd6fe', hairMain: '#a855f7', hairDark: '#6b21a8',
-        eyeColor: '#9333ea', outfitMain: '#c084fc', outfitTrim: '#fef08a', accent: '#ec4899',
-        hairStyle: 'long', accessory: 'starPin', deco: 'star', wink: false
-      },
-      {
-        id: 'boba', name: '🧋 珍奶甜心・珍珠', shortName: '珍珠',
-        bg1: '#fef3c7', bg2: '#fde68a', hairMain: '#92400e', hairDark: '#451a03',
-        eyeColor: '#d97706', outfitMain: '#fffbeb', outfitTrim: '#f59e0b', accent: '#ec4899',
-        hairStyle: 'bob', accessory: 'ribbon', deco: 'boba', wink: true
-      },
-      {
-        id: 'mii', name: '🐱 貓耳睡衣・咪醬', shortName: '咪醬',
-        bg1: '#ecfdf5', bg2: '#a7f3d0', hairMain: '#fdba74', hairDark: '#c2410c',
-        eyeColor: '#10b981', outfitMain: '#f472b6', outfitTrim: '#ffffff', accent: '#fde047',
-        hairStyle: 'bob', accessory: 'catEars', deco: 'cat', wink: false
-      },
-      {
-        id: 'sherry', name: '🐰 兔耳荷官・雪莉', shortName: '小兔',
-        bg1: '#fdf2f8', bg2: '#f5d0fe', hairMain: '#e2e8f0', hairDark: '#94a3b8',
-        eyeColor: '#f43f5e', outfitMain: '#be185d', outfitTrim: '#fde68a', accent: '#fb7185',
-        hairStyle: 'long', accessory: 'bunnyEars', deco: 'bunny', wink: true
-      },
-      {
-        id: 'kana', name: '🌺 夏日海灘・夏奈', shortName: '夏奈',
-        bg1: '#e0f2fe', bg2: '#bae6fd', hairMain: '#facc15', hairDark: '#ca8a04',
-        eyeColor: '#0284c7', outfitMain: '#fb7185', outfitTrim: '#ffffff', accent: '#fde047',
-        hairStyle: 'twintails', accessory: 'hibiscus', deco: 'beach', wink: false
-      },
-      {
-        id: 'alice', name: '👑 夢幻公主・愛麗絲', shortName: '愛麗絲',
-        bg1: '#eff6ff', bg2: '#fbcfe8', hairMain: '#60a5fa', hairDark: '#1d4ed8',
-        eyeColor: '#3b82f6', outfitMain: '#f9a8d4', outfitTrim: '#ffffff', accent: '#fde047',
-        hairStyle: 'long', accessory: 'tiara', deco: 'princess', wink: false
-      }
-    ].map(item => ({ ...item, type: 'svg', svg: buildCuteBeautySvg(item) }));
-
-    const BEAUTY_DIALOGUES = {
-      idle: [
-        '「主人加油喔～這把牌感覺超甜的💖」',
-        '「慢慢擺別著急，小心不要倒水相公喔🌸」',
-        '「點一下上方推薦擺法，就能輕鬆出牌✨」',
-        '「今天的手氣一定會像草莓奶油一樣甜🍰」',
-        '「偷偷告訴你，頭墩衝三可以多拿 3 水喔💕」'
-      ],
-      deal: [
-        '「新的一局發牌囉！祝主人拿到至尊青龍🐉💖」',
-        '「哇～這副牌閃閃發亮呢，快來排排看🌸」'
-      ],
-      chongsan: [
-        '「哇啊啊！頭墩衝三超帥氣的啦～(+3水)✨」',
-        '「衝三成功！甜心為你瘋狂打 Call 💖」'
-      ],
-      shoot: [
-        '「砰砰砰！打槍成功水數翻倍，太神啦🔫💘」',
-        '「三墩全勝直接打槍！對手都臉紅了啦🌸」'
-      ],
-      homerun: [
-        '「全壘打 HOME RUN！！主人橫掃全場超厲害🏆💖」',
-        '「哇！三家全倒！今晚請甜心喝珍奶喔🧋✨」'
-      ],
-      foul: [
-        '「哎呀～倒水相公了啦，下一局我們一定贏回來💦」'
-      ],
-      settleWin: [
-        '「贏水囉！主人的牌技果然是全場最棒的🎉💖」',
-        '「耶～大豐收！我們再來一局吧🌸」'
-      ],
-      settleLose: [
-        '「沒關係沒關係～甜心幫你吹吹氣，下局全壘打💪💕」'
+    /* =========================================================================
+       2. GITHUB LOCAL GALLERY MANAGER (.jpg -> .png -> .webp -> SVG Fallback)
+       ========================================================================= */
+    const photoMgr = {
+      // Each slot tracks resolvedUrl and status: 'checking' | 'local' | 'missing' | 'custom'
+      slots: BEAUTY_CONFIG.map(cfg => ({
+        ...cfg,
+        id: `slot-${cfg.num}`,
+        resolvedUrl: null,
+        status: 'checking'
+      })),
+      customExtras: [],
+      customMode: 'replace', // 'replace' (override slots 1..N) | 'mix' (add to playlist)
+      currentId: null,
+      currentIndex: 0,
+      shuffleBag: [],
+      activeLayer: 'A',
+      autoRotate: true,
+      autoTimer: null,
+      scrimIdx: 1, // Default: 🌤️ 中
+      scrimLevels: [
+        { label: '☀️ 亮', bg: 'linear-gradient(180deg, rgba(6,26,42,0.10) 0%, rgba(6,26,42,0.02) 45%, rgba(6,20,34,0.26) 100%)' },
+        { label: '🌤️ 中', bg: 'linear-gradient(180deg, rgba(6,26,42,0.36) 0%, rgba(6,26,42,0.18) 44%, rgba(10,18,32,0.58) 100%)' },
+        { label: '🌙 暗', bg: 'linear-gradient(180deg, rgba(4,14,24,0.62) 0%, rgba(4,14,24,0.48) 44%, rgba(4,10,20,0.80) 100%)' }
       ]
     };
 
-    const photoManager = {
-      playlist: [...BUILTIN_BEAUTIES],
-      customCount: 0,
-      currentIndex: 0,
-      autoRotate: true,
-      timer: null
-    };
-
-    function renderCurrentBeautyPhoto(customDialogue = null) {
-      const item = photoManager.playlist[photoManager.currentIndex] || BUILTIN_BEAUTIES[0];
-      const stage = document.getElementById('beauty-photo-stage');
-      if (!stage) return;
-
-      stage.classList.add('swapping');
-      setTimeout(() => {
-        if (item.type === 'svg') {
-          stage.innerHTML = item.svg;
-        } else {
-          stage.innerHTML = `<img src="${item.url}" alt="${item.name}" class="w-full h-full object-cover" />`;
+    /**
+     * Probe ./images/{n}.jpg -> ./images/{n}.png -> ./images/{n}.webp sequentially
+     */
+    function probeSingleSlot(slot) {
+      return new Promise(resolve => {
+        if (slot.status === 'custom' && slot.customUrl) {
+          resolve(slot);
+          return;
         }
-        document.getElementById('beauty-name-tag').textContent = item.name;
-        document.getElementById('beauty-counter-pill').textContent = `${photoManager.currentIndex + 1}/${photoManager.playlist.length}`;
-        if (customDialogue) {
-          document.getElementById('beauty-dialogue').textContent = customDialogue;
-        }
-        stage.classList.remove('swapping');
-      }, 180);
+        const base = slot.path.replace(/\.(jpg|jpeg|png|webp)$/i, '');
+        const candidates = [`${base}.jpg`, `${base}.png`, `${base}.webp`];
+        let attempt = 0;
+
+        const tryNext = () => {
+          if (attempt >= candidates.length) {
+            slot.resolvedUrl = null;
+            slot.status = 'missing';
+            resolve(slot);
+            return;
+          }
+          const testUrl = candidates[attempt++];
+          const img = new Image();
+          img.onload = () => {
+            slot.resolvedUrl = testUrl;
+            slot.status = 'local';
+            resolve(slot);
+          };
+          img.onerror = () => tryNext();
+          img.src = testUrl;
+        };
+        tryNext();
+      });
     }
 
-    function nextBeautyPhoto(manual = false, eventType = 'idle') {
-      if (photoManager.playlist.length <= 1) return;
-      photoManager.currentIndex = (photoManager.currentIndex + 1) % photoManager.playlist.length;
-      const lines = BEAUTY_DIALOGUES[eventType] || BEAUTY_DIALOGUES.idle;
-      const line = lines[Math.floor(Math.random() * lines.length)];
-      renderCurrentBeautyPhoto(line);
+    async function probeAllLocalImages() {
+      await Promise.all(photoMgr.slots.map(s => probeSingleSlot(s)));
+      updateAlbumStatusLabel();
+      updateAiAvatarsFromSlots();
+      renderGalleryGrid();
+      // Refresh currently displayed slide if it just finished resolving
+      const list = getActivePlaylist();
+      const idx = list.findIndex(x => x.id === photoMgr.currentId);
+      if (idx >= 0) renderSlideToActiveLayer(list[idx], idx, list.length, null, false);
+    }
+
+    function getActivePlaylist() {
+      if (photoMgr.customMode === 'mix' && photoMgr.customExtras.length > 0) {
+        return [...photoMgr.customExtras, ...photoMgr.slots];
+      }
+      return photoMgr.slots;
+    }
+
+    function refillShuffleBag() {
+      const list = getActivePlaylist();
+      const ids = list.map(x => x.id);
+      // Fisher-Yates Shuffle
+      for (let i = ids.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [ids[i], ids[j]] = [ids[j], ids[i]];
+      }
+      if (ids.length > 1 && ids[ids.length - 1] === photoMgr.currentId) {
+        [ids[0], ids[ids.length - 1]] = [ids[ids.length - 1], ids[0]];
+      }
+      photoMgr.shuffleBag = ids;
+    }
+
+    function getItemImageUrl(item) {
+      if (item.status === 'custom' && item.customUrl) return item.customUrl;
+      if (item.status === 'local' && item.resolvedUrl) return item.resolvedUrl;
+      return null;
+    }
+
+    function renderSlideToActiveLayer(item, idx, total, eventType = null, showBubble = false) {
+      const nextKey = photoMgr.activeLayer === 'A' ? 'B' : 'A';
+      const curLayer = document.getElementById(`bgLayer${photoMgr.activeLayer}`);
+      const nextLayer = document.getElementById(`bgLayer${nextKey}`);
+      const nextImg = document.getElementById(`bgImg${nextKey}`);
+      const nextSvg = document.getElementById(`bgSvg${nextKey}`);
+
+      const imgUrl = getItemImageUrl(item);
+      if (imgUrl) {
+        nextLayer.classList.remove('use-fallback');
+        nextImg.src = imgUrl;
+        nextSvg.innerHTML = '';
+      } else {
+        nextLayer.classList.add('use-fallback');
+        nextImg.removeAttribute('src');
+        nextSvg.innerHTML = buildFallbackSvg(item);
+      }
+
+      // 0.8s Smooth Crossfade
+      nextLayer.classList.add('active');
+      curLayer.classList.remove('active');
+      photoMgr.activeLayer = nextKey;
+
+      // Update UI labels & quote bubble
+      document.getElementById('bubble-card-code').textContent = item.card || '📷';
+      document.getElementById('bubble-name').textContent = item.name;
+      document.getElementById('bubble-index').textContent = `${idx + 1}/${total}`;
+
+      document.getElementById('pure-view-card-tag').textContent = item.card || '📷';
+      document.getElementById('pure-view-name').textContent = item.name;
+
+      let quote = (item.quotes && item.quotes[eventType]) || (item.quotes && item.quotes.idle) || '「專屬自訂相簿伴遊中，祝你這把清涼贏大水🌊」';
+      document.getElementById('bubble-quote').textContent = quote;
+
+      if (showBubble && appState.phase !== 'lobby') {
+        document.getElementById('goddess-bubble').classList.remove('hidden');
+      }
+    }
+
+    function displayGoddessByIndex(idx, eventType = null, showBubble = false) {
+      const list = getActivePlaylist();
+      if (!list.length) return;
+      const safeIdx = ((idx % list.length) + list.length) % list.length;
+      const item = list[safeIdx];
+      photoMgr.currentIndex = safeIdx;
+      photoMgr.currentId = item.id;
+      renderSlideToActiveLayer(item, safeIdx, list.length, eventType, showBubble);
+    }
+
+    function randomGoddess(manual = false, eventType = null) {
+      const list = getActivePlaylist();
+      if (!list.length) return;
+      if (photoMgr.shuffleBag.length === 0) refillShuffleBag();
+      const nextId = photoMgr.shuffleBag.pop();
+      const idx = list.findIndex(x => x.id === nextId);
+      displayGoddessByIndex(idx >= 0 ? idx : 0, eventType, true);
       if (manual) {
         audioEngine.playSfx('select');
         resetPhotoAutoTimer();
       }
     }
 
-    function triggerBeautyEvent(eventType) {
-      nextBeautyPhoto(false, eventType);
+    function nextGoddess() {
+      displayGoddessByIndex(photoMgr.currentIndex + 1, null, true);
+      audioEngine.playSfx('select');
+      resetPhotoAutoTimer();
+    }
+
+    function prevGoddess() {
+      displayGoddessByIndex(photoMgr.currentIndex - 1, null, true);
+      audioEngine.playSfx('select');
       resetPhotoAutoTimer();
     }
 
     function toggleAutoRotate() {
-      photoManager.autoRotate = !photoManager.autoRotate;
-      const btn = document.getElementById('btn-auto-rotate');
-      btn.textContent = photoManager.autoRotate ? '🔄 自動開' : '⏸ 已暫停';
-      btn.className = photoManager.autoRotate
-        ? 'px-1.5 py-0.5 rounded-full text-[10px] font-black bg-pink-500 text-white shrink-0'
-        : 'px-1.5 py-0.5 rounded-full text-[10px] font-black bg-rose-200 text-rose-700 shrink-0';
+      photoMgr.autoRotate = !photoMgr.autoRotate;
+      document.getElementById('btn-gallery-auto').textContent = photoMgr.autoRotate ? '🔄 15秒隨機：開' : '⏸ 15秒隨機：關';
       resetPhotoAutoTimer();
     }
 
     function resetPhotoAutoTimer() {
-      if (photoManager.timer) clearInterval(photoManager.timer);
-      if (photoManager.autoRotate) {
-        photoManager.timer = setInterval(() => {
-          if (appState.phase !== 'lobby') {
-            nextBeautyPhoto(false, 'idle');
-          }
-        }, 12000); // Auto-change every 12 seconds
+      if (photoMgr.autoTimer) clearInterval(photoMgr.autoTimer);
+      if (photoMgr.autoRotate) {
+        photoMgr.autoTimer = setInterval(() => {
+          randomGoddess(false, null);
+        }, 15000);
       }
+    }
+
+    function cycleScrimLevel() {
+      photoMgr.scrimIdx = (photoMgr.scrimIdx + 1) % photoMgr.scrimLevels.length;
+      const lvl = photoMgr.scrimLevels[photoMgr.scrimIdx];
+      document.getElementById('bg-scrim').style.background = lvl.bg;
+      document.getElementById('btn-scrim-lobby').textContent = lvl.label;
+      document.getElementById('btn-scrim-game').textContent = lvl.label;
+      audioEngine.playSfx('select');
+    }
+
+    function togglePureView(enable) {
+      if (enable) {
+        document.body.classList.add('pure-view-active');
+        document.getElementById('pure-view-controls').classList.remove('hidden');
+      } else {
+        document.body.classList.remove('pure-view-active');
+        document.getElementById('pure-view-controls').classList.add('hidden');
+      }
+      audioEngine.playSfx('select');
     }
 
     function triggerCustomPhotoUpload() {
@@ -1126,59 +1289,150 @@
 
     function handleCustomPhotosUpload(inputEl) {
       const files = Array.from(inputEl.files || []);
-      if (files.length === 0) return;
+      if (!files.length) return;
 
-      files.forEach((file) => {
+      photoMgr.customExtras = [];
+      files.forEach((file, i) => {
         const url = URL.createObjectURL(file);
-        photoManager.customCount++;
-        const cleanName = file.name.replace(/\.[^/.]+$/, '').slice(0, 12) || `自訂寫真 ${photoManager.customCount}`;
-        photoManager.playlist.unshift({
-          id: `custom-${Date.now()}-${photoManager.customCount}`,
-          type: 'img',
-          name: `📷 ${cleanName}`,
-          url
+        const cleanName = file.name.replace(/\.[^/.]+$/, '').slice(0, 12) || `自訂寫真 ${i + 1}`;
+        // Store for 'mix' mode
+        photoMgr.customExtras.push({
+          id: `custom-${Date.now()}-${i}`,
+          num: i + 1,
+          card: '📷',
+          name: cleanName,
+          path: file.name,
+          status: 'custom',
+          customUrl: url,
+          palette: ['#073b5c', '#0ea5e9', '#fb7185'],
+          quotes: BEAUTY_CONFIG[i % BEAUTY_CONFIG.length].quotes
         });
+        // Also populate slots 1..13 for 'replace' mode
+        if (i < photoMgr.slots.length) {
+          photoMgr.slots[i].customUrl = url;
+          photoMgr.slots[i].status = 'custom';
+        }
       });
 
-      photoManager.currentIndex = 0;
-      renderCurrentBeautyPhoto(`「已匯入 ${files.length} 張自訂寫真！玩牌時會自動輪播喔💖」`);
-      const lobbyStatus = document.getElementById('lobby-album-status');
-      if (lobbyStatus) {
-        lobbyStatus.textContent = `🖼️ 相簿共 ${photoManager.playlist.length} 張（含 ${photoManager.customCount} 張自訂）`;
-      }
-      showToast(`成功加入 ${files.length} 張自訂相簿照片！`, 'success');
+      document.getElementById('custom-mode-row').classList.remove('hidden');
+      document.getElementById('gallery-mode-bar').classList.remove('hidden');
+      updateAlbumStatusLabel();
+      updateAiAvatarsFromSlots();
+      refillShuffleBag();
+      displayGoddessByIndex(0, null, appState.phase !== 'lobby');
+      resetPhotoAutoTimer();
+      renderGalleryGrid();
+      showToast(`已載入 ${files.length} 張自訂寫真！立即搶先預覽 🏖️`, 'success');
       inputEl.value = '';
     }
 
-    function openPhotoLightbox() {
-      updateLightboxContent();
-      document.getElementById('lightbox-modal').classList.remove('hidden');
+    function setCustomPlaybackMode(mode) {
+      photoMgr.customMode = mode;
+      const isRep = mode === 'replace';
+      ['btn-mode-replace', 'btn-gal-replace'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.className = isRep ? 'px-2 py-0.5 rounded-lg text-[10px] sm:text-xs font-black bg-rose-500/85 text-white border border-rose-200/60' : 'px-2 py-0.5 rounded-lg text-[10px] sm:text-xs font-bold bg-black/40 text-sky-100 border border-white/20';
+      });
+      ['btn-mode-mix', 'btn-gal-mix'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.className = !isRep ? 'px-2 py-0.5 rounded-lg text-[10px] sm:text-xs font-black bg-rose-500/85 text-white border border-rose-200/60' : 'px-2 py-0.5 rounded-lg text-[10px] sm:text-xs font-bold bg-black/40 text-sky-100 border border-white/20';
+      });
+      updateAlbumStatusLabel();
+      refillShuffleBag();
+      displayGoddessByIndex(0, null, appState.phase !== 'lobby');
+      renderGalleryGrid();
+      audioEngine.playSfx('select');
     }
-    function closePhotoLightbox() {
-      document.getElementById('lightbox-modal').classList.add('hidden');
+
+    function updateAlbumStatusLabel() {
+      const el = document.getElementById('lobby-album-status');
+      if (!el) return;
+      const loadedLocal = photoMgr.slots.filter(s => s.status === 'local').length;
+      const loadedCustom = photoMgr.slots.filter(s => s.status === 'custom').length;
+      if (loadedCustom > 0) {
+        el.textContent = `📷 已載入 ${loadedCustom} 張自訂預覽圖（共 ${getActivePlaylist().length} 張輪播）`;
+      } else if (loadedLocal > 0) {
+        el.textContent = `✅ 本機 images/ 已載入 ${loadedLocal}/13 位女神`;
+      } else {
+        el.textContent = `⏳ 待放入 ./images/1.jpg~13.jpg（目前顯示預覽備援）`;
+      }
     }
-    function updateLightboxContent() {
-      const item = photoManager.playlist[photoManager.currentIndex] || BUILTIN_BEAUTIES[0];
-      document.getElementById('lightbox-title').textContent = `${item.name} (${photoManager.currentIndex + 1}/${photoManager.playlist.length})`;
-      const stage = document.getElementById('lightbox-stage');
-      stage.innerHTML = item.type === 'svg'
-        ? item.svg
-        : `<img src="${item.url}" alt="${item.name}" class="w-full h-full object-cover" />`;
+
+    function openGalleryModal() {
+      renderGalleryGrid();
+      document.getElementById('gallery-modal').classList.remove('hidden');
+    }
+    function closeGalleryModal() {
+      document.getElementById('gallery-modal').classList.add('hidden');
+    }
+
+    function renderGalleryGrid() {
+      const grid = document.getElementById('gallery-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+      const list = getActivePlaylist();
+
+      list.forEach((item, idx) => {
+        const isCurrent = item.id === photoMgr.currentId;
+        const imgUrl = getItemImageUrl(item);
+        const [c1, c2, c3] = item.palette || ['#073b5c', '#0ea5e9', '#fb7185'];
+
+        const statusBadge = item.status === 'custom'
+          ? '<span class="px-1.5 py-0.5 rounded bg-rose-500/90 text-[9px] font-black text-white">📷 自訂圖</span>'
+          : item.status === 'local'
+          ? '<span class="px-1.5 py-0.5 rounded bg-emerald-500/90 text-[9px] font-black text-white">✅ 已載入</span>'
+          : '<span class="px-1.5 py-0.5 rounded bg-black/60 border border-sky-300/40 text-[9px] font-bold text-sky-200">⏳ 待放入</span>';
+
+        const card = document.createElement('div');
+        card.className = `group relative rounded-2xl overflow-hidden border-2 cursor-pointer transition-transform active:scale-95 aspect-[3/4] ${
+          isCurrent ? 'border-rose-400 shadow-lg shadow-rose-400/30' : 'border-white/15 hover:border-sky-300/70'
+        }`;
+        card.style.background = `linear-gradient(145deg, ${c1}, ${c2}, ${c3})`;
+        card.onclick = () => {
+          displayGoddessByIndex(idx, null, true);
+          resetPhotoAutoTimer();
+          audioEngine.playSfx('select');
+          closeGalleryModal();
+        };
+
+        const mediaHtml = imgUrl
+          ? `<img src="${imgUrl}" alt="${item.name}" class="w-full h-full object-cover object-[50%_20%] group-hover:scale-105 transition-transform duration-300" />`
+          : `<div class="w-full h-full flex flex-col items-center justify-center p-2 text-center">
+               <div class="text-2xl font-black text-white/90 drop-shadow">${item.card}</div>
+               <div class="text-[10px] font-mono text-sky-100/90 mt-1 bg-black/35 px-2 py-0.5 rounded-full">images/${item.num}.jpg</div>
+             </div>`;
+
+        card.innerHTML = `
+          ${mediaHtml}
+          <div class="absolute top-1.5 left-1.5 right-1.5 flex items-center justify-between gap-1">
+            <span class="px-1.5 py-0.5 rounded bg-black/60 text-[10px] font-black text-amber-200">${item.card}</span>
+            ${statusBadge}
+          </div>
+          <div class="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/85 via-black/50 to-transparent">
+            <div class="flex items-center justify-between gap-1">
+              <span class="text-xs font-black text-white truncate">${item.name}</span>
+              ${isCurrent ? '<span class="text-[10px] text-rose-300 font-black shrink-0">使用中</span>' : ''}
+            </div>
+            <div class="text-[10px] font-mono text-sky-200/85 truncate">${item.resolvedUrl || item.path}</div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
     }
 
     /* =========================================================================
-       2. UI UTILITIES (Toast, Fullscreen, Modals)
+       3. UI HELPERS (Toast, Fullscreen, Modals — NO alert/confirm)
        ========================================================================= */
     function showToast(msg, type = 'info') {
       const container = document.getElementById('toast-container');
       const el = document.createElement('div');
       const colors = {
-        info: 'bg-white/95 border-pink-400 text-rose-700',
-        success: 'bg-pink-500/95 border-pink-200 text-white',
-        warn: 'bg-amber-100/95 border-amber-400 text-amber-900',
-        error: 'bg-rose-600/95 border-rose-200 text-white'
+        info: 'bg-[#082c44]/95 border-sky-300/70 text-sky-50',
+        success: 'bg-rose-500/95 border-rose-200 text-white',
+        warn: 'bg-amber-900/95 border-amber-300 text-amber-100',
+        error: 'bg-red-700/95 border-red-200 text-white'
       };
-      el.className = `px-4 py-2 rounded-2xl border-2 text-xs sm:text-sm font-black shadow-xl transition-all duration-300 ${colors[type] || colors.info}`;
+      el.className = `px-4 py-2 rounded-2xl border text-xs sm:text-sm font-black shadow-2xl transition-all duration-300 ${colors[type] || colors.info}`;
       el.textContent = msg;
       container.appendChild(el);
       setTimeout(() => {
@@ -1221,7 +1475,7 @@
     function closeRulesModal() { document.getElementById('rules-modal').classList.add('hidden'); }
 
     /* =========================================================================
-       3. AudioMediaEngine: Sweet TTS + Cute Crisp SFX + Soft Pentatonic BGM + Local MP3
+       4. AudioMediaEngine: zh-TW TTS + Web Audio SFX + Summer Pentatonic BGM + MP3
        ========================================================================= */
     class AudioMediaEngine {
       constructor() {
@@ -1240,9 +1494,8 @@
         this.customAudio.loop = true;
         this.useCustomBgm = false;
 
-        // Soft Music-Box Pentatonic Scale
-        this.pentatonic = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.5, 1174.66];
-        this.melodyPattern = [0, 2, 3, 5, 4, 3, 2, 0, 2, 3, 4, 6, 5, 4, 3, 2];
+        this.pentatonic = [392.00, 440.00, 523.25, 587.33, 659.25, 783.99, 880.00];
+        this.melodyPattern = [2, 4, 5, 4, 3, 2, 0, 2, 4, 5, 6, 5, 4, 3, 2, 4];
       }
 
       ensureContext() {
@@ -1250,9 +1503,7 @@
           const AC = window.AudioContext || window.webkitAudioContext;
           if (AC) this.ctx = new AC();
         }
-        if (this.ctx && this.ctx.state === 'suspended') {
-          this.ctx.resume().catch(() => {});
-        }
+        if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume().catch(() => {});
       }
 
       toggleMute() {
@@ -1287,18 +1538,13 @@
       loadCustomBgm(inputEl) {
         const file = inputEl.files && inputEl.files[0];
         if (!file) return;
-        const url = URL.createObjectURL(file);
-        this.customAudio.src = url;
+        this.customAudio.src = URL.createObjectURL(file);
         this.customAudio.volume = this.bgmVol;
         this.customAudio.muted = this.muted;
         this.useCustomBgm = true;
         document.getElementById('custom-bgm-name').textContent = `目前：${file.name}`;
-        if (this.bgmPlaying) {
-          this.stopPentatonicLoop();
-          this.customAudio.play().catch(() => {});
-        } else {
-          this.toggleBgm();
-        }
+        if (this.bgmPlaying) { this.stopPentatonicLoop(); this.customAudio.play().catch(() => {}); }
+        else this.toggleBgm();
         showToast(`已載入本機音樂：${file.name}`, 'success');
       }
 
@@ -1308,15 +1554,10 @@
         const btn = document.getElementById('btn-bgm-toggle');
         if (this.bgmPlaying) {
           btn.textContent = '⏸ 暫停音樂';
-          if (this.useCustomBgm) {
-            this.customAudio.volume = this.bgmVol;
-            this.customAudio.muted = this.muted;
-            this.customAudio.play().catch(() => {});
-          } else {
-            this.startPentatonicLoop();
-          }
+          if (this.useCustomBgm) { this.customAudio.volume = this.bgmVol; this.customAudio.muted = this.muted; this.customAudio.play().catch(() => {}); }
+          else this.startPentatonicLoop();
         } else {
-          btn.textContent = this.useCustomBgm ? '▶ 播放本機音樂' : '▶ 播放五聲音階';
+          btn.textContent = this.useCustomBgm ? '▶ 播放本機音樂' : '▶ 播放音樂';
           this.stopPentatonicLoop();
           this.customAudio.pause();
         }
@@ -1327,131 +1568,88 @@
         const playNote = () => {
           if (!this.bgmPlaying || this.useCustomBgm) return;
           if (!this.muted && this.bgmVol > 0 && this.ctx) {
-            const idx = this.melodyPattern[this.bgmStep % this.melodyPattern.length];
-            const freq = this.pentatonic[idx];
+            const freq = this.pentatonic[this.melodyPattern[this.bgmStep % this.melodyPattern.length]];
             const now = this.ctx.currentTime;
-            const osc = this.ctx.createOscillator();
-            const gain = this.ctx.createGain();
-            osc.type = 'sine';
+            const osc = this.ctx.createOscillator(), g = this.ctx.createGain();
+            osc.type = 'triangle';
             osc.frequency.setValueAtTime(freq, now);
-            const peak = this.bgmVol * 0.12;
-            gain.gain.setValueAtTime(0.001, now);
-            gain.gain.linearRampToValueAtTime(peak, now + 0.02);
-            gain.gain.exponentialRampToValueAtTime(0.0008, now + 1.0);
-            osc.connect(gain); gain.connect(this.ctx.destination);
-            osc.start(now); osc.stop(now + 1.05);
+            g.gain.setValueAtTime(0.001, now);
+            g.gain.linearRampToValueAtTime(this.bgmVol * 0.14, now + 0.025);
+            g.gain.exponentialRampToValueAtTime(0.0008, now + 0.95);
+            osc.connect(g); g.connect(this.ctx.destination);
+            osc.start(now); osc.stop(now + 1.0);
           }
           this.bgmStep++;
-          this.bgmTimer = setTimeout(playNote, 600);
+          this.bgmTimer = setTimeout(playNote, 560);
         };
         playNote();
       }
 
-      stopPentatonicLoop() {
-        if (this.bgmTimer) { clearTimeout(this.bgmTimer); this.bgmTimer = null; }
-      }
+      stopPentatonicLoop() { if (this.bgmTimer) { clearTimeout(this.bgmTimer); this.bgmTimer = null; } }
 
       playSfx(type) {
         if (this.muted || this.sfxVol <= 0) return;
         this.ensureContext();
         if (!this.ctx) return;
-        const now = this.ctx.currentTime;
-        const vol = this.sfxVol * 0.32;
-
+        const now = this.ctx.currentTime, vol = this.sfxVol * 0.34;
         try {
           if (type === 'select') {
-            const osc = this.ctx.createOscillator();
-            const g = this.ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(880, now);
-            osc.frequency.exponentialRampToValueAtTime(1180, now + 0.055);
-            g.gain.setValueAtTime(vol * 0.55, now);
-            g.gain.exponentialRampToValueAtTime(0.001, now + 0.065);
-            osc.connect(g); g.connect(this.ctx.destination);
-            osc.start(now); osc.stop(now + 0.07);
+            const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+            o.type = 'sine'; o.frequency.setValueAtTime(760, now); o.frequency.exponentialRampToValueAtTime(1040, now + 0.05);
+            g.gain.setValueAtTime(vol * 0.55, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+            o.connect(g); g.connect(this.ctx.destination); o.start(now); o.stop(now + 0.065);
           } else if (type === 'place' || type === 'deal') {
-            const osc = this.ctx.createOscillator();
-            const g = this.ctx.createGain();
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(type === 'deal' ? 520 : 640, now);
-            osc.frequency.exponentialRampToValueAtTime(320, now + 0.065);
-            g.gain.setValueAtTime(vol * 0.65, now);
-            g.gain.exponentialRampToValueAtTime(0.001, now + 0.075);
-            osc.connect(g); g.connect(this.ctx.destination);
-            osc.start(now); osc.stop(now + 0.08);
+            const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+            o.type = 'triangle'; o.frequency.setValueAtTime(type === 'deal' ? 420 : 540, now); o.frequency.exponentialRampToValueAtTime(220, now + 0.07);
+            g.gain.setValueAtTime(vol * 0.7, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+            o.connect(g); g.connect(this.ctx.destination); o.start(now); o.stop(now + 0.085);
           } else if (type === 'lock') {
-            [659.25, 783.99, 1046.5].forEach((f, i) => {
-              const osc = this.ctx.createOscillator();
-              const g = this.ctx.createGain();
-              osc.type = 'sine';
-              osc.frequency.setValueAtTime(f, now + i * 0.055);
-              g.gain.setValueAtTime(vol * 0.55, now + i * 0.055);
-              g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.055 + 0.16);
-              osc.connect(g); g.connect(this.ctx.destination);
-              osc.start(now + i * 0.055); osc.stop(now + i * 0.055 + 0.18);
+            [523.25, 659.25, 783.99].forEach((f, i) => {
+              const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+              o.type = 'sine'; o.frequency.setValueAtTime(f, now + i * 0.06);
+              g.gain.setValueAtTime(vol * 0.6, now + i * 0.06); g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.06 + 0.16);
+              o.connect(g); g.connect(this.ctx.destination); o.start(now + i * 0.06); o.stop(now + i * 0.06 + 0.18);
             });
           } else if (type === 'reveal') {
-            const osc = this.ctx.createOscillator();
-            const g = this.ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(523.25, now);
-            osc.frequency.exponentialRampToValueAtTime(880, now + 0.12);
-            g.gain.setValueAtTime(vol * 0.6, now);
-            g.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
-            osc.connect(g); g.connect(this.ctx.destination);
-            osc.start(now); osc.stop(now + 0.15);
+            const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+            o.type = 'sine'; o.frequency.setValueAtTime(440, now); o.frequency.exponentialRampToValueAtTime(780, now + 0.13);
+            g.gain.setValueAtTime(vol * 0.65, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+            o.connect(g); g.connect(this.ctx.destination); o.start(now); o.stop(now + 0.16);
           } else if (type === 'shoot') {
-            [0, 0.11, 0.22].forEach(offset => {
-              const osc = this.ctx.createOscillator();
-              const g = this.ctx.createGain();
-              osc.type = 'triangle';
-              osc.frequency.setValueAtTime(920, now + offset);
-              osc.frequency.exponentialRampToValueAtTime(180, now + offset + 0.09);
-              g.gain.setValueAtTime(vol * 1.0, now + offset);
-              g.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.1);
-              osc.connect(g); g.connect(this.ctx.destination);
-              osc.start(now + offset); osc.stop(now + offset + 0.11);
-            });
+            const len = Math.floor(this.ctx.sampleRate * 0.18);
+            const buf = this.ctx.createBuffer(1, len, this.ctx.sampleRate);
+            const data = buf.getChannelData(0);
+            for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (this.ctx.sampleRate * 0.04));
+            const src = this.ctx.createBufferSource(); src.buffer = buf;
+            const flt = this.ctx.createBiquadFilter(); flt.type = 'lowpass'; flt.frequency.setValueAtTime(1200, now);
+            const g = this.ctx.createGain(); g.gain.setValueAtTime(vol * 1.4, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+            src.connect(flt); flt.connect(g); g.connect(this.ctx.destination); src.start(now);
           } else if (type === 'homerun' || type === 'win') {
             [523.25, 659.25, 783.99, 1046.5, 1318.5].forEach((f, i) => {
-              const osc = this.ctx.createOscillator();
-              const g = this.ctx.createGain();
-              osc.type = 'sine';
-              osc.frequency.setValueAtTime(f, now + i * 0.08);
-              g.gain.setValueAtTime(vol * 0.75, now + i * 0.08);
-              g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.32);
-              osc.connect(g); g.connect(this.ctx.destination);
-              osc.start(now + i * 0.08); osc.stop(now + i * 0.08 + 0.35);
+              const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+              o.type = 'triangle'; o.frequency.setValueAtTime(f, now + i * 0.08);
+              g.gain.setValueAtTime(vol * 0.8, now + i * 0.08); g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.34);
+              o.connect(g); g.connect(this.ctx.destination); o.start(now + i * 0.08); o.stop(now + i * 0.08 + 0.36);
             });
           } else if (type === 'foul') {
-            const osc = this.ctx.createOscillator();
-            const g = this.ctx.createGain();
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(340, now);
-            osc.frequency.linearRampToValueAtTime(200, now + 0.25);
-            g.gain.setValueAtTime(vol * 0.6, now);
-            g.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
-            osc.connect(g); g.connect(this.ctx.destination);
-            osc.start(now); osc.stop(now + 0.3);
+            const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+            o.type = 'sawtooth'; o.frequency.setValueAtTime(220, now); o.frequency.linearRampToValueAtTime(130, now + 0.24);
+            g.gain.setValueAtTime(vol * 0.45, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.26);
+            o.connect(g); g.connect(this.ctx.destination); o.start(now); o.stop(now + 0.28);
           }
         } catch (e) {}
       }
 
       speak(text) {
-        if (this.muted || !this.voiceEnabled || this.voiceVol <= 0) return;
-        if (!('speechSynthesis' in window)) return;
+        if (this.muted || !this.voiceEnabled || this.voiceVol <= 0 || !('speechSynthesis' in window)) return;
         try {
           window.speechSynthesis.cancel();
-          const utter = new SpeechSynthesisUtterance(text);
-          utter.lang = 'zh-TW';
-          utter.volume = this.voiceVol;
-          utter.rate = 1.08;
-          utter.pitch = 1.24; // Sweet higher pitch
+          const u = new SpeechSynthesisUtterance(text);
+          u.lang = 'zh-TW'; u.volume = this.voiceVol; u.rate = 1.06; u.pitch = 1.12;
           const voices = window.speechSynthesis.getVoices();
-          const twVoice = voices.find(v => v.lang.includes('zh-TW') || v.lang.includes('zh_TW'))
-            || voices.find(v => v.lang.includes('zh'));
-          if (twVoice) utter.voice = twVoice;
-          window.speechSynthesis.speak(utter);
+          const tw = voices.find(v => v.lang.includes('zh-TW') || v.lang.includes('zh_TW')) || voices.find(v => v.lang.includes('zh'));
+          if (tw) u.voice = tw;
+          window.speechSynthesis.speak(u);
         } catch (e) {}
       }
     }
@@ -1459,22 +1657,17 @@
     const audioEngine = new AudioMediaEngine();
 
     /* =========================================================================
-       4. TAIWAN 13-CARDS CORE EVALUATOR, SPECIAL HANDS & SOLVER
+       5. TAIWAN 13-CARDS CORE ENGINE (Rank-Only, A-2-3-4-5 2nd, 3 Strategies)
        ========================================================================= */
     const SUITS = ['♠', '♥', '♣', '♦'];
     const SUIT_COLORS = ['black', 'red', 'black', 'red'];
-    const RANK_LABELS = {
-      2: '2', 3: '3', 4: '4', 5: '5', 6: '6', 7: '7', 8: '8',
-      9: '9', 10: '10', 11: 'J', 12: 'Q', 13: 'K', 14: 'A'
-    };
+    const RANK_LABELS = { 2:'2',3:'3',4:'4',5:'5',6:'6',7:'7',8:'8',9:'9',10:'10',11:'J',12:'Q',13:'K',14:'A' };
     const HAND_NAMES = ['烏龍', '一對', '兩對', '三條', '順子', '同花', '葫蘆', '鐵支', '同花順'];
 
     function createDeck() {
       const deck = [];
       let id = 0;
-      for (let s = 0; s < 4; s++) {
-        for (let r = 2; r <= 14; r++) deck.push({ id: id++, suit: s, rank: r });
-      }
+      for (let s = 0; s < 4; s++) for (let r = 2; r <= 14; r++) deck.push({ id: id++, suit: s, rank: r });
       for (let i = deck.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [deck[i], deck[j]] = [deck[j], deck[i]];
@@ -1488,9 +1681,7 @@
       const isFlush = cards.every(c => c.suit === cards[0].suit);
       const counts = {};
       for (const r of ranks) counts[r] = (counts[r] || 0) + 1;
-      const groups = Object.entries(counts)
-        .map(([r, cnt]) => ({ rank: Number(r), cnt }))
-        .sort((a, b) => b.cnt - a.cnt || b.rank - a.rank);
+      const groups = Object.entries(counts).map(([r, cnt]) => ({ rank: Number(r), cnt })).sort((a, b) => b.cnt - a.cnt || b.rank - a.rank);
 
       let straightRank = 0;
       if (groups.length === 5) {
@@ -1518,9 +1709,7 @@
       const ranks = cards.map(c => c.rank).sort((a, b) => b - a);
       const counts = {};
       for (const r of ranks) counts[r] = (counts[r] || 0) + 1;
-      const groups = Object.entries(counts)
-        .map(([r, cnt]) => ({ rank: Number(r), cnt }))
-        .sort((a, b) => b.cnt - a.cnt || b.rank - a.rank);
+      const groups = Object.entries(counts).map(([r, cnt]) => ({ rank: Number(r), cnt })).sort((a, b) => b.cnt - a.cnt || b.rank - a.rank);
 
       let type = 0, tb = [];
       if (groups[0].cnt === 3) { type = 3; tb = [groups[0].rank, 0, 0, 0, 0]; }
@@ -1531,39 +1720,38 @@
       return { type, name: type === 3 ? '衝三(三條)' : HAND_NAMES[type], tiebreakers: tb, score };
     }
 
-    function getLaneWinShui(lane, evalObj) {
-      if (!evalObj) return 1;
-      if (lane === 'front') return evalObj.type === 3 ? 3 : 1;
-      if (lane === 'mid') return evalObj.type === 8 ? 10 : evalObj.type === 7 ? 8 : evalObj.type === 6 ? 2 : 1;
-      if (lane === 'back') return evalObj.type === 8 ? 5 : evalObj.type === 7 ? 4 : 1;
+    function getLaneWinShui(lane, ev) {
+      if (!ev) return 1;
+      if (lane === 'front') return ev.type === 3 ? 3 : 1;
+      if (lane === 'mid') return ev.type === 8 ? 10 : ev.type === 7 ? 8 : ev.type === 6 ? 2 : 1;
+      if (lane === 'back') return ev.type === 8 ? 5 : ev.type === 7 ? 4 : 1;
       return 1;
     }
 
     function detectSpecialHand(cards13) {
       if (!cards13 || cards13.length !== 13) return null;
-      const rankCounts = new Array(15).fill(0);
-      const suitCounts = [0, 0, 0, 0];
-      for (const c of cards13) { rankCounts[c.rank]++; suitCounts[c.suit]++; }
+      const rc = new Array(15).fill(0), sc = [0, 0, 0, 0];
+      for (const c of cards13) { rc[c.rank]++; sc[c.suit]++; }
 
       let allUnique = true;
-      for (let r = 2; r <= 14; r++) if (rankCounts[r] !== 1) { allUnique = false; break; }
+      for (let r = 2; r <= 14; r++) if (rc[r] !== 1) { allUnique = false; break; }
       if (allUnique) {
-        if (suitCounts.some(cnt => cnt === 13)) return { code: 'royal_dragon', name: '至尊青龍', shui: 26, priority: 5 };
+        if (sc.some(v => v === 13)) return { code: 'royal_dragon', name: '至尊青龍', shui: 26, priority: 5 };
         return { code: 'dragon', name: '一條龍', shui: 13, priority: 4 };
       }
 
-      let pairTotal = 0;
-      for (let r = 2; r <= 14; r++) pairTotal += Math.floor(rankCounts[r] / 2);
-      if (pairTotal === 6) return { code: 'six_pairs', name: '六對半', shui: 3, priority: 3 };
+      let pairs = 0;
+      for (let r = 2; r <= 14; r++) pairs += Math.floor(rc[r] / 2);
+      if (pairs === 6) return { code: 'six_pairs', name: '六對半', shui: 3, priority: 3 };
 
-      const nz = suitCounts.filter(c => c > 0).sort((a, b) => b - a);
+      const nz = sc.filter(v => v > 0).sort((a, b) => b - a);
       const isThreeFlush =
         (nz.length === 1 && nz[0] === 13) ||
         (nz.length === 2 && ((nz[0] === 10 && nz[1] === 3) || (nz[0] === 8 && nz[1] === 5))) ||
         (nz.length === 3 && nz[0] === 5 && nz[1] === 5 && nz[2] === 3);
       if (isThreeFlush) return { code: 'three_flush', name: '三同花', shui: 3, priority: 2 };
 
-      if (canPartitionThreeStraights(rankCounts.slice())) return { code: 'three_straight', name: '三順子', shui: 3, priority: 1 };
+      if (canPartitionThreeStraights(rc.slice())) return { code: 'three_straight', name: '三順子', shui: 3, priority: 1 };
       return null;
     }
 
@@ -1598,14 +1786,13 @@
             for (let d = c + 1; d < n - 1; d++)
               for (let e = d + 1; e < n; e++) {
                 const sub = [cards13[a], cards13[b], cards13[c], cards13[d], cards13[e]];
-                const ev = eval5(sub);
-                combos5.push({ indices: [a, b, c, d, e], mask: (1 << a) | (1 << b) | (1 << c) | (1 << d) | (1 << e), ev });
+                combos5.push({ indices: [a, b, c, d, e], mask: (1 << a) | (1 << b) | (1 << c) | (1 << d) | (1 << e), ev: eval5(sub) });
               }
 
       combos5.sort((x, y) => y.ev.score - x.ev.score);
       const backCandidates = [], seen = new Set(), tCnt = new Array(9).fill(0);
       for (const item of combos5) {
-        if (backCandidates.length < 24 || (tCnt[item.ev.type] < 4 && backCandidates.length < 40)) {
+        if (backCandidates.length < 24 || (tCnt[item.ev.type] < 4 && backCandidates.length < 42)) {
           if (!seen.has(item.mask)) { backCandidates.push(item); seen.add(item.mask); tCnt[item.ev.type]++; }
         }
       }
@@ -1629,22 +1816,28 @@
                 const hB = bEv.type === 8 ? 40 : bEv.type === 7 ? 32 : bEv.type * 3.1 + bEv.tiebreakers[0] * 0.2;
                 validSolutions.push({
                   front: fCards, mid: mCards, back: backItem.indices.map(idx => cards13[idx]),
-                  fEv, mEv, bEv, rating: hF + hM + hB, sig: `${fEv.type}-${mEv.type}-${bEv.type}`
+                  fEv, mEv, bEv,
+                  balancedScore: hF + hM + hB,
+                  frontFocusScore: hF * 2.2 + hM * 0.7 + hB * 0.5,
+                  backFocusScore: hB * 2.1 + hM * 1.1 + hF * 0.4,
+                  sig: `${fEv.type}-${mEv.type}-${bEv.type}`
                 });
               }
             }
       }
 
-      validSolutions.sort((a, b) => b.rating - a.rating);
-      const diverse = [], usedSig = new Set();
-      for (const sol of validSolutions) {
-        if (!usedSig.has(sol.sig)) { usedSig.add(sol.sig); diverse.push(sol); if (diverse.length === 3) break; }
-      }
-      for (const sol of validSolutions) {
-        if (diverse.length >= 3) break;
-        if (!diverse.includes(sol)) diverse.push(sol);
-      }
-      return { bestList: diverse, allValid: validSolutions };
+      if (validSolutions.length === 0) return { strategies: [], allValid: [] };
+
+      validSolutions.sort((a, b) => b.balancedScore - a.balancedScore);
+      const bestBalanced = { ...validSolutions[0], label: '均衡配置' };
+
+      const byFront = validSolutions.slice().sort((a, b) => b.frontFocusScore - a.frontFocusScore);
+      const bestFront = { ...(byFront.find(s => s.sig !== bestBalanced.sig) || byFront[0]), label: '衝頭搶水' };
+
+      const byBack = validSolutions.slice().sort((a, b) => b.backFocusScore - a.backFocusScore);
+      const bestBack = { ...(byBack.find(s => s.sig !== bestBalanced.sig && s.sig !== bestFront.sig) || byBack[0]), label: '拚尾保底' };
+
+      return { strategies: [bestBalanced, bestFront, bestBack], allValid: validSolutions };
     }
 
     function computeAiArrangement(cards13, difficulty) {
@@ -1652,12 +1845,12 @@
       if (special && difficulty !== 'easy') {
         return { front: cards13.slice(0, 3), mid: cards13.slice(3, 8), back: cards13.slice(8, 13), isSpecial: true, special };
       }
-      const { bestList, allValid } = findBestArrangements(cards13);
+      const { strategies, allValid } = findBestArrangements(cards13);
       if (allValid.length === 0) return { front: cards13.slice(0, 3), mid: cards13.slice(3, 8), back: cards13.slice(8, 13), isSpecial: false, special: null };
 
       let chosen;
-      if (difficulty === 'master') chosen = bestList[0];
-      else if (difficulty === 'normal') chosen = bestList[Math.floor(Math.random() * Math.min(3, bestList.length))];
+      if (difficulty === 'master') chosen = strategies[0];
+      else if (difficulty === 'normal') chosen = strategies[Math.floor(Math.random() * strategies.length)];
       else {
         const start = Math.floor(allValid.length * 0.55);
         chosen = allValid[start + Math.floor(Math.random() * Math.max(1, allValid.length - start))] || allValid[allValid.length - 1];
@@ -1684,7 +1877,7 @@
             if (A.isSpecial && B.isSpecial) {
               if (A.special.priority > B.special.priority) { shuiA = A.special.shui; note = `${A.name} 報到(${A.special.name}) 壓制`; }
               else if (B.special.priority > A.special.priority) { shuiA = -B.special.shui; note = `${B.name} 報到(${B.special.name}) 壓制`; }
-              else note = '雙方同為報到平手';
+              else note = '雙方報到平手';
             } else if (A.isSpecial) { shuiA = A.special.shui; note = `${A.name} 報到【${A.special.name}】`; }
             else { shuiA = -B.special.shui; note = `${B.name} 報到【${B.special.name}】`; }
             totalDelta[i] += shuiA; totalDelta[j] -= shuiA;
@@ -1756,12 +1949,12 @@
     }
 
     /* =========================================================================
-       5. STATE & PEERJS P2P MULTIPLAYER (Cute Girls AI: 小櫻、小莓、小兔)
+       6. APP STATE & PEERJS P2P MULTIPLAYER
        ========================================================================= */
-    const AI_GIRLS = [
-      { name: '小櫻', avatarIdx: 0 }, // 櫻花巫女
-      { name: '小莓', avatarIdx: 1 }, // 草莓女僕
-      { name: '小兔', avatarIdx: 5 }  // 兔耳荷官
+    const AI_PRESETS = [
+      { name: '海灘小夏', slotIdx: 0, icon: '🌊' },
+      { name: '泳池莉莉', slotIdx: 1, icon: '🍹' },
+      { name: '衝浪妮娜', slotIdx: 2, icon: '🏄‍♀️' }
     ];
 
     const appState = {
@@ -1775,14 +1968,15 @@
       round: 0,
       phase: 'lobby',
       seats: [
-        { seatIdx: 0, name: '甜心牌聖', isAi: false, avatarIdx: 7, peerId: 'local', totalShui: 0, locked: false },
-        { seatIdx: 1, name: AI_GIRLS[0].name, isAi: true, avatarIdx: AI_GIRLS[0].avatarIdx, peerId: null, totalShui: 0, locked: false },
-        { seatIdx: 2, name: AI_GIRLS[1].name, isAi: true, avatarIdx: AI_GIRLS[1].avatarIdx, peerId: null, totalShui: 0, locked: false },
-        { seatIdx: 3, name: AI_GIRLS[2].name, isAi: true, avatarIdx: AI_GIRLS[2].avatarIdx, peerId: null, totalShui: 0, locked: false }
+        { seatIdx: 0, name: '盛夏牌聖', isAi: false, slotIdx: 4, icon: '👑', avatar: null, peerId: 'local', totalShui: 0, locked: false },
+        { seatIdx: 1, name: AI_PRESETS[0].name, isAi: true, slotIdx: 0, icon: AI_PRESETS[0].icon, avatar: null, peerId: null, totalShui: 0, locked: false },
+        { seatIdx: 2, name: AI_PRESETS[1].name, isAi: true, slotIdx: 1, icon: AI_PRESETS[1].icon, avatar: null, peerId: null, totalShui: 0, locked: false },
+        { seatIdx: 3, name: AI_PRESETS[2].name, isAi: true, slotIdx: 2, icon: AI_PRESETS[2].icon, avatar: null, peerId: null, totalShui: 0, locked: false }
       ],
       hand: [],
       lanes: { front: [], mid: [], back: [] },
-      selectedIds: new Set(),
+      activeTargetLane: 'front',
+      swapSource: null,
       sortMode: 'rank',
       mySpecial: null,
       suggestions: [],
@@ -1793,42 +1987,54 @@
       lastShowdown: null
     };
 
-    function setNetBadge(text, ok = true) {
-      const desktop = document.getElementById('net-status-badge');
-      const mobile = document.getElementById('mobile-net-badge');
-      desktop.innerHTML = `<span class="w-2 h-2 rounded-full ${ok ? 'bg-emerald-500' : 'bg-amber-400'}"></span> ${text}`;
-      mobile.textContent = text;
+    function updateAiAvatarsFromSlots() {
+      appState.seats.forEach(s => {
+        const slot = photoMgr.slots[s.slotIdx % photoMgr.slots.length];
+        s.avatar = slot ? getItemImageUrl(slot) : null;
+      });
+      if (appState.phase === 'lobby') renderLobbySeats();
+      else renderOpponents(appState.phase === 'settled' ? 3 : 0);
     }
+
+    function setNetBadge(text, ok = true) {
+      document.getElementById('net-status-badge').innerHTML = `<span class="w-2 h-2 rounded-full ${ok ? 'bg-emerald-400' : 'bg-amber-400'}"></span> ${text}`;
+    }
+
+    function diffLabel(d) { return d === 'easy' ? '放水新手' : (d === 'master' ? '大師' : '普通'); }
 
     function setAiDifficulty(diff) {
       appState.aiDifficulty = diff;
       document.querySelectorAll('.ai-diff-btn').forEach(btn => {
         const active = btn.dataset.diff === diff;
         btn.className = active
-          ? 'ai-diff-btn py-1.5 rounded-2xl text-xs font-black border-2 border-pink-500 bg-pink-100 text-rose-700'
-          : 'ai-diff-btn py-1.5 rounded-2xl text-xs font-bold border border-pink-300 bg-white/80 text-rose-700';
+          ? 'ai-diff-btn py-1.5 rounded-2xl text-xs font-black border-2 border-rose-300 bg-rose-500/45 text-white'
+          : 'ai-diff-btn py-1.5 rounded-2xl text-xs font-bold border border-sky-300/30 bg-black/30 text-sky-100';
       });
       renderLobbySeats();
     }
 
-    function diffLabel(d) { return d === 'easy' ? '放水新手' : (d === 'master' ? '大師' : '普通'); }
+    function renderAvatarCircle(seat, sizeClass = 'w-9 h-9') {
+      if (seat.avatar) {
+        return `<div class="${sizeClass} rounded-full overflow-hidden border border-sky-200/60 bg-sky-950 shrink-0"><img src="${seat.avatar}" alt="${seat.name}" class="w-full h-full object-cover object-[50%_20%]" /></div>`;
+      }
+      return `<div class="${sizeClass} rounded-full border border-sky-200/60 bg-gradient-to-br from-sky-600 to-rose-500 shrink-0 flex items-center justify-center text-sm">${seat.icon || '🏖️'}</div>`;
+    }
 
     function renderLobbySeats() {
       const container = document.getElementById('lobby-seats');
       container.innerHTML = '';
       appState.seats.forEach((s, idx) => {
         const isMe = idx === appState.mySeatIdx;
-        const avatarSvg = BUILTIN_BEAUTIES[s.avatarIdx % BUILTIN_BEAUTIES.length].svg;
         const card = document.createElement('div');
         card.className = `p-2 rounded-2xl border flex items-center gap-2 ${
-          isMe ? 'bg-pink-100/90 border-pink-400 shadow-sm' : 'bg-white/75 border-pink-200'
+          isMe ? 'bg-rose-500/25 border-rose-300/80' : 'bg-black/30 border-white/15'
         }`;
         card.innerHTML = `
-          <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-pink-300 shrink-0 bg-pink-50">${avatarSvg}</div>
+          ${renderAvatarCircle(s, 'w-9 h-9')}
           <div class="min-w-0 flex-1">
-            <div class="text-xs sm:text-sm font-black text-rose-700 truncate">${s.name}</div>
-            <div class="text-[10px] text-rose-500/80 font-bold truncate">
-              ${isMe ? '💖 你 (本機)' : (s.isAi ? `🎀 AI (${diffLabel(appState.aiDifficulty)})` : '✨ 已連線好友')}
+            <div class="text-xs sm:text-sm font-black text-white truncate">${s.name}</div>
+            <div class="text-[10px] text-sky-200/85 font-bold truncate">
+              ${isMe ? '💖 你 (本機)' : (s.isAi ? `AI (${diffLabel(appState.aiDifficulty)})` : '✨ 連線好友')}
             </div>
           </div>
         `;
@@ -1836,13 +2042,8 @@
       });
 
       const startBtn = document.getElementById('btn-start-match');
-      if (appState.mode === 'guest') {
-        startBtn.disabled = true;
-        startBtn.textContent = '⏳ 等待房主發牌...';
-      } else {
-        startBtn.disabled = false;
-        startBtn.textContent = '🌸 開始發牌對戰 ✨';
-      }
+      if (appState.mode === 'guest') { startBtn.disabled = true; startBtn.textContent = '⏳ 等待房主發牌...'; }
+      else { startBtn.disabled = false; startBtn.textContent = '🏖️ 開始發牌對戰 ✨'; }
     }
 
     function updateInviteQR(code) {
@@ -1856,12 +2057,12 @@
       qrBox.innerHTML = '';
       try {
         if (typeof QRCode !== 'undefined') {
-          new QRCode(qrBox, { text: url, width: 68, height: 68, colorDark: '#be185d', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
+          new QRCode(qrBox, { text: url, width: 68, height: 68, colorDark: '#075985', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
         } else {
-          qrBox.innerHTML = `<span class="text-xs font-black text-rose-600 font-mono">${code}</span>`;
+          qrBox.innerHTML = `<span class="text-xs font-black text-sky-800 font-mono">${code}</span>`;
         }
       } catch (e) {
-        qrBox.innerHTML = `<span class="text-xs font-black text-rose-600 font-mono">${code}</span>`;
+        qrBox.innerHTML = `<span class="text-xs font-black text-sky-800 font-mono">${code}</span>`;
       }
     }
 
@@ -1872,7 +2073,7 @@
         const ta = document.createElement('textarea');
         ta.value = url; ta.style.position = 'fixed'; ta.style.opacity = '0';
         document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
-        showToast('已複製邀請網址！快傳給好友一起玩🌸', 'success');
+        showToast('已複製邀請網址！快傳給好友加入🌊', 'success');
       } catch (e) {
         showToast(`請手動分享房號：${appState.roomCode}`, 'warn');
       }
@@ -1886,31 +2087,27 @@
     function fallbackToLocal(reason) {
       cleanupPeer();
       appState.mode = 'local'; appState.mySeatIdx = 0; appState.roomCode = '';
-      setNetBadge('本機甜心AI模式', false);
+      setNetBadge('本機單機AI模式', false);
       document.getElementById('room-code-display').textContent = '房號：本機單機';
-      document.getElementById('invite-status-text').textContent = reason || '已自動切換為本機 AI 模式';
+      document.getElementById('invite-status-text').textContent = reason || '已自動切換本機 AI 模式';
       renderLobbySeats();
     }
 
     function createOnlineRoom() {
-      const myName = document.getElementById('player-name-input').value.trim() || '甜心牌聖';
+      const myName = document.getElementById('player-name-input').value.trim() || '盛夏牌聖';
       appState.seats[0].name = myName;
       cleanupPeer();
-      if (typeof Peer === 'undefined') {
-        fallbackToLocal('離線環境，自動降級本機 AI 模式');
-        showToast('偵測到離線環境，已自動切換為單機 AI 模式', 'warn');
-        return;
-      }
+      if (typeof Peer === 'undefined') { fallbackToLocal('離線環境，自動切換本機 AI'); showToast('偵測到離線環境，已切換單機 AI 模式', 'warn'); return; }
 
       const code = String(Math.floor(1000 + Math.random() * 9000));
       setNetBadge('連線中...', false);
       let settled = false;
       const timer = setTimeout(() => {
-        if (!settled) { settled = true; fallbackToLocal('連線逾時，自動切換本機 AI 模式'); showToast('P2P 伺服器受限，已無縫降級為本機 AI 模式', 'warn'); }
+        if (!settled) { settled = true; fallbackToLocal('連線逾時，自動切換本機 AI'); showToast('P2P 伺服器受限，已無縫降級單機 AI 模式', 'warn'); }
       }, 4500);
 
       try {
-        const peer = new Peer(`sakura13-${code}`, { debug: 0 });
+        const peer = new Peer(`summergh13-${code}`, { debug: 0 });
         appState.peer = peer;
         peer.on('open', () => {
           if (settled) return;
@@ -1918,36 +2115,36 @@
           appState.mode = 'host'; appState.roomCode = code; appState.mySeatIdx = 0;
           setNetBadge(`線上房主 #${code}`, true);
           updateInviteQR(code); renderLobbySeats();
-          showToast(`粉櫻房間 ${code} 建立成功！`, 'success');
+          showToast(`盛夏房間 ${code} 建立成功！`, 'success');
         });
-        peer.on('connection', (conn) => {
-          conn.on('data', (data) => handleHostReceive(conn, data));
+        peer.on('connection', conn => {
+          conn.on('data', data => handleHostReceive(conn, data));
           conn.on('close', () => handleGuestDisconnect(conn.peer));
         });
         peer.on('error', () => {
-          if (!settled) { settled = true; clearTimeout(timer); fallbackToLocal('沙盒環境限制，自動切換本機 AI 模式'); showToast('偵測到連線受限，已無縫切換為單機 AI 模式', 'warn'); }
+          if (!settled) { settled = true; clearTimeout(timer); fallbackToLocal('沙盒受限，自動切換本機 AI'); showToast('連線受限，已無縫降級單機 AI 模式', 'warn'); }
         });
-      } catch (e) { clearTimeout(timer); fallbackToLocal('自動切換本機 AI 模式'); }
+      } catch (e) { clearTimeout(timer); fallbackToLocal('自動切換本機 AI'); }
     }
 
     function joinOnlineRoom() {
       const code = document.getElementById('join-room-input').value.trim();
       if (!code) { showToast('請輸入 4 位數房號', 'warn'); return; }
-      const myName = document.getElementById('player-name-input').value.trim() || '甜心好友';
+      const myName = document.getElementById('player-name-input').value.trim() || '牌友';
       cleanupPeer();
       if (typeof Peer === 'undefined') { fallbackToLocal('離線環境，已切換單機 AI'); return; }
 
       setNetBadge(`加入 #${code}...`, false);
       let connected = false;
       const timer = setTimeout(() => {
-        if (!connected) { fallbackToLocal('找不到房間，切回單機 AI 模式'); showToast('無法連線至該房間，已切回單機 AI 模式', 'warn'); }
+        if (!connected) { fallbackToLocal('找不到房間，切回單機 AI'); showToast('無法連線至該房間，已切回單機模式', 'warn'); }
       }, 5000);
 
       try {
         const peer = new Peer(undefined, { debug: 0 });
         appState.peer = peer;
         peer.on('open', () => {
-          const conn = peer.connect(`sakura13-${code}`, { reliable: true });
+          const conn = peer.connect(`summergh13-${code}`, { reliable: true });
           appState.hostConn = conn;
           conn.on('open', () => {
             connected = true; clearTimeout(timer);
@@ -1955,13 +2152,13 @@
             setNetBadge(`已加入 #${code}`, true);
             document.getElementById('room-code-display').textContent = `房號：${code}`;
             conn.send({ type: 'JOIN', name: myName });
-            showToast(`成功加入粉櫻房間 ${code}！`, 'success');
+            showToast(`成功加入盛夏房間 ${code}！`, 'success');
           });
-          conn.on('data', (data) => handleGuestReceive(data));
+          conn.on('data', data => handleGuestReceive(data));
           conn.on('close', () => { showToast('與房主斷開連線，返回大廳', 'warn'); leaveToLobby(); });
         });
-        peer.on('error', () => { if (!connected) { clearTimeout(timer); fallbackToLocal('連線受限，切回單機 AI 模式'); } });
-      } catch (e) { clearTimeout(timer); fallbackToLocal('自動切換本機 AI 模式'); }
+        peer.on('error', () => { if (!connected) { clearTimeout(timer); fallbackToLocal('連線受限，切回單機 AI'); } });
+      } catch (e) { clearTimeout(timer); fallbackToLocal('自動切換本機 AI'); }
     }
 
     function handleHostReceive(conn, data) {
@@ -1969,13 +2166,11 @@
       if (data.type === 'JOIN') {
         const openSeat = appState.seats.find(s => s.isAi);
         if (!openSeat) { conn.send({ type: 'FULL' }); return; }
-        openSeat.isAi = false;
-        openSeat.name = (data.name || '連線好友').slice(0, 10);
-        openSeat.peerId = conn.peer;
+        openSeat.isAi = false; openSeat.name = (data.name || '連線好友').slice(0, 10); openSeat.icon = '💖'; openSeat.peerId = conn.peer;
         appState.guestConns[conn.peer] = { conn, seatIdx: openSeat.seatIdx };
         conn.send({ type: 'ASSIGN_SEAT', seatIdx: openSeat.seatIdx });
         broadcastLobbyState(); renderLobbySeats();
-        showToast(`${openSeat.name} 加入房間囉！`, 'success');
+        showToast(`${openSeat.name} 加入房間！`, 'success');
       } else if (data.type === 'SUBMIT') {
         const guest = appState.guestConns[conn.peer];
         if (guest) hostReceiveSubmission(guest.seatIdx, data.submission);
@@ -1986,11 +2181,12 @@
       const info = appState.guestConns[peerId];
       if (!info) return;
       const seat = appState.seats[info.seatIdx];
-      const girl = AI_GIRLS[(info.seatIdx - 1 + 3) % 3];
-      seat.isAi = true; seat.name = girl.name; seat.avatarIdx = girl.avatarIdx; seat.peerId = null;
+      const ai = AI_PRESETS[(info.seatIdx - 1 + 3) % 3];
+      seat.isAi = true; seat.name = ai.name; seat.icon = ai.icon; seat.slotIdx = ai.slotIdx; seat.peerId = null;
       delete appState.guestConns[peerId];
+      updateAiAvatarsFromSlots();
       broadcastLobbyState(); renderLobbySeats();
-      showToast(`座位 ${info.seatIdx + 1} 玩家離開，已由 ${girl.name} 接管`, 'warn');
+      showToast(`座位 ${info.seatIdx + 1} 玩家離開，已由 ${ai.name} 接管`, 'warn');
       if (appState.phase === 'arranging' && !appState.hostSubmissions[info.seatIdx]) {
         hostReceiveSubmission(info.seatIdx, computeAiArrangement(appState.hostHands[info.seatIdx], appState.aiDifficulty));
       }
@@ -2013,24 +2209,24 @@
     }
 
     /* =========================================================================
-       6. GAME FLOW: START, DEAL, ARRANGE, SHOWDOWN & SETTLEMENT
+       7. GAME FLOW & FLUID ARRANGEMENT (One-Tap Place + Two-Card Swap)
        ========================================================================= */
     function startQuickLocalGame() {
-      const myName = document.getElementById('player-name-input').value.trim() || '甜心牌聖';
+      const myName = document.getElementById('player-name-input').value.trim() || '盛夏牌聖';
       cleanupPeer();
       appState.mode = 'local'; appState.mySeatIdx = 0; appState.round = 0;
       appState.seats = [
-        { seatIdx: 0, name: myName, isAi: false, avatarIdx: 7, peerId: 'local', totalShui: 0, locked: false },
-        { seatIdx: 1, name: AI_GIRLS[0].name, isAi: true, avatarIdx: AI_GIRLS[0].avatarIdx, peerId: null, totalShui: 0, locked: false },
-        { seatIdx: 2, name: AI_GIRLS[1].name, isAi: true, avatarIdx: AI_GIRLS[1].avatarIdx, peerId: null, totalShui: 0, locked: false },
-        { seatIdx: 3, name: AI_GIRLS[2].name, isAi: true, avatarIdx: AI_GIRLS[2].avatarIdx, peerId: null, totalShui: 0, locked: false }
+        { seatIdx: 0, name: myName, isAi: false, slotIdx: 4, icon: '👑', avatar: null, peerId: 'local', totalShui: 0, locked: false },
+        { seatIdx: 1, name: AI_PRESETS[0].name, isAi: true, slotIdx: 0, icon: AI_PRESETS[0].icon, avatar: null, peerId: null, totalShui: 0, locked: false },
+        { seatIdx: 2, name: AI_PRESETS[1].name, isAi: true, slotIdx: 1, icon: AI_PRESETS[1].icon, avatar: null, peerId: null, totalShui: 0, locked: false },
+        { seatIdx: 3, name: AI_PRESETS[2].name, isAi: true, slotIdx: 2, icon: AI_PRESETS[2].icon, avatar: null, peerId: null, totalShui: 0, locked: false }
       ];
+      updateAiAvatarsFromSlots();
       hostStartGame();
     }
 
     function hostStartGame() {
-      const myName = document.getElementById('player-name-input').value.trim() || '甜心牌聖';
-      appState.seats[appState.mySeatIdx].name = myName;
+      appState.seats[appState.mySeatIdx].name = document.getElementById('player-name-input').value.trim() || '盛夏牌聖';
       startNewRoundAsHost();
     }
 
@@ -2063,11 +2259,13 @@
       document.getElementById('game-screen').classList.remove('hidden');
       document.getElementById('game-screen').classList.add('flex');
       document.getElementById('settlement-modal').classList.add('hidden');
+      document.getElementById('goddess-bubble').classList.remove('hidden');
 
       appState.phase = 'arranging';
       appState.hand = cards13.slice();
       appState.lanes = { front: [], mid: [], back: [] };
-      appState.selectedIds = new Set();
+      appState.activeTargetLane = 'front';
+      appState.swapSource = null;
       appState.lastShowdown = null;
 
       sortHandArray();
@@ -2075,13 +2273,13 @@
       appState.mySpecial = detectSpecialHand(cards13);
       const specBtn = document.getElementById('btn-special-declare');
       if (appState.mySpecial) {
-        specBtn.textContent = `🌟 報到：${appState.mySpecial.name} (+${appState.mySpecial.shui}水)`;
+        specBtn.textContent = `✨ 報到亮牌：${appState.mySpecial.name} (+${appState.mySpecial.shui}水)`;
         specBtn.classList.remove('hidden');
       } else {
         specBtn.classList.add('hidden');
       }
 
-      appState.suggestions = findBestArrangements(cards13).bestList;
+      appState.suggestions = findBestArrangements(cards13).strategies;
       renderSuggestions();
 
       document.getElementById('assist-bar').classList.remove('hidden');
@@ -2089,19 +2287,18 @@
       ['front', 'mid', 'back'].forEach(l => document.getElementById(`score-${l}`).classList.add('hidden'));
 
       document.getElementById('hud-round').textContent = `第 ${appState.round} 局`;
-      document.getElementById('hud-room-tag').textContent = appState.roomCode ? `房號 #${appState.roomCode}` : '甜心單機模式';
-      document.getElementById('hud-my-score').innerHTML = `總水數：<strong>${appState.seats[appState.mySeatIdx].totalShui}</strong>`;
-      document.getElementById('stage-status-text').textContent = '點選手牌放入頭/中/尾三墩，或套用推薦擺法';
+      document.getElementById('hud-my-score').innerHTML = `總水：<strong class="text-amber-300">${appState.seats[appState.mySeatIdx].totalShui}</strong>`;
+      document.getElementById('stage-status-text').textContent = '點擊手牌放入紅框墩位，點任兩張牌互換位置';
 
       renderOpponents();
       renderAllLanes();
       renderHand();
 
-      // Trigger Beauty Photo swap on new round deal!
-      triggerBeautyEvent('deal');
-      audioEngine.playSfx('deal');
-      audioEngine.speak(`第${appState.round}局發牌囉，主人請開始擺牌`);
+      randomGoddess(false, 'deal');
+      resetPhotoAutoTimer();
 
+      audioEngine.playSfx('deal');
+      audioEngine.speak(`第${appState.round}局發牌，請開始擺牌`);
       startArrangementTimer(60);
     }
 
@@ -2118,7 +2315,7 @@
           clearInterval(appState.timerHandle);
           appState.timerHandle = null;
           if (appState.phase === 'arranging') {
-            showToast('時間到囉！甜心已幫你套用最佳擺法💖', 'warn');
+            showToast('時間到！已自動套用均衡配置擺牌', 'warn');
             if (appState.suggestions.length > 0) applySuggestion(0);
             confirmPlayerArrangement();
           }
@@ -2126,14 +2323,22 @@
       }, 1000);
     }
 
-    /* =========================================================================
-       7. CARD INTERACTION & RENDERING
-       ========================================================================= */
-    function createCardElement(card, variant = 'hand', isSelected = false) {
+    function advanceActiveTargetLane() {
+      const limits = { front: 3, mid: 5, back: 5 };
+      if (appState.lanes[appState.activeTargetLane].length < limits[appState.activeTargetLane]) return;
+      for (const l of ['front', 'mid', 'back']) {
+        if (appState.lanes[l].length < limits[l]) {
+          appState.activeTargetLane = l;
+          return;
+        }
+      }
+    }
+
+    function createCardElement(card, variant = 'hand', stateClass = '') {
       const div = document.createElement('div');
       const colorClass = SUIT_COLORS[card.suit];
       const rankTxt = RANK_LABELS[card.rank], suitTxt = SUITS[card.suit];
-      div.className = `p-card ${colorClass} ${variant}-card ${isSelected ? 'selected' : ''}`;
+      div.className = `p-card ${colorClass} ${variant}-card ${stateClass}`;
 
       if (variant === 'mini') {
         div.innerHTML = `<div class="text-[9px] sm:text-[10px] font-black leading-none">${rankTxt}</div><div class="text-[10px] sm:text-xs leading-none self-end">${suitTxt}</div>`;
@@ -2164,77 +2369,134 @@
       const tray = document.getElementById('hand-tray');
       tray.innerHTML = '';
       if (appState.hand.length === 0) {
-        tray.innerHTML = `<div class="text-xs text-rose-500 font-black py-3">13 張牌都擺好囉！確認沒倒水就按「💖 確認擺牌」吧</div>`;
+        tray.innerHTML = `<div class="text-xs text-sky-100 font-bold bg-black/45 px-3 py-1.5 rounded-full">13 張牌已擺滿！點任兩張牌可互換，確認後按「💖 確認擺牌」</div>`;
       } else {
         appState.hand.forEach(card => {
-          const el = createCardElement(card, 'hand', appState.selectedIds.has(card.id));
+          const el = createCardElement(card, 'hand');
           el.onclick = () => {
             if (appState.phase !== 'arranging') return;
-            if (appState.selectedIds.has(card.id)) appState.selectedIds.delete(card.id);
-            else appState.selectedIds.add(card.id);
-            audioEngine.playSfx('select');
-            renderHand(); updateLaneHighlights();
+
+            if (appState.swapSource) {
+              const srcLane = appState.lanes[appState.swapSource.lane];
+              const sIdx = srcLane.findIndex(c => c.id === appState.swapSource.cardId);
+              const hIdx = appState.hand.findIndex(c => c.id === card.id);
+              if (sIdx !== -1 && hIdx !== -1) {
+                const tmp = srcLane[sIdx];
+                srcLane[sIdx] = appState.hand[hIdx];
+                appState.hand[hIdx] = tmp;
+                srcLane.sort((a, b) => b.rank - a.rank || a.suit - b.suit);
+                sortHandArray();
+                appState.swapSource = null;
+                audioEngine.playSfx('place');
+                renderAllLanes(); renderHand();
+                return;
+              }
+              appState.swapSource = null;
+            }
+
+            advanceActiveTargetLane();
+            const limits = { front: 3, mid: 5, back: 5 };
+            const target = appState.activeTargetLane;
+            if (appState.lanes[target].length < limits[target]) {
+              const hIdx = appState.hand.findIndex(c => c.id === card.id);
+              if (hIdx !== -1) {
+                appState.lanes[target].push(appState.hand.splice(hIdx, 1)[0]);
+                appState.lanes[target].sort((a, b) => b.rank - a.rank || a.suit - b.suit);
+                advanceActiveTargetLane();
+                audioEngine.playSfx('place');
+                renderAllLanes(); renderHand();
+              }
+            }
           };
           tray.appendChild(el);
         });
       }
       document.getElementById('hand-count-hint').textContent = `剩餘 ${appState.hand.length} 張`;
-      updateLaneHighlights();
-    }
-
-    function updateLaneHighlights() {
-      const hasSel = appState.selectedIds.size > 0 && appState.phase === 'arranging';
-      const limits = { front: 3, mid: 5, back: 5 };
-      ['front', 'mid', 'back'].forEach(lane => {
-        const el = document.getElementById(`lane-${lane}`);
-        if (hasSel && limits[lane] - appState.lanes[lane].length > 0) el.classList.add('can-drop');
-        else el.classList.remove('can-drop');
-      });
     }
 
     function handleLaneClick(lane) {
-      if (appState.phase !== 'arranging' || appState.selectedIds.size === 0) return;
+      if (appState.phase !== 'arranging') return;
       const limits = { front: 3, mid: 5, back: 5 };
-      const space = limits[lane] - appState.lanes[lane].length;
-      if (space <= 0) { showToast('這一墩已經滿囉，點牌可以收回～', 'warn'); return; }
 
-      const toMove = appState.hand.filter(c => appState.selectedIds.has(c.id)).slice(0, space);
-      const moveIds = new Set(toMove.map(c => c.id));
-      appState.hand = appState.hand.filter(c => !moveIds.has(c.id));
-      appState.lanes[lane].push(...toMove);
-      appState.lanes[lane].sort((a, b) => b.rank - a.rank || a.suit - b.suit);
-      appState.selectedIds.clear();
+      if (appState.swapSource && appState.swapSource.lane !== lane) {
+        if (appState.lanes[lane].length < limits[lane]) {
+          const srcArr = appState.lanes[appState.swapSource.lane];
+          const sIdx = srcArr.findIndex(c => c.id === appState.swapSource.cardId);
+          if (sIdx !== -1) {
+            appState.lanes[lane].push(srcArr.splice(sIdx, 1)[0]);
+            appState.lanes[lane].sort((a, b) => b.rank - a.rank || a.suit - b.suit);
+            appState.swapSource = null;
+            audioEngine.playSfx('place');
+            renderAllLanes(); renderHand();
+            return;
+          }
+        }
+        appState.swapSource = null;
+      }
 
-      audioEngine.playSfx('place');
-      renderAllLanes(); renderHand();
+      appState.activeTargetLane = lane;
+      audioEngine.playSfx('select');
+      renderAllLanes();
     }
 
-    function returnCardFromLane(lane, cardId, evt) {
+    function handleLaneCardClick(lane, cardId, evt) {
       evt.stopPropagation();
       if (appState.phase !== 'arranging') return;
-      const idx = appState.lanes[lane].findIndex(c => c.id === cardId);
-      if (idx === -1) return;
-      appState.hand.push(appState.lanes[lane].splice(idx, 1)[0]);
-      sortHandArray(); audioEngine.playSfx('select');
-      renderAllLanes(); renderHand();
+
+      if (!appState.swapSource) {
+        appState.swapSource = { lane, cardId };
+        appState.activeTargetLane = lane;
+        audioEngine.playSfx('select');
+        renderAllLanes();
+        return;
+      }
+
+      if (appState.swapSource.lane === lane && appState.swapSource.cardId === cardId) {
+        const idx = appState.lanes[lane].findIndex(c => c.id === cardId);
+        if (idx !== -1) {
+          appState.hand.push(appState.lanes[lane].splice(idx, 1)[0]);
+          sortHandArray();
+          appState.activeTargetLane = lane;
+        }
+        appState.swapSource = null;
+        audioEngine.playSfx('select');
+        renderAllLanes(); renderHand();
+        return;
+      }
+
+      const srcArr = appState.lanes[appState.swapSource.lane];
+      const dstArr = appState.lanes[lane];
+      const sIdx = srcArr.findIndex(c => c.id === appState.swapSource.cardId);
+      const dIdx = dstArr.findIndex(c => c.id === cardId);
+      if (sIdx !== -1 && dIdx !== -1) {
+        const tmp = srcArr[sIdx];
+        srcArr[sIdx] = dstArr[dIdx];
+        dstArr[dIdx] = tmp;
+        srcArr.sort((a, b) => b.rank - a.rank || a.suit - b.suit);
+        dstArr.sort((a, b) => b.rank - a.rank || a.suit - b.suit);
+        audioEngine.playSfx('place');
+      }
+      appState.swapSource = null;
+      renderAllLanes();
     }
 
     function clearAllLanes() {
       if (appState.phase !== 'arranging') return;
       appState.hand.push(...appState.lanes.front, ...appState.lanes.mid, ...appState.lanes.back);
       appState.lanes = { front: [], mid: [], back: [] };
-      appState.selectedIds.clear();
+      appState.activeTargetLane = 'front';
+      appState.swapSource = null;
       sortHandArray(); audioEngine.playSfx('select');
       renderAllLanes(); renderHand();
     }
 
     function renderSuggestions() {
       const box = document.getElementById('suggestions-container');
-      box.innerHTML = `<span class="text-[11px] text-rose-600 font-black shrink-0">💡 推薦：</span>`;
+      box.innerHTML = `<span class="text-[11px] text-sky-200 font-black shrink-0">💡 推薦：</span>`;
       appState.suggestions.forEach((sol, idx) => {
         const btn = document.createElement('button');
-        btn.className = 'px-2 py-0.5 rounded-full bg-white hover:bg-pink-100 border border-pink-300 text-[11px] font-bold text-rose-700 whitespace-nowrap shrink-0 shadow-sm active:scale-95';
-        btn.textContent = `${sol.fEv.name} / ${sol.mEv.name} / ${sol.bEv.name}`;
+        btn.className = 'px-2.5 py-0.5 rounded-full bg-black/45 hover:bg-rose-500/50 border border-sky-300/40 text-[11px] font-bold text-sky-50 whitespace-nowrap shrink-0 backdrop-blur-sm active:scale-95';
+        btn.textContent = `【${sol.label}】${sol.fEv.name}/${sol.mEv.name}/${sol.bEv.name}`;
         btn.onclick = () => applySuggestion(idx);
         box.appendChild(btn);
       });
@@ -2247,7 +2509,7 @@
       appState.lanes.front = sol.front.slice().sort((a, b) => b.rank - a.rank);
       appState.lanes.mid = sol.mid.slice().sort((a, b) => b.rank - a.rank);
       appState.lanes.back = sol.back.slice().sort((a, b) => b.rank - a.rank);
-      appState.hand = []; appState.selectedIds.clear();
+      appState.hand = []; appState.swapSource = null;
       audioEngine.playSfx('place');
       renderAllLanes(); renderHand();
     }
@@ -2259,14 +2521,19 @@
       const evalMap = { front: fEv, mid: mEv, back: bEv };
 
       ['front', 'mid', 'back'].forEach(lane => {
+        const laneEl = document.getElementById(`lane-${lane}`);
+        if (appState.phase === 'arranging' && appState.activeTargetLane === lane) laneEl.classList.add('active-target');
+        else laneEl.classList.remove('active-target');
+
         const cardBox = document.getElementById(`cards-${lane}`);
         cardBox.innerHTML = '';
         if (appState.lanes[lane].length === 0) {
-          cardBox.innerHTML = `<span class="text-[10px] text-rose-400/70 font-bold">點擊放入牌</span>`;
+          cardBox.innerHTML = `<span class="text-[10px] text-sky-100/55 font-bold">${appState.activeTargetLane === lane ? '點手牌放入此墩' : '點擊選取此墩'}</span>`;
         } else {
           appState.lanes[lane].forEach(c => {
-            const el = createCardElement(c, 'lane');
-            el.onclick = (e) => returnCardFromLane(lane, c.id, e);
+            const isSwapSel = appState.swapSource && appState.swapSource.lane === lane && appState.swapSource.cardId === c.id;
+            const el = createCardElement(c, 'lane', isSwapSel ? 'swap-selected' : '');
+            el.onclick = (e) => handleLaneCardClick(lane, c.id, e);
             cardBox.appendChild(el);
           });
         }
@@ -2277,11 +2544,11 @@
           const bonus = getLaneWinShui(lane, ev);
           badge.textContent = bonus > 1 ? `${ev.name} (+${bonus}水)` : ev.name;
           badge.className = bonus > 1
-            ? 'px-1.5 py-0.5 rounded-full bg-gradient-to-r from-pink-500 to-rose-400 text-[10px] font-black text-white whitespace-nowrap'
-            : 'px-1.5 py-0.5 rounded-full bg-pink-100 text-[10px] font-bold text-rose-700 whitespace-nowrap';
+            ? 'px-1.5 py-0.5 rounded-full bg-gradient-to-r from-rose-500 to-orange-400 text-[10px] font-black text-white whitespace-nowrap'
+            : 'px-1.5 py-0.5 rounded-full bg-black/55 text-[10px] font-bold text-sky-100 whitespace-nowrap';
         } else {
           badge.textContent = `${appState.lanes[lane].length}/${lane === 'front' ? 3 : 5}`;
-          badge.className = 'px-1.5 py-0.5 rounded-full bg-white/80 text-[10px] font-bold text-rose-400 whitespace-nowrap';
+          badge.className = 'px-1.5 py-0.5 rounded-full bg-black/40 text-[10px] font-bold text-sky-200/75 whitespace-nowrap';
         }
       });
 
@@ -2318,20 +2585,19 @@
     function submitMyHand(submission) {
       if (appState.timerHandle) { clearInterval(appState.timerHandle); appState.timerHandle = null; }
       appState.phase = 'waiting';
+      appState.swapSource = null;
       document.getElementById('assist-bar').classList.add('hidden');
       document.getElementById('hand-control-section').classList.add('hidden');
       document.getElementById('stage-status-text').textContent = submission.isSpecial
         ? `已宣告報到【${submission.special.name}】，等待大家亮牌...`
-        : '擺牌完成！等待可愛對手們準備好...';
+        : '擺牌完成！等待其他玩家鎖定...';
 
+      renderAllLanes();
       audioEngine.playSfx('lock');
       if (submission.isSpecial) audioEngine.speak(`恭喜報到，${submission.special.name}`);
 
-      if (appState.mode === 'guest' && appState.hostConn) {
-        appState.hostConn.send({ type: 'SUBMIT', submission });
-      } else {
-        hostReceiveSubmission(appState.mySeatIdx, submission);
-      }
+      if (appState.mode === 'guest' && appState.hostConn) appState.hostConn.send({ type: 'SUBMIT', submission });
+      else hostReceiveSubmission(appState.mySeatIdx, submission);
     }
 
     function hostReceiveSubmission(seatIdx, submission) {
@@ -2355,11 +2621,9 @@
     }
 
     /* =========================================================================
-       8. OPPONENTS RENDERING & ANIMATED SHOWDOWN WITH BEAUTY PHOTO TRIGGERS
+       8. OPPONENTS RENDERING & ANIMATED SHOWDOWN SEQUENCE
        ========================================================================= */
-    function getOpponentSeats() {
-      return [1, 2, 3].map(off => (appState.mySeatIdx + off) % 4);
-    }
+    function getOpponentSeats() { return [1, 2, 3].map(off => (appState.mySeatIdx + off) % 4); }
 
     function renderOpponents(revealStage = 0) {
       const container = document.getElementById('opponents-row');
@@ -2369,41 +2633,40 @@
       getOpponentSeats().forEach(seatIdx => {
         const seat = appState.seats[seatIdx];
         const evData = sd ? sd.evals[seatIdx] : null;
-        const avatarSvg = BUILTIN_BEAUTIES[seat.avatarIdx % BUILTIN_BEAUTIES.length].svg;
         const card = document.createElement('div');
-        card.className = 'glass-card rounded-2xl p-1.5 sm:p-2 flex flex-col gap-1 min-w-0';
+        card.className = 'glass-panel rounded-2xl p-1.5 sm:p-2 flex flex-col gap-1 min-w-0';
 
         let statusTag = seat.locked
-          ? '<span class="px-1.5 py-0.5 rounded-full bg-emerald-100 text-[9px] sm:text-[10px] text-emerald-700 font-black shrink-0">準備好</span>'
-          : '<span class="px-1.5 py-0.5 rounded-full bg-pink-100 text-[9px] sm:text-[10px] text-rose-600 font-black animate-pulse shrink-0">思考中</span>';
+          ? '<span class="px-1.5 py-0.5 rounded-full bg-emerald-500/35 border border-emerald-300/50 text-[9px] sm:text-[10px] text-emerald-100 font-black shrink-0">已鎖定</span>'
+          : '<span class="px-1.5 py-0.5 rounded-full bg-rose-500/35 border border-rose-300/50 text-[9px] sm:text-[10px] text-rose-100 font-black animate-pulse shrink-0">擺牌中</span>';
 
         if (revealStage > 0 && evData) {
-          if (evData.isSpecial) statusTag = `<span class="px-1.5 py-0.5 rounded-full bg-rose-500 text-[9px] text-white font-black shrink-0">🌟 ${evData.special.name}</span>`;
-          else if (evData.isFoul) statusTag = `<span class="px-1.5 py-0.5 rounded-full bg-rose-600 text-[9px] text-white font-black shrink-0">⚠️ 倒水</span>`;
+          if (evData.isSpecial) statusTag = `<span class="px-1.5 py-0.5 rounded-full bg-amber-500 text-[9px] text-white font-black shrink-0">✨ ${evData.special.name}</span>`;
+          else if (evData.isFoul) statusTag = `<span class="px-1.5 py-0.5 rounded-full bg-red-600 text-[9px] text-white font-black shrink-0">⚠️ 倒水</span>`;
           else {
             const d = sd.totalDelta[seatIdx];
-            statusTag = `<span class="px-1.5 py-0.5 rounded-full ${d >= 0 ? 'bg-pink-500 text-white' : 'bg-rose-100 text-rose-700'} text-[9px] font-black shrink-0">${revealStage === 3 ? (d >= 0 ? `+${d}水` : `${d}水`) : '比牌中'}</span>`;
+            statusTag = `<span class="px-1.5 py-0.5 rounded-full ${d >= 0 ? 'bg-rose-500 text-white' : 'bg-black/55 text-sky-200'} text-[9px] font-black shrink-0 tabular-nums">${revealStage === 3 ? (d >= 0 ? `+${d}水` : `${d}水`) : '比牌中'}</span>`;
           }
         }
 
         card.innerHTML = `
           <div class="flex items-center gap-1.5 min-w-0">
-            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full overflow-hidden border border-pink-300 shrink-0 bg-pink-50">${avatarSvg}</div>
+            ${renderAvatarCircle(seat, 'w-7 h-7 sm:w-8 sm:h-8')}
             <div class="min-w-0 flex-1">
               <div class="flex items-center justify-between gap-1">
-                <span class="text-[11px] sm:text-xs font-black text-rose-800 truncate">${seat.name}</span>
+                <span class="text-[11px] sm:text-xs font-black text-white truncate">${seat.name}</span>
                 ${statusTag}
               </div>
-              <div class="text-[10px] text-rose-500 font-bold">總水：<strong class="text-rose-700">${seat.totalShui}</strong></div>
+              <div class="text-[10px] text-sky-200/85 font-bold tabular-nums">總水：<strong class="text-amber-300">${seat.totalShui}</strong></div>
             </div>
           </div>
         `;
 
         if (revealStage > 0 && evData) {
           const wrap = document.createElement('div');
-          wrap.className = 'space-y-0.5 pt-1 border-t border-pink-200';
+          wrap.className = 'space-y-0.5 pt-1 border-t border-white/15';
           if (evData.isSpecial) {
-            wrap.innerHTML = `<div class="text-center py-1.5 text-[11px] font-black text-rose-600">報到免比 (+${evData.special.shui}水/家)</div>`;
+            wrap.innerHTML = `<div class="text-center py-1 text-[11px] font-black text-amber-300">報到免比 (+${evData.special.shui}水/家)</div>`;
           } else {
             [
               { label: '頭', cards: evData.front, ev: evData.fEv, min: 1 },
@@ -2417,7 +2680,7 @@
               if (revealStage >= ld.min) ld.cards.forEach(c => cBox.appendChild(createCardElement(c, 'mini')));
               else for (let k = 0; k < ld.cards.length; k++) { const b = document.createElement('div'); b.className = 'p-card mini-card p-card-back'; cBox.appendChild(b); }
               const lbl = document.createElement('span');
-              lbl.className = 'text-[9px] font-black text-rose-600 shrink-0';
+              lbl.className = 'text-[9px] font-black text-sky-200 shrink-0';
               lbl.textContent = revealStage >= ld.min ? ld.ev.name : `${ld.label}墩`;
               row.appendChild(cBox); row.appendChild(lbl);
               wrap.appendChild(row);
@@ -2437,33 +2700,31 @@
       const myEval = result.evals[myIdx];
       const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
-      // Special hand announcement
       const specials = result.evals.filter(e => e.isSpecial);
       if (specials.length > 0) {
         const txt = specials.map(s => `${s.name}【${s.special.name}】`).join('、');
-        document.getElementById('stage-status-text').textContent = `🌟 特殊報到：${txt}`;
+        document.getElementById('stage-status-text').textContent = `✨ 特殊報到：${txt}`;
         audioEngine.playSfx('homerun');
         audioEngine.speak(`恭喜報到，${txt}`);
-        showDramaticBanner('🌟 特殊牌型報到！', txt);
-        triggerBeautyEvent('homerun');
+        showDramaticBanner('✨ 特殊牌型報到！', txt);
+        randomGoddess(false, 'homerun');
         renderOpponents(1);
         await sleep(1650);
       }
 
-      // Foul alert for player
       if (myEval.isFoul) {
         audioEngine.playSfx('foul');
         audioEngine.speak('哎呀，倒水相公囉');
-        triggerBeautyEvent('foul');
+        randomGoddess(false, 'foul');
       }
 
-      // Step 1: Front Lane (Check 衝三 trigger!)
-      document.getElementById('stage-status-text').textContent = '🌸 第一步：比頭墩（3張）';
+      // Step 1: Front Lane
+      document.getElementById('stage-status-text').textContent = '▶ 第一步：比頭墩（3張）';
       audioEngine.playSfx('reveal');
       if (!myEval.isSpecial && !myEval.isFoul && myEval.fEv && myEval.fEv.type === 3) {
-        audioEngine.speak('頭墩衝三！太厲害了');
-        triggerBeautyEvent('chongsan');
-        showDramaticBanner('✨ 頭墩衝三 (+3水) ✨', '可愛甜心為你歡呼！');
+        audioEngine.speak('頭墩衝三！加三水');
+        randomGoddess(false, 'chongsan');
+        showDramaticBanner('✨ 頭墩衝三 (+3水) ✨', '夏日女神為你歡呼！');
       } else {
         audioEngine.speak('比頭墩');
       }
@@ -2472,7 +2733,7 @@
       await sleep(1250);
 
       // Step 2: Mid Lane
-      document.getElementById('stage-status-text').textContent = '🌸 第二步：比中墩（5張）';
+      document.getElementById('stage-status-text').textContent = '▶ 第二步：比中墩（5張）';
       audioEngine.playSfx('reveal');
       audioEngine.speak('比中墩');
       renderOpponents(2);
@@ -2480,41 +2741,40 @@
       await sleep(1250);
 
       // Step 3: Back Lane
-      document.getElementById('stage-status-text').textContent = '🌸 第三步：比尾墩（5張）';
+      document.getElementById('stage-status-text').textContent = '▶ 第三步：比尾墩（5張）';
       audioEngine.playSfx('reveal');
       audioEngine.speak('比尾墩');
       renderOpponents(3);
       showMyLaneScore('back', result.laneNet.back[myIdx]);
       await sleep(1250);
 
-      // Step 4: Shoot & Home Run FX + Beauty Photo Trigger
+      // Step 4: Shoot & Home Run FX
       const totalShoots = result.shootsGiven.reduce((acc, arr) => acc + arr.length, 0);
       if (result.homeRunSeats.length > 0) {
         const hrNames = result.homeRunSeats.map(i => appState.seats[i].name).join('、');
         document.getElementById('stage-status-text').textContent = `🏆 全壘打！${hrNames} 橫掃全場！`;
         audioEngine.playSfx('shoot');
         setTimeout(() => audioEngine.playSfx('homerun'), 220);
-        audioEngine.speak(`全壘打！${hrNames} 打槍三家，水數再翻倍！`);
+        audioEngine.speak(`全壘打！${hrNames} 打槍三家，總水數再翻倍！`);
         showDramaticBanner('🏆 全壘打 HOME RUN!', `${hrNames} 橫掃三家！`);
-        triggerBeautyEvent('homerun');
+        randomGoddess(false, 'homerun');
         await sleep(1850);
       } else if (totalShoots > 0) {
         const shooters = [];
         result.shootsGiven.forEach((victims, sIdx) => {
           if (victims.length > 0) shooters.push(`${appState.seats[sIdx].name} 打槍 ${victims.map(v => appState.seats[v].name).join('、')}`);
         });
-        document.getElementById('stage-status-text').textContent = `💘 ${shooters.join(' ｜ ')}`;
+        document.getElementById('stage-status-text').textContent = `🔫 ${shooters.join(' ｜ ')}`;
         audioEngine.playSfx('shoot');
         audioEngine.speak(`打槍！${shooters[0]}`);
-        showDramaticBanner('💘 打槍 SHOOT ×2', shooters.join(' / '));
-        triggerBeautyEvent('shoot');
+        showDramaticBanner('🔫 打槍 SHOOT ×2', shooters.join(' / '));
+        randomGoddess(false, 'shoot');
         await sleep(1750);
       }
 
-      document.getElementById('hud-my-score').innerHTML = `總水數：<strong>${appState.seats[myIdx].totalShui}</strong>`;
+      document.getElementById('hud-my-score').innerHTML = `總水：<strong class="text-amber-300">${appState.seats[myIdx].totalShui}</strong>`;
 
-      // Settlement Beauty Photo Swap
-      triggerBeautyEvent(result.totalDelta[myIdx] >= 0 ? 'settleWin' : 'settleLose');
+      randomGoddess(false, result.totalDelta[myIdx] >= 0 ? 'settleWin' : 'settleLose');
       appState.phase = 'settled';
       openSettlementModal(result);
     }
@@ -2523,8 +2783,8 @@
       const el = document.getElementById(`score-${lane}`);
       el.classList.remove('hidden');
       el.textContent = net > 0 ? `+${net} 水` : `${net} 水`;
-      el.className = `text-[11px] font-black px-2 py-0.5 rounded-full ${
-        net > 0 ? 'bg-pink-500 text-white' : net < 0 ? 'bg-rose-200 text-rose-800' : 'bg-white text-rose-500'
+      el.className = `text-[11px] font-black px-2 py-0.5 rounded-full tabular-nums ${
+        net > 0 ? 'bg-rose-500 text-white' : net < 0 ? 'bg-red-950/85 text-red-200 border border-red-400/50' : 'bg-black/50 text-sky-100'
       }`;
     }
 
@@ -2532,48 +2792,46 @@
       const myIdx = appState.mySeatIdx;
       const myDelta = result.totalDelta[myIdx];
 
-      document.getElementById('settle-title').textContent = `第 ${appState.round} 局 甜心結算戰報`;
+      document.getElementById('settle-title').textContent = `第 ${appState.round} 局 盛夏結算戰報`;
       const tags = [];
       if (result.homeRunSeats.length > 0) tags.push('🏆 本局出現全壘打');
-      if (result.evals.some(e => e.isSpecial)) tags.push('🌟 本局出現特殊報到');
+      if (result.evals.some(e => e.isSpecial)) tags.push('✨ 本局出現特殊報到');
       if (result.evals.some(e => e.isFoul)) tags.push('⚠️ 本局有玩家倒水');
       document.getElementById('settle-subtitle').textContent = tags.length ? tags.join('・') : '四家逐墩比牌完成';
 
       const deltaBadge = document.getElementById('settle-my-delta');
       deltaBadge.textContent = myDelta >= 0 ? `本局 +${myDelta} 水` : `本局 ${myDelta} 水`;
-      deltaBadge.className = `px-3 py-1 rounded-full text-sm font-black border ${
-        myDelta > 0 ? 'bg-pink-500 border-pink-300 text-white'
-        : myDelta < 0 ? 'bg-rose-100 border-rose-300 text-rose-700'
-        : 'bg-white border-pink-200 text-rose-600'
+      deltaBadge.className = `px-3 py-1 rounded-full text-sm font-black border tabular-nums ${
+        myDelta > 0 ? 'bg-rose-500/85 border-rose-200 text-white'
+        : myDelta < 0 ? 'bg-red-950/80 border-red-400 text-red-200'
+        : 'bg-black/40 border-sky-300/40 text-sky-100'
       }`;
 
       const body = document.getElementById('settle-body');
       body.innerHTML = '';
 
-      // Standings Table
       const standCard = document.createElement('div');
-      standCard.className = 'rounded-2xl bg-white border border-pink-200 overflow-hidden shadow-sm';
+      standCard.className = 'rounded-2xl bg-black/35 border border-white/15 overflow-hidden';
       let rowsHtml = '';
       appState.seats.forEach((s, idx) => {
-        const d = result.totalDelta[idx];
-        const ev = result.evals[idx];
+        const d = result.totalDelta[idx], ev = result.evals[idx];
         const badges = [];
-        if (result.homeRunSeats.includes(idx)) badges.push('<span class="px-1.5 py-0.5 rounded-full bg-rose-500 text-[10px] text-white font-black">全壘打</span>');
-        else if (result.shootsGiven[idx].length > 0) badges.push(`<span class="px-1.5 py-0.5 rounded-full bg-pink-400 text-[10px] text-white font-black">打槍×${result.shootsGiven[idx].length}</span>`);
-        if (ev.isSpecial) badges.push(`<span class="px-1.5 py-0.5 rounded-full bg-purple-500 text-[10px] text-white font-black">${ev.special.name}</span>`);
-        if (ev.isFoul) badges.push('<span class="px-1.5 py-0.5 rounded-full bg-rose-700 text-[10px] text-white font-black">倒水</span>');
+        if (result.homeRunSeats.includes(idx)) badges.push('<span class="px-1.5 py-0.5 rounded-full bg-amber-500 text-[10px] text-white font-black">全壘打</span>');
+        else if (result.shootsGiven[idx].length > 0) badges.push(`<span class="px-1.5 py-0.5 rounded-full bg-rose-500 text-[10px] text-white font-black">打槍×${result.shootsGiven[idx].length}</span>`);
+        if (ev.isSpecial) badges.push(`<span class="px-1.5 py-0.5 rounded-full bg-sky-500 text-[10px] text-white font-black">${ev.special.name}</span>`);
+        if (ev.isFoul) badges.push('<span class="px-1.5 py-0.5 rounded-full bg-red-700 text-[10px] text-white font-black">倒水</span>');
 
         rowsHtml += `
-          <tr class="border-t border-pink-100 ${idx === myIdx ? 'bg-pink-50/90' : ''}">
-            <td class="px-3 py-2 font-black text-xs sm:text-sm text-rose-800">${s.name} ${badges.join(' ')}</td>
-            <td class="px-3 py-2 text-right font-mono font-black text-xs sm:text-sm ${d > 0 ? 'text-pink-600' : d < 0 ? 'text-rose-400' : 'text-slate-400'}">${d > 0 ? '+' + d : d} 水</td>
-            <td class="px-3 py-2 text-right font-mono font-bold text-xs sm:text-sm text-rose-700">${s.totalShui} 水</td>
+          <tr class="border-t border-white/10 ${idx === myIdx ? 'bg-rose-500/15' : ''}">
+            <td class="px-3 py-2 font-black text-xs sm:text-sm text-white">${s.name} ${badges.join(' ')}</td>
+            <td class="px-3 py-2 text-right font-mono tabular-nums font-black text-xs sm:text-sm ${d > 0 ? 'text-amber-300' : d < 0 ? 'text-rose-300' : 'text-slate-300'}">${d > 0 ? '+' + d : d} 水</td>
+            <td class="px-3 py-2 text-right font-mono tabular-nums font-bold text-xs sm:text-sm text-sky-200">${s.totalShui} 水</td>
           </tr>
         `;
       });
       standCard.innerHTML = `
         <table class="w-full text-left">
-          <thead class="bg-pink-50 text-[11px] text-rose-500">
+          <thead class="bg-black/40 text-[11px] text-sky-200/85">
             <tr><th class="px-3 py-2">玩家</th><th class="px-3 py-2 text-right">本局水數</th><th class="px-3 py-2 text-right">累計總水數</th></tr>
           </thead>
           <tbody>${rowsHtml}</tbody>
@@ -2581,9 +2839,8 @@
       `;
       body.appendChild(standCard);
 
-      // Pairwise Breakdown (Player's matches on top)
       const detailTitle = document.createElement('div');
-      detailTitle.className = 'text-xs font-black text-rose-600 pt-1';
+      detailTitle.className = 'text-xs font-black text-sky-200 pt-1';
       detailTitle.textContent = '⚔️ 兩兩捉對逐墩明細';
       body.appendChild(detailTitle);
 
@@ -2593,24 +2850,24 @@
         const isMine = (p.i === myIdx || p.j === myIdx);
         const fmt = (n) => n > 0 ? `+${n}` : `${n}`;
         const laneInfo = p.type === 'special' || p.type === 'foul_both'
-          ? `<span class="text-rose-600 font-bold">${p.note}</span>`
-          : `頭(${fmt(p.fDiff)}) / 中(${fmt(p.mDiff)}) / 尾(${fmt(p.bDiff)})・<span class="text-rose-600 font-bold">${p.note}</span>`;
+          ? `<span class="text-sky-200 font-bold">${p.note}</span>`
+          : `頭(${fmt(p.fDiff)}) / 中(${fmt(p.mDiff)}) / 尾(${fmt(p.bDiff)})・<span class="text-sky-200 font-bold">${p.note}</span>`;
 
         const item = document.createElement('div');
-        item.className = `p-2.5 rounded-2xl border text-xs space-y-1 ${isMine ? 'bg-pink-50 border-pink-300' : 'bg-white border-pink-100'}`;
+        item.className = `p-2.5 rounded-2xl border text-xs space-y-1 ${isMine ? 'bg-rose-500/15 border-rose-300/45' : 'bg-black/30 border-white/10'}`;
         item.innerHTML = `
           <div class="flex items-center justify-between font-black">
-            <span class="text-rose-800">${pA} <span class="text-pink-400">VS</span> ${pB}</span>
-            <span class="font-mono ${p.netA > 0 ? 'text-pink-600' : p.netA < 0 ? 'text-rose-400' : 'text-slate-400'}">${pA} ${fmt(p.netA)} 水</span>
+            <span class="text-white">${pA} <span class="text-rose-400">VS</span> ${pB}</span>
+            <span class="font-mono tabular-nums ${p.netA > 0 ? 'text-amber-300' : p.netA < 0 ? 'text-rose-300' : 'text-slate-300'}">${pA} ${fmt(p.netA)} 水</span>
           </div>
-          <div class="text-[11px] text-rose-500">${laneInfo}</div>
+          <div class="text-[11px] text-sky-100/80">${laneInfo}</div>
         `;
         body.appendChild(item);
       });
 
       const nextBtn = document.getElementById('btn-next-round');
       if (appState.mode === 'guest') { nextBtn.disabled = true; nextBtn.textContent = '等待房主開啟下一局...'; }
-      else { nextBtn.disabled = false; nextBtn.textContent = '確定 / 再來一局 🌸'; }
+      else { nextBtn.disabled = false; nextBtn.textContent = '再來一局 🏖️'; }
 
       document.getElementById('settlement-modal').classList.remove('hidden');
       if (myDelta > 0) audioEngine.playSfx('win');
@@ -2627,6 +2884,7 @@
       document.getElementById('settlement-modal').classList.add('hidden');
       document.getElementById('game-screen').classList.add('hidden');
       document.getElementById('game-screen').classList.remove('flex');
+      document.getElementById('goddess-bubble').classList.add('hidden');
       document.getElementById('lobby-screen').classList.remove('hidden');
       appState.phase = 'lobby';
       renderLobbySeats();
@@ -2636,16 +2894,20 @@
        9. INITIALIZATION
        ========================================================================= */
     window.addEventListener('DOMContentLoaded', () => {
-      renderLobbySeats();
-      renderCurrentBeautyPhoto();
+      refillShuffleBag();
+      randomGoddess(false, null);
       resetPhotoAutoTimer();
+      renderLobbySeats();
+
+      // Probe ./images/1.jpg~13.jpg (with .png & .webp fallback) in background
+      probeAllLocalImages();
 
       try {
         const params = new URLSearchParams(window.location.search);
         const roomParam = params.get('room');
         if (roomParam) {
           document.getElementById('join-room-input').value = roomParam.trim();
-          showToast(`已自動帶入房號 ${roomParam}，請點「加入房間」🌸`, 'info');
+          showToast(`已自動帶入房號 ${roomParam}，請點「加入房間」🏖️`, 'info');
         }
       } catch (e) {}
 
